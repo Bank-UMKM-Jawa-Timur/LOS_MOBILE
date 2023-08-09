@@ -48,12 +48,12 @@ const textBoldLightSecondLarge = TextStyle(
 
 // Bold Dark
 const textBoldDarkSmall = TextStyle(
-  fontSize: 8,
+  fontSize: 9,
   fontWeight: FontWeight.w700,
   color: Colors.black,
 );
 const textBoldDarkMedium = TextStyle(
-  fontSize: 11,
+  fontSize: 12,
   fontWeight: FontWeight.w700,
   color: Colors.black,
 );

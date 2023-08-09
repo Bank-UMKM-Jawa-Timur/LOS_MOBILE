@@ -9,3 +9,10 @@ const enabledBorder = OutlineInputBorder(
   borderRadius: BorderRadius.all(Radius.circular(4)),
   borderSide: BorderSide(width: 1, color: mGreyLightColor),
 );
+
+decorationFormTgl() {
+  return BoxDecoration(
+    border: Border.all(color: mGreyLightColor),
+    borderRadius: const BorderRadius.all(Radius.circular(4)),
+  );
+}
