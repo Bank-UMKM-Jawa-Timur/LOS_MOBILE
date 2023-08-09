@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:los_mobile/widgets/logo/widget_logo.dart';
+import 'package:los_mobile/src/widgets/my_logo.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
@@ -8,7 +8,7 @@ class SplashScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: WidgetLogo().logoSplash,
+        child: logoSplash,
       ),
     );
   }

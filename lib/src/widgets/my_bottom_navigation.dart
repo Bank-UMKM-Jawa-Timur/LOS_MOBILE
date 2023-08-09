@@ -1,20 +1,17 @@
 import 'package:community_material_icon/community_material_icon.dart';
 import 'package:flutter/material.dart';
+import 'package:los_mobile/utils/colors.dart';
 import 'package:los_mobile/view/home/home_page.dart';
 import 'package:los_mobile/view/profile/profile_page.dart';
-import 'package:los_mobile/widgets/Space/widget_space.dart';
-import 'package:los_mobile/widgets/colors/theme.dart';
 
-class BottomNavigationBarExample extends StatefulWidget {
-  const BottomNavigationBarExample({super.key});
+class MyBottomNavigationBar extends StatefulWidget {
+  const MyBottomNavigationBar({super.key});
 
   @override
-  State<BottomNavigationBarExample> createState() =>
-      _BottomNavigationBarExampleState();
+  State<MyBottomNavigationBar> createState() => _MyBottomNavigationBarState();
 }
 
-class _BottomNavigationBarExampleState
-    extends State<BottomNavigationBarExample> {
+class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
   int _selectedIndex = 0;
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
@@ -58,7 +55,7 @@ class _BottomNavigationBarExampleState
                 child: Ink(
                   decoration: BoxDecoration(
                       border: Border.all(color: Colors.white, width: 4),
-                      color: WidgetTheme.primaryColor,
+                      color: mPrimaryColor,
                       // shape: BoxShape.circle,
                       borderRadius: BorderRadius.circular(15)),
                   child: InkWell(
@@ -73,11 +70,10 @@ class _BottomNavigationBarExampleState
                 ),
               ),
             ),
-            WidgetSpace().spaceHeight(1),
             const Text(
               "Analisa",
-              style: TextStyle(
-                  fontWeight: FontWeight.w500, color: WidgetTheme.primaryColor),
+              style:
+                  TextStyle(fontWeight: FontWeight.w500, color: mPrimaryColor),
             )
           ],
         ),
@@ -109,7 +105,7 @@ class _BottomNavigationBarExampleState
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: WidgetTheme.primaryColor,
+        selectedItemColor: mPrimaryColor,
         onTap: _onItemTapped,
       ),
     );
