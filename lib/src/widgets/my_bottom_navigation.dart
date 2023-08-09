@@ -1,8 +1,8 @@
 import 'package:community_material_icon/community_material_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:los_mobile/utils/colors.dart';
-import 'package:los_mobile/view/home/home_page.dart';
-import 'package:los_mobile/view/profile/profile_page.dart';
+import 'package:los_mobile/src/futures/home/view/home_page.dart';
+import 'package:los_mobile/src/futures/profile/view/profile_page.dart';
 
 class MyBottomNavigationBar extends StatefulWidget {
   const MyBottomNavigationBar({super.key});
