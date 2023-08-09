@@ -227,21 +227,105 @@ class _HomePageState extends State<HomePage> {
                 )
               ],
             ),
+            spaceHeightMedium,
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Container(
-                  width: Get.width * 0.3,
-                  height: 20,
-                  color: Colors.amber,
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    height: 33,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(color: mGreyVeryLightColor, width: 1),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                              width: 33,
+                              height: 33,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(6),
+                                color: mGreenFlatColor,
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  "001",
+                                  style: textBoldLightMedium,
+                                ),
+                              ),
+                            ),
+                            spaceWidthVerySmall,
+                            const Text(
+                              "Surabaya",
+                              style: textBoldDarkSmall,
+                            )
+                          ],
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.only(right: 10),
+                          child: Text(
+                            "450",
+                            style: textBoldDarkSmall,
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
                 ),
-                Container(
-                  width: Get.width * 0.3,
-                  height: 20,
-                  color: Colors.amber,
+                spaceWidthSmall,
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    height: 33,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(color: mGreyVeryLightColor, width: 1),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                              width: 33,
+                              height: 33,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(6),
+                                color: mPrimaryColor,
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  "024",
+                                  style: textBoldLightMedium,
+                                ),
+                              ),
+                            ),
+                            spaceWidthVerySmall,
+                            const Text(
+                              "Surabaya",
+                              style: textBoldDarkSmall,
+                            )
+                          ],
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.only(right: 10),
+                          child: Text(
+                            "450",
+                            style: textBoldDarkSmall,
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
                 ),
               ],
-            )
+            ),
           ],
         ),
       ),
@@ -524,6 +608,7 @@ class _HomePageState extends State<HomePage> {
 
   Column _formCabang() {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text("Cabang", style: textBoldDarkMedium),
         const SizedBox(height: 5),
@@ -534,14 +619,8 @@ class _HomePageState extends State<HomePage> {
             isExpanded: true,
             decoration: const InputDecoration(
               contentPadding: EdgeInsets.all(8),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(4)),
-                borderSide: BorderSide(width: 1, color: Color(0xFF515151)),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(4)),
-                borderSide: BorderSide(width: 1, color: Color(0xFFE4E4E4)),
-              ),
+              focusedBorder: focusedBorder,
+              enabledBorder: enabledBorder,
               border: OutlineInputBorder(),
               filled: true,
               fillColor: Colors.white,
