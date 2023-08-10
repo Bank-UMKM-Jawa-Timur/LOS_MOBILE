@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:los_mobile/utils/colors.dart';
 import 'package:los_mobile/src/futures/login/controller/login_controller.dart';
 import 'package:los_mobile/utils/colors.dart';
 
@@ -149,7 +150,46 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                         icon: Icon(Icons.logout, size: 20),
                         onPressed: () {
-                          loginController.logout();
+                          showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  title: Text(
+                                    "Logout?",
+                                    style: TextStyle(
+                                      color: mPrimaryColor,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  content:
+                                      Text("Anda yakin ingin logout akun?"),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      child: const Text(
+                                        "No",
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                    TextButton(
+                                      child: const Text(
+                                        "Oke",
+                                        style: TextStyle(
+                                          color: mPrimaryColor,
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        loginController.logout();
+                                      },
+                                    ),
+                                  ],
+                                  elevation: 24.0,
+                                );
+                              });
                         },
                         label: Text(
                           'Logout',
