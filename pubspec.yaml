@@ -33,6 +33,7 @@ dependencies:
   get: ^4.6.5
   community_material_icon: ^5.9.55
   pie_chart: ^5.3.2
+  shimmer: ^3.0.0
 
 
   # The following adds the Cupertino Icons font to your application.
