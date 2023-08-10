@@ -21,17 +21,18 @@ class _HomePageState extends State<HomePage> {
       DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
 
   String? valueKetPembayaran;
+
   List ketPembayaranList = [
     'Semua Cabang',
     'Surabaya',
     'Lumajang',
   ];
+
   final colorListData = <Color>[
     mGreenFlatColor,
     mPrimaryColor,
     mYellowColor,
   ];
-
   final colorListPosisi = <Color>[
     mBlueFlatColor,
     mAmberFlatColor,
