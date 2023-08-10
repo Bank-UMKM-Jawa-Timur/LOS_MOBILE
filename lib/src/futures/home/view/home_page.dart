@@ -68,7 +68,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     double heightStatusBar = MediaQuery.of(context).viewPadding.top;
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F8F8),
+      backgroundColor: mBgColor,
       appBar: _BuildAppBar(heightStatusBar),
       body: _BuildBody(),
     );

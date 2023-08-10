@@ -20,6 +20,7 @@ class _ShimmerHomePageState extends State<ShimmerHomePage> {
   Widget build(BuildContext context) {
     double heightStatusBar = MediaQuery.of(context).viewPadding.top;
     return Scaffold(
+      backgroundColor: mBgColor,
       appBar: _buildAppBar(heightStatusBar),
       body: MyShimmer().buildBody(),
     );
