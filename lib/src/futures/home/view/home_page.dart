@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:los_mobile/src/widgets/all_widgets.dart';
+import 'package:los_mobile/src/widgets/my_alert_dialog.dart';
 import 'package:los_mobile/src/widgets/my_border_form.dart';
 import 'package:los_mobile/src/widgets/my_legends_chart.dart';
 import 'package:los_mobile/src/widgets/my_shadow.dart';
@@ -120,15 +121,23 @@ class _HomePageState extends State<HomePage> {
           )
         ],
       ),
-      actions: const [
+      actions: [
         Padding(
-          padding: EdgeInsets.only(right: 25),
-          child: Icon(
-            Icons.notifications_none,
-            size: 30,
-            color: Colors.white,
-          ),
-        )
+            padding: EdgeInsets.only(right: 25),
+            child: InkWell(
+              onTap: () {
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return MyAlertDialog().alertdialog(context);
+                    });
+              },
+              child: Icon(
+                Icons.notifications_none,
+                size: 30,
+                color: Colors.white,
+              ),
+            ))
       ],
       automaticallyImplyLeading: true,
       leadingWidth: Get.width * 0.28,

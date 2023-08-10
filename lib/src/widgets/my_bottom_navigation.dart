@@ -1,5 +1,6 @@
 import 'package:community_material_icon/community_material_icon.dart';
 import 'package:flutter/material.dart';
+import 'package:los_mobile/src/widgets/my_alert_dialog.dart';
 import 'package:los_mobile/utils/colors.dart';
 import 'package:los_mobile/src/futures/home/view/home_page.dart';
 import 'package:los_mobile/src/futures/profile/view/profile_page.dart';
@@ -60,7 +61,13 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
                       borderRadius: BorderRadius.circular(15)),
                   child: InkWell(
                     borderRadius: BorderRadius.circular(500.0),
-                    onTap: () {},
+                    onTap: () {
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return MyAlertDialog().alertdialog(context);
+                          });
+                    },
                     child: const Icon(
                       Icons.credit_card,
                       size: 27,
