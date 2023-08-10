@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:los_mobile/utils/colors.dart';
+import 'package:los_mobile/src/futures/login/controller/login_controller.dart';
+import 'package:los_mobile/utils/colors.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -11,13 +13,15 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   bool beoAuth = false;
+  LoginController loginController = Get.put(LoginController());
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: mBgColor,
       appBar: AppBar(
         title: const Text("Profile", style: TextStyle(color: Colors.black)),
-        backgroundColor: Colors.white,
+        backgroundColor: mBgColor,
         elevation: 0,
       ),
       body: ListView(
@@ -178,7 +182,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                           color: mPrimaryColor,
                                         ),
                                       ),
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        loginController.logout();
+                                      },
                                     ),
                                   ],
                                   elevation: 24.0,

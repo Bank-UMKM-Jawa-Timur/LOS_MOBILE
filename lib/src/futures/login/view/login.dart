@@ -1,11 +1,14 @@
 import 'package:community_material_icon/community_material_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:los_mobile/src/futures/home/view/home_page.dart';
+import 'package:los_mobile/src/futures/login/controller/login_controller.dart';
 import 'package:los_mobile/src/widgets/all_widgets.dart';
 import 'package:los_mobile/src/widgets/my_border_form.dart';
 import 'package:los_mobile/src/widgets/my_bottom_navigation.dart';
 import 'package:los_mobile/src/widgets/my_logo.dart';
 import 'package:los_mobile/utils/colors.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -15,8 +18,21 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  var emailNip = TextEditingController(text: "");
-  var password = TextEditingController(text: "");
+  LoginController loginController = Get.put(LoginController());
+
+  @override
+  void initState() {
+    super.initState();
+    checkToken();
+  }
+
+  checkToken() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (prefs.getString("token") != null) {
+      Get.offAll(const MyBottomNavigationBar());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,7 +62,7 @@ class _LoginState extends State<Login> {
                   ),
                   autocorrect: false,
                   maxLines: 1,
-                  controller: emailNip,
+                  controller: loginController.emailNipController,
                   textInputAction: TextInputAction.next,
                 ),
               ),
@@ -69,7 +85,7 @@ class _LoginState extends State<Login> {
                   ),
                   autocorrect: false,
                   maxLines: 1,
-                  controller: password,
+                  controller: loginController.passwordController,
                   textInputAction: TextInputAction.next,
                 ),
               ),
@@ -82,7 +98,7 @@ class _LoginState extends State<Login> {
                     backgroundColor: mPrimaryColor,
                   ),
                   onPressed: () {
-                    Get.offAll(const MyBottomNavigationBar());
+                    loginController.login();
                   },
                   icon: const Icon(CommunityMaterialIcons.login),
                   label: const Text(
@@ -90,7 +106,7 @@ class _LoginState extends State<Login> {
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
                   ),
                 ),
-              )
+              ),
             ],
           ),
         ),
