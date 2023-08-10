@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:los_mobile/src/futures/home/view/home_page.dart';
 import 'package:los_mobile/src/futures/login/view/login.dart';
+import 'package:los_mobile/src/widgets/my_bottom_navigation.dart';
 import 'package:los_mobile/src/widgets/my_snackbar.dart';
 import 'package:los_mobile/utils/base_url.dart';
 import 'package:http/http.dart' as http;
@@ -43,7 +44,7 @@ class LoginController extends GetxController {
             await prefs?.setString('token', token);
             emailNipController.clear();
             passwordController.clear();
-            Get.offAll(const HomePage());
+            Get.offAll(const MyBottomNavigationBar());
             print(response.body);
           } else {
             print(response.statusCode);

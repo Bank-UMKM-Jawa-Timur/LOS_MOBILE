@@ -345,7 +345,6 @@ class _HomePageState extends State<HomePage> {
   Container _posisiPengajuan() {
     return Container(
       width: Get.width,
-      height: 245,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         color: Colors.white,
@@ -418,7 +417,6 @@ class _HomePageState extends State<HomePage> {
   Container _dataPengajuan() {
     return Container(
       width: Get.width,
-      height: 245,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         color: Colors.white,
