@@ -591,7 +591,21 @@ class _HomePageState extends State<HomePage> {
                                 BorderRadius.circular(20), // <-- Radius
                           ),
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return Transform.scale(
+                                  scale: 3,
+                                  child: Center(
+                                    child: CircularProgressIndicator(
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                          Colors.white),
+                                    ),
+                                  ));
+                            },
+                          );
+                        },
                         child: Text(
                           "FILTER",
                           style: textBoldLightMedium,

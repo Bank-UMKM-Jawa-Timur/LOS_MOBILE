@@ -116,7 +116,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             ],
                           ),
                           Switch(
-                            activeColor: Colors.red[800],
+                            activeColor: Colors.red[900],
                             value: beoAuth,
                             onChanged: (bool value) {
                               setState(() {
