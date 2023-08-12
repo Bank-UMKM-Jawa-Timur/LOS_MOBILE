@@ -8,12 +8,14 @@ import 'package:los_mobile/src/futures/home/controllers/posisi_pengajuan_control
 import 'package:los_mobile/src/futures/home/controllers/rating_cabang_controller.dart';
 import 'package:los_mobile/src/futures/home/view/shimmer_home_page.dart';
 import 'package:los_mobile/src/widgets/all_widgets.dart';
-import 'package:los_mobile/src/widgets/my_alert_dialog.dart';
+import 'package:los_mobile/src/widgets/dialog/my_alert_dialog.dart';
 import 'package:los_mobile/src/widgets/my_border_form.dart';
-import 'package:los_mobile/src/widgets/my_date_picker_android.dart';
+import 'package:los_mobile/src/widgets/my_circle_avatar.dart';
+import 'package:los_mobile/src/widgets/date/my_date_picker_android.dart';
 import 'package:los_mobile/src/widgets/my_legends_chart.dart';
 import 'package:los_mobile/src/widgets/my_pie_chart.dart';
 import 'package:los_mobile/src/widgets/my_shadow.dart';
+import 'package:los_mobile/src/widgets/my_shorten_last_name.dart';
 import 'package:los_mobile/src/widgets/my_target_platform.dart';
 import 'package:los_mobile/utils/colors.dart';
 import 'package:los_mobile/utils/constant.dart';
@@ -135,22 +137,7 @@ class _HomePageState extends State<HomePage> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Container(
-              width: 41,
-              height: 41,
-              decoration: const BoxDecoration(
-                color: Color(0xFF4B64E2),
-                borderRadius: BorderRadius.all(
-                  Radius.circular(30),
-                ),
-              ),
-              child: const Center(
-                child: Text(
-                  "A",
-                  style: textBoldLightSecondLarge,
-                ),
-              ),
-            ),
+            circleAvatarWidget(name, 21),
           ],
         ),
       ),
@@ -159,12 +146,12 @@ class _HomePageState extends State<HomePage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            name,
+            shortenLastName(name),
             style: textBoldLightLarge,
           ),
           const SizedBox(height: 3),
           Text(
-            bagian == null ? jabatan : "$jabatan $bagian",
+            bagian == "null" ? jabatan : "$jabatan $bagian",
             style: const TextStyle(
               fontSize: 9,
               fontWeight: FontWeight.w700,
@@ -605,7 +592,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                     ],
-                  )
+                  ),
                 ],
               ),
               SizedBox(

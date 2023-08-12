@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
@@ -63,7 +64,9 @@ class PosisiPengajuanController extends GetxController {
     } catch (e) {
       debugPrint("Error $e");
     } finally {
-      isLoading(false);
+      Timer(const Duration(seconds: 1), () {
+        isLoading(false);
+      });
     }
   }
 }

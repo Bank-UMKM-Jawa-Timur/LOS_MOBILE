@@ -28,7 +28,7 @@ class DataCabangController extends GetxController {
     try {
       isLoading(true);
       http.Response response = await http.get(
-        Uri.parse('$base_url/kkb/get-cabang'),
+        Uri.parse('$base_url/v1/get-cabang'),
         headers: headers,
       );
       if (response.statusCode == 200) {

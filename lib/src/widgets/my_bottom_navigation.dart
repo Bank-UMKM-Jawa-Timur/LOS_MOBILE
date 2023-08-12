@@ -1,6 +1,8 @@
+import 'dart:async';
+
 import 'package:community_material_icon/community_material_icon.dart';
 import 'package:flutter/material.dart';
-import 'package:los_mobile/src/widgets/my_alert_dialog.dart';
+import 'package:los_mobile/src/widgets/dialog/my_alert_dialog.dart';
 import 'package:los_mobile/utils/colors.dart';
 import 'package:los_mobile/src/futures/home/view/home_page.dart';
 import 'package:los_mobile/src/futures/profile/view/profile_page.dart';
@@ -87,7 +89,7 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.white,
-        items: const <BottomNavigationBarItem>[
+        items: const [
           BottomNavigationBarItem(
             icon: Icon(
               CommunityMaterialIcons.home_outline,
@@ -96,10 +98,9 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            backgroundColor: Colors.amber,
             icon: Icon(
               CommunityMaterialIcons.home_outline,
-              size: 25,
+              size: 0,
             ),
             label: '',
           ),
