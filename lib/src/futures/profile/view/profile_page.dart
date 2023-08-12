@@ -1,8 +1,15 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart';
+import 'package:los_mobile/src/widgets/my_alert_dialog_android.dart';
+import 'package:los_mobile/src/widgets/my_alert_dialog_ios.dart';
+import 'package:los_mobile/src/widgets/my_target_platform.dart';
+import 'package:los_mobile/src/widgets/my_text_widget.dart';
 import 'package:los_mobile/utils/colors.dart';
 import 'package:los_mobile/src/futures/login/controller/login_controller.dart';
-import 'package:los_mobile/utils/colors.dart';
+import 'package:los_mobile/utils/preferens_user.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -14,6 +21,37 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   bool beoAuth = false;
   LoginController loginController = Get.put(LoginController());
+  PreferensUser preferensUser = Get.put(PreferensUser());
+
+  Future<void> alert() async {
+    print("object");
+  }
+
+  String name = "";
+  String jabatan = "";
+  String bagian = "";
+  String role = "";
+  String email = "";
+
+  bool typeFilter = false;
+  @override
+  void initState() {
+    super.initState();
+    getUser();
+  }
+
+  totalPengajuan() {}
+
+  void getUser() async {
+    SharedPreferences spref = await SharedPreferences.getInstance();
+    setState(() {
+      name = "${spref.getString("name")}";
+      jabatan = "${spref.getString("jabatan")}";
+      bagian = "${spref.getString("bagian")}";
+      role = "${spref.getString("role")}";
+      email = "${spref.getString("email")}";
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,185 +62,170 @@ class _ProfilePageState extends State<ProfilePage> {
         backgroundColor: mBgColor,
         elevation: 0,
       ),
-      body: ListView(
-        children: [
-          Container(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                // bagian avatar
-                Container(
-                    width: 80,
-                    height: 80,
-                    margin: EdgeInsets.only(top: 70),
-                    child: CircleAvatar(
-                      child: new Text(
-                        'A',
-                        textAlign: TextAlign.center,
-                        style: new TextStyle(
-                            fontSize: 50.0,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white),
-                      ),
-                      backgroundColor: avatarColor,
-                    )),
-                Container(
-                    margin: EdgeInsets.only(top: 30),
-                    child: Text("Arsyad Arthan Nurrohim",
-                        style: new TextStyle(
-                            fontSize: 20.0, fontWeight: FontWeight.bold))),
-                Container(
-                    margin: EdgeInsets.only(top: 10),
-                    child: Text("admin@mail.com",
-                        style: new TextStyle(
-                            color: textEmail,
-                            fontSize: 15.0,
-                            fontWeight: FontWeight.normal))),
-
-                Container(
-                  padding: EdgeInsets.all(10),
-                  margin: EdgeInsets.only(top: 40),
-                  child: Column(children: [
-                    SizedBox(
-                      width: Get.width,
-                      child: ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          primary: Colors.white,
-                          backgroundColor: primary,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                                buttonRadius), // <-- Radius
+      body: Obx(
+        () => preferensUser.isLoading.value
+            ? const CircularProgressIndicator()
+            : ListView(
+                children: [
+                  Container(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        // bagian avatar
+                        Container(
+                            width: 80,
+                            height: 80,
+                            margin: const EdgeInsets.only(top: 70),
+                            child: CircleAvatar(
+                              child: Text(
+                                'A',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    fontSize: 50.0,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white),
+                              ),
+                              backgroundColor: avatarColor,
+                            )),
+                        Container(
+                          margin: const EdgeInsets.only(top: 30),
+                          child: Text(
+                            name,
+                            style: const TextStyle(
+                                fontSize: 20.0, fontWeight: FontWeight.bold),
                           ),
-                          alignment: Alignment.centerLeft,
-                          padding: EdgeInsets.all(16),
-                          splashFactory: NoSplash.splashFactory,
-                          elevation: 0,
                         ),
-                        icon: Icon(Icons.lock_reset, size: 28.0),
-                        onPressed: () {},
-                        label: Text(
-                          'Ganti Password',
-                          textAlign: TextAlign.center,
+                        Container(
+                          margin: const EdgeInsets.only(top: 10),
+                          child: Text(
+                            email,
+                            style: TextStyle(
+                                color: textEmail,
+                                fontSize: 15.0,
+                                fontWeight: FontWeight.normal),
+                          ),
                         ),
-                      ),
-                    ),
-                    SizedBox(height: spacingColumn),
-                    Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-                      width: Get.width,
-                      decoration: BoxDecoration(
-                          color: primary,
-                          borderRadius:
-                              BorderRadius.all(Radius.circular(buttonRadius))),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                margin: EdgeInsets.only(left: 10),
-                                child: Icon(
-                                  Icons.fingerprint,
-                                  color: Colors.white,
+
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          margin: const EdgeInsets.only(top: 40),
+                          child: Column(children: [
+                            SizedBox(
+                              width: Get.width,
+                              child: ElevatedButton.icon(
+                                style: ElevatedButton.styleFrom(
+                                  primary: Colors.white,
+                                  backgroundColor: primary,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                        buttonRadius), // <-- Radius
+                                  ),
+                                  alignment: Alignment.centerLeft,
+                                  padding: const EdgeInsets.all(16),
+                                  splashFactory: NoSplash.splashFactory,
+                                  elevation: 0,
+                                ),
+                                icon: const Icon(Icons.lock_reset, size: 28.0),
+                                onPressed: () {},
+                                label: const Text(
+                                  'Ganti Password',
+                                  textAlign: TextAlign.center,
                                 ),
                               ),
-                              Container(
-                                margin: EdgeInsets.only(left: 10),
-                                child: Text(
-                                  'Beomatric Authentication',
-                                  textAlign: TextAlign.left,
-                                  style: TextStyle(
-                                    color: Colors.white,
+                            ),
+                            SizedBox(height: spacingColumn),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 3),
+                              width: Get.width,
+                              decoration: BoxDecoration(
+                                  color: primary,
+                                  borderRadius: BorderRadius.all(
+                                      Radius.circular(buttonRadius))),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Container(
+                                        margin: const EdgeInsets.only(left: 10),
+                                        child: const Icon(
+                                          Icons.fingerprint,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      Container(
+                                        margin: const EdgeInsets.only(left: 10),
+                                        child: const Text(
+                                          'Beomatric Authentication',
+                                          textAlign: TextAlign.left,
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      )
+                                    ],
                                   ),
+                                  Switch(
+                                    activeColor: Colors.red[900],
+                                    value: beoAuth,
+                                    onChanged: (bool value) {
+                                      setState(() {
+                                        beoAuth = value;
+                                      });
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(height: spacingColumn),
+                            SizedBox(
+                              width: Get.width,
+                              child: ElevatedButton.icon(
+                                style: ElevatedButton.styleFrom(
+                                  primary: Colors.white,
+                                  backgroundColor: primary,
+                                  alignment: Alignment.centerLeft,
+                                  padding: const EdgeInsets.all(16),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                        buttonRadius), // <-- Radius
+                                  ),
+                                  splashFactory: NoSplash.splashFactory,
+                                  elevation: 0,
                                 ),
-                              )
-                            ],
-                          ),
-                          Switch(
-                            activeColor: Colors.red[900],
-                            value: beoAuth,
-                            onChanged: (bool value) {
-                              setState(() {
-                                beoAuth = value;
-                              });
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: spacingColumn),
-                    SizedBox(
-                      width: Get.width,
-                      child: ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          primary: Colors.white,
-                          backgroundColor: primary,
-                          alignment: Alignment.centerLeft,
-                          padding: EdgeInsets.all(16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                                buttonRadius), // <-- Radius
-                          ),
-                          splashFactory: NoSplash.splashFactory,
-                          elevation: 0,
+                                icon: const Icon(Icons.logout, size: 20),
+                                onPressed: () {
+                                  if (defaultTargetPlatform == deviceAndroid) {
+                                    alertDialogAndroidLogout(
+                                      context,
+                                      titleDialogWarning,
+                                      messageeDialoglogout,
+                                    );
+                                  } else if (defaultTargetPlatform ==
+                                      deviceIos) {
+                                    AlertDialogIosLogout(
+                                      context,
+                                      titleDialogWarning,
+                                      messageeDialoglogout,
+                                    );
+                                  }
+                                },
+                                label: const Text(
+                                  'Logout',
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                          ]),
                         ),
-                        icon: Icon(Icons.logout, size: 20),
-                        onPressed: () {
-                          showDialog(
-                              context: context,
-                              builder: (context) {
-                                return AlertDialog(
-                                  title: Text(
-                                    "Logout?",
-                                    style: TextStyle(
-                                      color: mPrimaryColor,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  content:
-                                      Text("Anda yakin ingin logout akun?"),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      child: const Text(
-                                        "No",
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                    ),
-                                    TextButton(
-                                      child: const Text(
-                                        "Oke",
-                                        style: TextStyle(
-                                          color: mPrimaryColor,
-                                        ),
-                                      ),
-                                      onPressed: () {
-                                        loginController.logout();
-                                      },
-                                    ),
-                                  ],
-                                  elevation: 24.0,
-                                );
-                              });
-                        },
-                        label: Text(
-                          'Logout',
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
+                      ],
                     ),
-                  ]),
-                ),
-              ],
-            ),
-          ),
-        ],
+                  ),
+                ],
+              ),
       ),
     );
   }

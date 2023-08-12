@@ -1,12 +1,25 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:los_mobile/src/futures/home/controllers/data_cabang_controller.dart';
+import 'package:los_mobile/src/futures/home/controllers/data_pengajuan_controller.dart';
+import 'package:los_mobile/src/futures/home/controllers/posisi_pengajuan_controller.dart';
+import 'package:los_mobile/src/futures/home/controllers/rating_cabang_controller.dart';
+import 'package:los_mobile/src/futures/home/view/shimmer_home_page.dart';
 import 'package:los_mobile/src/widgets/all_widgets.dart';
 import 'package:los_mobile/src/widgets/my_alert_dialog.dart';
 import 'package:los_mobile/src/widgets/my_border_form.dart';
+import 'package:los_mobile/src/widgets/my_date_picker_android.dart';
 import 'package:los_mobile/src/widgets/my_legends_chart.dart';
+import 'package:los_mobile/src/widgets/my_pie_chart.dart';
 import 'package:los_mobile/src/widgets/my_shadow.dart';
+import 'package:los_mobile/src/widgets/my_target_platform.dart';
 import 'package:los_mobile/utils/colors.dart';
-import 'package:pie_chart/pie_chart.dart';
+import 'package:los_mobile/utils/constant.dart';
+import 'package:los_mobile/utils/preferens_user.dart';
+import 'package:los_mobile/utils/role_user.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -16,15 +29,57 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  DateTime dateTime =
-      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
-  DateTime dateTime2 =
-      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+  RatingCabangController ratingCabangController =
+      Get.put(RatingCabangController());
+  DataPengajuanController dataPengajuanController =
+      Get.put(DataPengajuanController());
+  DataCabangController dataCabangController = Get.put(DataCabangController());
+  PosisiPengajuanController posisiPengajuanController =
+      Get.put(PosisiPengajuanController());
+  PreferensUser preferensUser = Get.put(PreferensUser());
 
-  String? valueKetPembayaran;
+  String name = "";
+  String jabatan = "";
+  String bagian = "";
+  String role = "";
+  String kodeCabang = "";
+
+  String? valueCabang;
+  String? filterCabang;
+  String? filterRating;
+  String? filterCodeCabang;
+
+  bool typeFilter = false;
+  @override
+  void initState() {
+    super.initState();
+    getUser();
+    filterCabang = "Semua cabang";
+    filterRating = "Semua cabang";
+  }
+
+  totalPengajuan() {}
+
+  void getUser() async {
+    SharedPreferences spref = await SharedPreferences.getInstance();
+    setState(() {
+      name = "${spref.getString("name")}";
+      jabatan = "${spref.getString("jabatan")}";
+      bagian = "${spref.getString("bagian")}";
+      role = "${spref.getString("role")}";
+      kodeCabang = "${spref.getString("kode_cabang")}";
+      print("ROLEEEE $role");
+    });
+  }
+
+  Future refresh() async {
+    setState(() {
+      print(1 + 1);
+    });
+  }
 
   List ketPembayaranList = [
-    'Semua Cabang',
+    'Semua cabang',
     'Surabaya',
     'Lumajang',
   ];
@@ -42,18 +97,6 @@ class _HomePageState extends State<HomePage> {
     mBlueLightColor,
   ];
 
-  Future refresh() async {
-    setState(() {
-      print(1 + 1);
-    });
-  }
-
-  Map<String, double> dataMap = {
-    "Disetujui": 51,
-    "Ditolak": 10,
-    "On Progress": 21,
-  };
-
   Map<String, double> dataMapPosisi = {
     "Pincab": 51,
     "PBP": 10,
@@ -62,15 +105,23 @@ class _HomePageState extends State<HomePage> {
     "Staff": 21,
   };
 
-  bool typeFilter = false;
-
   @override
   Widget build(BuildContext context) {
     double heightStatusBar = MediaQuery.of(context).viewPadding.top;
-    return Scaffold(
-      backgroundColor: mBgColor,
-      appBar: _BuildAppBar(heightStatusBar),
-      body: _BuildBody(),
+    return Obx(
+      () => dataPengajuanController.isLoading.value
+          ? const ShimmerHomePage()
+          : ratingCabangController.isLoading.value
+              ? const ShimmerHomePage()
+              : dataCabangController.isLoading.value
+                  ? const ShimmerHomePage()
+                  : posisiPengajuanController.isLoading.value
+                      ? const ShimmerHomePage()
+                      : Scaffold(
+                          backgroundColor: mBgColor,
+                          appBar: _BuildAppBar(heightStatusBar),
+                          body: _BuildBody(),
+                        ),
     );
   }
 
@@ -104,17 +155,17 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       centerTitle: false,
-      title: const Column(
+      title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Arsyad Arthan Nurrohim",
+            name,
             style: textBoldLightLarge,
           ),
-          SizedBox(height: 3),
+          const SizedBox(height: 3),
           Text(
-            "Staf Service & Operation",
-            style: TextStyle(
+            bagian == null ? jabatan : "$jabatan $bagian",
+            style: const TextStyle(
               fontSize: 9,
               fontWeight: FontWeight.w700,
               color: Color(0xFFEBEBEB),
@@ -124,7 +175,7 @@ class _HomePageState extends State<HomePage> {
       ),
       actions: [
         Padding(
-            padding: EdgeInsets.only(right: 25),
+            padding: const EdgeInsets.only(right: 25),
             child: InkWell(
               onTap: () {
                 showDialog(
@@ -133,7 +184,7 @@ class _HomePageState extends State<HomePage> {
                       return MyAlertDialog().alertdialog(context);
                     });
               },
-              child: Icon(
+              child: const Icon(
                 Icons.notifications_none,
                 size: 30,
                 color: Colors.white,
@@ -190,10 +241,32 @@ class _HomePageState extends State<HomePage> {
                       ),
                       spaceHeightMedium,
                       _dataPengajuan(),
-                      spaceHeightMedium,
-                      _posisiPengajuan(),
-                      spaceHeightMedium,
-                      _ratingCabang(),
+                      role == pincab
+                          ? Column(
+                              children: [
+                                spaceHeightMedium,
+                                _posisiPengajuan(),
+                              ],
+                            )
+                          : const SizedBox(),
+                      filterCabang != "Semua cabang"
+                          ? Column(
+                              children: [
+                                spaceHeightMedium,
+                                _posisiPengajuan(),
+                              ],
+                            )
+                          : const SizedBox(),
+                      filterRating == "Semua cabang"
+                          ? role == pincab
+                              ? const SizedBox()
+                              : Column(
+                                  children: [
+                                    spaceHeightMedium,
+                                    _ratingCabang(),
+                                  ],
+                                )
+                          : Container(),
                       spaceHeightMedium,
                     ],
                   ),
@@ -209,7 +282,6 @@ class _HomePageState extends State<HomePage> {
   Container _ratingCabang() {
     return Container(
       width: Get.width,
-      height: 245,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         color: Colors.white,
@@ -230,9 +302,9 @@ class _HomePageState extends State<HomePage> {
                 ),
                 Row(
                   children: [
-                    legendChart("Disetujui", mGreenFlatColor),
+                    legendChart("Tertinggi", mGreenFlatColor),
                     spaceWidthSmall,
-                    legendChart("Ditolak", mPrimaryColor),
+                    legendChart("Terendah", mPrimaryColor),
                   ],
                 )
               ],
@@ -242,98 +314,119 @@ class _HomePageState extends State<HomePage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
-                  flex: 1,
-                  child: Container(
-                    height: 33,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(color: mGreyVeryLightColor, width: 1),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              width: 33,
-                              height: 33,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(6),
-                                color: mGreenFlatColor,
-                              ),
-                              child: const Center(
-                                child: Text(
-                                  "001",
-                                  style: textBoldLightMedium,
-                                ),
-                              ),
-                            ),
-                            spaceWidthVerySmall,
-                            const Text(
-                              "Surabaya",
-                              style: textBoldDarkSmall,
-                            )
-                          ],
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.only(right: 10),
-                          child: Text(
-                            "450",
-                            style: textBoldDarkSmall,
+                    flex: 1,
+                    child: ListView.builder(
+                      itemCount: ratingCabangController
+                              .ratingCabangModel?.data.tertinggi.length ??
+                          0,
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 4),
+                          height: 33,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(
+                                color: mGreyVeryLightColor, width: 1),
                           ),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-                spaceWidthSmall,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    width: 33,
+                                    height: 33,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(6),
+                                      color: mGreenFlatColor,
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        "${ratingCabangController.ratingCabangModel?.data.tertinggi[index].kodeCabang}",
+                                        style: textBoldLightMedium,
+                                      ),
+                                    ),
+                                  ),
+                                  spaceWidthVerySmall,
+                                  Text(
+                                    "${ratingCabangController.ratingCabangModel?.data.tertinggi[index].cabang}",
+                                    style: textBoldDarkSmall,
+                                  )
+                                ],
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(right: 10),
+                                child: Text(
+                                  "${ratingCabangController.ratingCabangModel?.data.tertinggi[index].total}",
+                                  style: textBoldDarkSmall,
+                                ),
+                              )
+                            ],
+                          ),
+                        );
+                      },
+                    )),
+                spaceWidthVerySmall,
                 Expanded(
-                  flex: 1,
-                  child: Container(
-                    height: 33,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(color: mGreyVeryLightColor, width: 1),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              width: 33,
-                              height: 33,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(6),
-                                color: mPrimaryColor,
-                              ),
-                              child: const Center(
-                                child: Text(
-                                  "024",
-                                  style: textBoldLightMedium,
-                                ),
-                              ),
-                            ),
-                            spaceWidthVerySmall,
-                            const Text(
-                              "Surabaya",
-                              style: textBoldDarkSmall,
-                            )
-                          ],
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.only(right: 10),
-                          child: Text(
-                            "450",
-                            style: textBoldDarkSmall,
+                    flex: 1,
+                    child: ListView.builder(
+                      itemCount: ratingCabangController
+                              .ratingCabangModel?.data.terendah.length ??
+                          0,
+                      shrinkWrap: true,
+                      reverse: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 4),
+                          height: 33,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(
+                                color: mGreyVeryLightColor, width: 1),
                           ),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    width: 33,
+                                    height: 33,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(6),
+                                      color: mPrimaryColor,
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        "${ratingCabangController.ratingCabangModel?.data.terendah[index].kodeCabang}",
+                                        style: textBoldLightMedium,
+                                      ),
+                                    ),
+                                  ),
+                                  spaceWidthVerySmall,
+                                  Text(
+                                    "${ratingCabangController.ratingCabangModel?.data.terendah[index].cabang}",
+                                    style: textBoldDarkSmall,
+                                  )
+                                ],
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(right: 10),
+                                child: Text(
+                                  "${ratingCabangController.ratingCabangModel?.data.terendah[index].total}",
+                                  style: textBoldDarkSmall,
+                                ),
+                              )
+                            ],
+                          ),
+                        );
+                      },
+                    )),
               ],
             ),
           ],
@@ -362,39 +455,30 @@ class _HomePageState extends State<HomePage> {
               style: textBoldDarkLarge,
             ),
             spaceHeightLarge,
-            PieChart(
-              dataMap: dataMapPosisi,
-              animationDuration: const Duration(milliseconds: 1000),
-              chartLegendSpacing: 30,
-              chartRadius: MediaQuery.of(context).size.width / 3.2,
-              colorList: colorListPosisi,
-              initialAngleInDegree: 0,
-              chartType: ChartType.ring,
-              emptyColor: Colors.black,
-              ringStrokeWidth: 32,
-              centerText: "21",
-              centerTextStyle: const TextStyle(
-                fontSize: 30,
-                color: Colors.black,
-                fontWeight: FontWeight.w700,
-              ),
-              legendOptions: const LegendOptions(
-                showLegendsInRow: true,
-                legendPosition: LegendPosition.bottom,
-                showLegends: false,
-                legendTextStyle:
-                    TextStyle(fontWeight: FontWeight.bold, fontSize: 8),
-              ),
-              chartValuesOptions: const ChartValuesOptions(
-                showChartValueBackground: true,
-                chartValueBackgroundColor: Color(0xFFF8F8F8),
-                chartValueStyle: textBoldDarkMedium,
-                showChartValues: true,
-                showChartValuesInPercentage: false,
-                showChartValuesOutside: true,
-                decimalPlaces: 0,
-              ),
-            ),
+            posisiPengajuanController.posisiPengajuanModel!.data.isEmpty
+                ? Container()
+                : pieChart(
+                    context,
+                    {
+                      "Pincab": double.parse(
+                        "${posisiPengajuanController.posisiPengajuanModel?.data[0].pincab}",
+                      ),
+                      "PBP": double.parse(
+                        "${posisiPengajuanController.posisiPengajuanModel?.data[0].pbp}",
+                      ),
+                      "PBO": double.parse(
+                        "${posisiPengajuanController.posisiPengajuanModel?.data[0].pbo}",
+                      ),
+                      "Penyelia": double.parse(
+                        "${posisiPengajuanController.posisiPengajuanModel?.data[0].penyelia}",
+                      ),
+                      "Staff": double.parse(
+                        "${posisiPengajuanController.posisiPengajuanModel?.data[0].staff}",
+                      ),
+                    },
+                    colorListPosisi,
+                    posisiPengajuanController.totalPosisi.toString(),
+                  ),
             spaceHeightSmall,
             spaceHeightMedium,
             Row(
@@ -434,38 +518,21 @@ class _HomePageState extends State<HomePage> {
               style: textBoldDarkLarge,
             ),
             spaceHeightLarge,
-            PieChart(
-              dataMap: dataMap,
-              animationDuration: const Duration(milliseconds: 1000),
-              chartLegendSpacing: 30,
-              chartRadius: MediaQuery.of(context).size.width / 3.2,
-              colorList: colorListData,
-              initialAngleInDegree: 0,
-              chartType: ChartType.ring,
-              emptyColor: Colors.black,
-              ringStrokeWidth: 32,
-              centerText: "96",
-              centerTextStyle: const TextStyle(
-                fontSize: 30,
-                color: Colors.black,
-                fontWeight: FontWeight.w700,
-              ),
-              legendOptions: const LegendOptions(
-                showLegendsInRow: true,
-                legendPosition: LegendPosition.bottom,
-                showLegends: false,
-                legendTextStyle:
-                    TextStyle(fontWeight: FontWeight.bold, fontSize: 8),
-              ),
-              chartValuesOptions: const ChartValuesOptions(
-                showChartValueBackground: true,
-                chartValueBackgroundColor: Color(0xFFF8F8F8),
-                chartValueStyle: textBoldDarkMedium,
-                showChartValues: true,
-                showChartValuesInPercentage: false,
-                showChartValuesOutside: true,
-                decimalPlaces: 0,
-              ),
+            pieChart(
+              context,
+              {
+                'Disetujui': dataPengajuanController
+                    .dataPengajuanModel!.totalDisetujui
+                    .toDouble(),
+                'Ditolak': dataPengajuanController
+                    .dataPengajuanModel!.totalDitolak
+                    .toDouble(),
+                'On Progress': dataPengajuanController
+                    .dataPengajuanModel!.totalDiproses
+                    .toDouble(),
+              },
+              colorListData,
+              "${dataPengajuanController.totalPengajuan}",
             ),
             spaceHeightSmall,
             spaceHeightMedium,
@@ -492,13 +559,13 @@ class _HomePageState extends State<HomePage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Column(
+              Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
-                      Text(
+                      const Text(
                         "Periode : ",
                         style: TextStyle(
                           fontSize: 11,
@@ -507,8 +574,8 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       Text(
-                        "01-Juni-2023 s/d 30-juni-2023",
-                        style: TextStyle(
+                        "${ratingCabangController.firstDateFilter.fullDate()} s/d ${ratingCabangController.lastDateFilter.fullDate()}",
+                        style: const TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
                           color: Colors.black,
@@ -518,7 +585,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   Row(
                     children: [
-                      Text(
+                      const Text(
                         "Cabang : ",
                         style: TextStyle(
                           fontSize: 11,
@@ -527,8 +594,11 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       Text(
-                        "Keseluruhan",
-                        style: TextStyle(
+                        role == administrator || role == spi || role == ku
+                            ? filterCabang!
+                            : dataPengajuanController
+                                .dataPengajuanModel!.data[0].cabang,
+                        style: const TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
                           color: Colors.black,
@@ -538,7 +608,7 @@ class _HomePageState extends State<HomePage> {
                   )
                 ],
               ),
-              Container(
+              SizedBox(
                 child: Row(
                   children: [
                     Container(
@@ -558,14 +628,13 @@ class _HomePageState extends State<HomePage> {
                             }
                           });
                         }
-                        print(typeFilter);
                       },
                       child: typeFilter
-                          ? Icon(
+                          ? const Icon(
                               Icons.arrow_drop_up,
                               size: 35,
                             )
-                          : Icon(
+                          : const Icon(
                               Icons.arrow_drop_down,
                               size: 35,
                             ),
@@ -587,42 +656,114 @@ class _HomePageState extends State<HomePage> {
                     ),
                     spaceHeightSmall,
                     _formDate(),
-                    _formCabang(),
+                    role == administrator || role == spi || role == ku
+                        ? _formCabang()
+                        : Container(),
                     spaceHeightMedium,
                     SizedBox(
                       width: Get.width,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: mPrimaryColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(20), // <-- Radius
+                      child: Row(
+                        children: [
+                          Expanded(
+                            flex: 1,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: mPrimaryColor,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadius.circular(20), // <-- Radius
+                                ),
+                              ),
+                              onPressed: () {
+                                if (mounted) {
+                                  typeFilter = false;
+                                  filterCabang = valueCabang == null
+                                      ? "Semua cabang"
+                                      : valueCabang!;
+                                  filterRating = valueCabang == null
+                                      ? "Semua cabang"
+                                      : valueCabang!;
+                                  if (role == administrator ||
+                                      role == spi ||
+                                      role == ku ||
+                                      role == direksi) {
+                                    dataPengajuanController.kodeCabang =
+                                        filterCodeCabang;
+                                  } else {
+                                    dataPengajuanController.kodeCabang =
+                                        kodeCabang;
+                                  }
+                                  print("kodeCabang $filterCodeCabang");
+                                }
+                                ratingCabangController.getDataRating();
+                                dataPengajuanController.getDataPengajuan();
+                                posisiPengajuanController.getPosisiPengajuan();
+                                // ratingCabangController.isLoading.value ??
+                                //     showDialog(
+                                //       context: context,
+                                //       builder: (context) {
+                                //         return Transform.scale(
+                                //           scale: 3,
+                                //           child: Center(
+                                //             child: CircularProgressIndicator(
+                                //               valueColor:
+                                //                   AlwaysStoppedAnimation<Color>(
+                                //                       Colors.white),
+                                //             ),
+                                //           ),
+                                //         );
+                                //       },
+                                //     );
+                              },
+                              child: const Text(
+                                "FILTER",
+                                style: textBoldLightMedium,
+                              ),
+                            ),
                           ),
-                        ),
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              return Transform.scale(
-                                  scale: 3,
-                                  child: Center(
-                                    child: CircularProgressIndicator(
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                          Colors.white),
+                          filterCabang == "Semua cabang"
+                              ? Container()
+                              : spaceWidthSmall,
+                          filterCabang == "Semua cabang"
+                              ? Container()
+                              : Expanded(
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(0xFFFFE5E4),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(
+                                            20), // <-- Radius
+                                      ),
                                     ),
-                                  ));
-                            },
-                          );
-                        },
-                        child: Text(
-                          "FILTER",
-                          style: textBoldLightMedium,
-                        ),
+                                    onPressed: () {
+                                      if (mounted) {
+                                        setState(() {
+                                          filterRating = "Semua cabang";
+                                          filterCabang = "Semua cabang";
+                                          dataPengajuanController.kodeCabang =
+                                              null;
+                                          valueCabang = null;
+                                          typeFilter = false;
+                                        });
+                                      }
+                                      ratingCabangController.getDataRating();
+                                      dataPengajuanController
+                                          .getDataPengajuan();
+                                      posisiPengajuanController
+                                          .getPosisiPengajuan();
+                                    },
+                                    child: const Text(
+                                      "Reset",
+                                      style: TextStyle(color: mPrimaryColor),
+                                    ),
+                                  ),
+                                )
+                        ],
                       ),
                     )
                   ],
                 )
-              : Container()
+              : Container(),
         ],
       ),
     );
@@ -647,25 +788,25 @@ class _HomePageState extends State<HomePage> {
               filled: true,
               fillColor: Colors.white,
             ),
-            value: valueKetPembayaran,
-            hint: const Text(
-              "Semua Cabang",
-              style: textBoldDarkMedium,
-            ),
+            value: valueCabang,
+            hint: const Text("Semua cabang", style: textBoldDarkMedium),
             onChanged: ((value) {
               if (mounted) {
                 setState(() {
-                  valueKetPembayaran = value as String;
+                  valueCabang = value as String;
                 });
               }
             }),
-            items: ketPembayaranList.map((item) {
+            items: dataCabangController.dataCabangModel?.data.map((item) {
               return DropdownMenuItem(
                 child: Text(
-                  "$item".toUpperCase(),
+                  item.cabang,
                   style: textBoldDarkMedium,
                 ),
-                value: item,
+                onTap: () {
+                  filterCodeCabang = item.kodeCabang;
+                },
+                value: item.cabang,
               );
             }).toList(),
           ),
@@ -696,17 +837,45 @@ class _HomePageState extends State<HomePage> {
                 const SizedBox(height: 5),
                 InkWell(
                   onTap: () async {
-                    final date = await pickerDate();
-                    if (date == null) return;
-                    final newDateTime = DateTime(
-                      date.year,
-                      date.month,
-                      date.day,
-                    );
-                    if (mounted) {
-                      setState(() {
-                        dateTime = date;
-                      });
+                    if (defaultTargetPlatform == deviceAndroid) {
+                      final date = await datePicker(context, DateTime.now());
+                      if (mounted) {
+                        setState(() {
+                          ratingCabangController.firstDateFilter = date!;
+                        });
+                      }
+                    } else if (defaultTargetPlatform == deviceIos) {
+                      showCupertinoModalPopup(
+                        context: context,
+                        builder: (_) => Container(
+                          height: 500,
+                          color: const Color.fromARGB(255, 255, 255, 255),
+                          child: Column(
+                            children: [
+                              SizedBox(
+                                height: 400,
+                                child: CupertinoDatePicker(
+                                    initialDateTime: DateTime.now(),
+                                    mode: CupertinoDatePickerMode.date,
+                                    onDateTimeChanged: (val) {
+                                      setState(() {
+                                        ratingCabangController.firstDateFilter =
+                                            val;
+                                        // print(val);
+                                        // firstDate = val;
+                                      });
+                                    }),
+                              ),
+
+                              // Close the modal
+                              CupertinoButton(
+                                child: const Text('OK'),
+                                onPressed: () => Navigator.of(context).pop(),
+                              )
+                            ],
+                          ),
+                        ),
+                      );
                     }
                   },
                   child: Container(
@@ -728,7 +897,7 @@ class _HomePageState extends State<HomePage> {
                               ),
                               spaceWidthVerySmall,
                               Text(
-                                "${dateTime.day}-${dateTime.month}-${dateTime.year}",
+                                "${ratingCabangController.firstDateFilter.simpleDate()}",
                                 style: textBoldDarkMedium,
                               ),
                             ],
@@ -754,17 +923,43 @@ class _HomePageState extends State<HomePage> {
                 const SizedBox(height: 5),
                 InkWell(
                   onTap: () async {
-                    final date = await pickerDate2();
-                    if (date == null) return;
-                    final newDateTime = DateTime(
-                      date.year,
-                      date.month,
-                      date.day,
-                    );
-                    if (mounted) {
-                      setState(() {
-                        dateTime2 = date;
-                      });
+                    if (defaultTargetPlatform == deviceAndroid) {
+                      final date = await datePicker(context, DateTime.now());
+                      if (mounted) {
+                        setState(() {
+                          ratingCabangController.lastDateFilter = date!;
+                        });
+                      }
+                    } else if (defaultTargetPlatform == deviceIos) {
+                      showCupertinoModalPopup(
+                        context: context,
+                        builder: (_) => Container(
+                          height: 500,
+                          color: const Color.fromARGB(255, 255, 255, 255),
+                          child: Column(
+                            children: [
+                              SizedBox(
+                                height: 400,
+                                child: CupertinoDatePicker(
+                                    initialDateTime: DateTime.now(),
+                                    mode: CupertinoDatePickerMode.date,
+                                    onDateTimeChanged: (val) {
+                                      setState(() {
+                                        ratingCabangController.lastDateFilter =
+                                            val;
+                                      });
+                                    }),
+                              ),
+
+                              // Close the modal
+                              CupertinoButton(
+                                child: const Text('OK'),
+                                onPressed: () => Navigator.of(context).pop(),
+                              )
+                            ],
+                          ),
+                        ),
+                      );
                     }
                   },
                   child: Container(
@@ -786,7 +981,12 @@ class _HomePageState extends State<HomePage> {
                               ),
                               spaceWidthVerySmall,
                               Text(
-                                "${dateTime2.day}-${dateTime2.month}-${dateTime2.year}",
+                                // dateTimeLast != null
+                                //     ? "${dateTimeLast!.day}-${dateTimeLast!.month}-${dateTimeLast!.year}"
+                                //     : 'dd-mm-yyyy',
+                                ratingCabangController.lastDateFilter
+                                    .simpleDate()
+                                    .toString(),
                                 style: textBoldDarkMedium,
                               ),
                             ],
@@ -803,17 +1003,4 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-
-  Future<DateTime?> pickerDate() => showDatePicker(
-        context: context,
-        initialDate: dateTime,
-        firstDate: DateTime.now().subtract(const Duration(days: 14)),
-        lastDate: DateTime(2100),
-      );
-  Future<DateTime?> pickerDate2() => showDatePicker(
-        context: context,
-        initialDate: dateTime2,
-        firstDate: DateTime.now().subtract(const Duration(days: 14)),
-        lastDate: DateTime(2100),
-      );
 }

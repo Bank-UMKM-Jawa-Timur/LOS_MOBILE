@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:los_mobile/src/futures/home/view/home_page.dart';
+
 import 'package:los_mobile/src/futures/login/view/login.dart';
 import 'package:los_mobile/src/widgets/my_bottom_navigation.dart';
 import 'package:los_mobile/src/widgets/my_snackbar.dart';
@@ -39,13 +39,31 @@ class LoginController extends GetxController {
           if (json["status"] == "berhasil") {
             var token = json['access_token'];
             var email = json['email'];
+            var role = json['role'];
+            var data = json['data'];
+            var name = data['nama'];
+            Map<String, dynamic> jabatan = data['jabatan'];
+            var nama_jabatan = jabatan['nama_jabatan'];
+            if (data['entitas']['type'] != 1) {
+              prefs = await SharedPreferences.getInstance();
+              var cab = data['entitas']['cab'];
+              var kodeCabang = cab['kd_cabang'];
+              await prefs?.setString('kode_cabang', kodeCabang);
+            }
+            if (data['bagian'] != null) {
+              prefs = await SharedPreferences.getInstance();
+              var bagian = data['bagian']['nama_bagian'];
+              await prefs?.setString('bagian', bagian);
+            }
             prefs = await SharedPreferences.getInstance();
             await prefs?.setString('email', email);
             await prefs?.setString('token', token);
+            await prefs?.setString('name', name);
+            await prefs?.setString('jabatan', nama_jabatan);
+            await prefs?.setString('role', role);
             emailNipController.clear();
             passwordController.clear();
             Get.offAll(const MyBottomNavigationBar());
-            print(response.body);
           } else {
             print(response.statusCode);
           }
@@ -75,6 +93,9 @@ class LoginController extends GetxController {
       if (response.statusCode == 200) {
         prefs?.remove('email');
         prefs?.remove('token');
+        prefs?.remove('name');
+        // prefs?.remove('jabatan');
+        prefs?.clear();
         Get.offAll(const Login());
       } else {
         snackbarError(response.statusCode.toString());

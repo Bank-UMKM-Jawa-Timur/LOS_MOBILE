@@ -85,6 +85,8 @@ class _LoginState extends State<Login> {
                   ),
                   autocorrect: false,
                   maxLines: 1,
+                  obscureText: true,
+                  enableSuggestions: false,
                   controller: loginController.passwordController,
                   textInputAction: TextInputAction.next,
                 ),
