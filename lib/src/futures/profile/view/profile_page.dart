@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart';
+import 'package:los_mobile/src/widgets/all_widgets.dart';
 import 'package:los_mobile/src/widgets/dialog/my_alert_dialog_android.dart';
 import 'package:los_mobile/src/widgets/dialog/my_alert_dialog_ios.dart';
 import 'package:los_mobile/src/widgets/my_circle_avatar.dart';
@@ -25,24 +26,17 @@ class _ProfilePageState extends State<ProfilePage> {
   LoginController loginController = Get.put(LoginController());
   PreferensUser preferensUser = Get.put(PreferensUser());
 
-  Future<void> alert() async {
-    print("object");
-  }
-
   String name = "";
   String jabatan = "";
   String bagian = "";
   String role = "";
   String email = "";
 
-  bool typeFilter = false;
   @override
   void initState() {
     super.initState();
     getUser();
   }
-
-  totalPengajuan() {}
 
   void getUser() async {
     SharedPreferences spref = await SharedPreferences.getInstance();
@@ -74,142 +68,35 @@ class _ProfilePageState extends State<ProfilePage> {
             : Padding(
                 padding:
                     const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
-                child: Container(
+                child: SizedBox(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
                       // bagian avatar
                       circleAvatarWidget(name, 50),
-                      Container(
-                        margin: const EdgeInsets.only(top: 30),
-                        child: Text(
-                          shortenLastName(name),
-                          style: const TextStyle(
-                              fontSize: 20.0, fontWeight: FontWeight.bold),
+                      spaceHeightMedium,
+                      Text(
+                        shortenLastName(name),
+                        style: textBoldDarkVeryLarge,
+                      ),
+                      spaceHeightSmall,
+                      Text(
+                        email,
+                        style: const TextStyle(
+                          color: mGreyLightColor,
+                          fontSize: 15.0,
+                          fontWeight: FontWeight.normal,
                         ),
                       ),
                       Container(
-                        margin: const EdgeInsets.only(top: 10),
-                        child: Text(
-                          email,
-                          style: TextStyle(
-                              color: textEmail,
-                              fontSize: 15.0,
-                              fontWeight: FontWeight.normal),
-                        ),
-                      ),
-
-                      Container(
-                        padding: const EdgeInsets.all(10),
                         margin: const EdgeInsets.only(top: 40),
                         child: Column(children: [
-                          SizedBox(
-                            width: Get.width,
-                            child: ElevatedButton.icon(
-                              style: ElevatedButton.styleFrom(
-                                primary: Colors.white,
-                                backgroundColor: primary,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                      buttonRadius), // <-- Radius
-                                ),
-                                alignment: Alignment.centerLeft,
-                                padding: const EdgeInsets.all(16),
-                                splashFactory: NoSplash.splashFactory,
-                                elevation: 0,
-                              ),
-                              icon: const Icon(Icons.lock_reset, size: 28.0),
-                              onPressed: () {},
-                              label: const Text(
-                                'Ganti Password',
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: spacingColumn),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 3),
-                            width: Get.width,
-                            decoration: BoxDecoration(
-                                color: primary,
-                                borderRadius: BorderRadius.all(
-                                    Radius.circular(buttonRadius))),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: [
-                                    Container(
-                                      margin: const EdgeInsets.only(left: 10),
-                                      child: const Icon(
-                                        Icons.fingerprint,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    Container(
-                                      margin: const EdgeInsets.only(left: 10),
-                                      child: const Text(
-                                        'Beomatric Authentication',
-                                        textAlign: TextAlign.left,
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                                Switch(
-                                  activeColor: Colors.red[900],
-                                  value: beoAuth,
-                                  onChanged: (bool value) {
-                                    setState(() {
-                                      beoAuth = value;
-                                    });
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(height: spacingColumn),
-                          SizedBox(
-                            width: Get.width,
-                            child: ElevatedButton.icon(
-                              style: ElevatedButton.styleFrom(
-                                primary: Colors.white,
-                                backgroundColor: primary,
-                                alignment: Alignment.centerLeft,
-                                padding: const EdgeInsets.all(16),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                      buttonRadius), // <-- Radius
-                                ),
-                                splashFactory: NoSplash.splashFactory,
-                                elevation: 0,
-                              ),
-                              icon: const Icon(Icons.logout, size: 20),
-                              onPressed: () {
-                                if (defaultTargetPlatform == deviceAndroid) {
-                                  alertDialogAndroidLogout(
-                                    context,
-                                    titleDialogWarning,
-                                    messageeDialoglogout,
-                                  );
-                                } else if (defaultTargetPlatform == deviceIos) {
-                                  AlertDialogIosLogout(
-                                    context,
-                                    titleDialogWarning,
-                                    messageeDialoglogout,
-                                  );
-                                }
-                              },
-                              label: const Text(
-                                'Logout',
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
+                          _bottomChangePassword(),
+                          spaceHeightMedium,
+                          _bottomAuth(),
+                          spaceHeightMedium,
+                          _bottomLogout(context),
                         ]),
                       ),
                     ],
@@ -219,26 +106,123 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
     );
   }
-}
 
-// digunakan untuk mengconvert hexa color ke bawaan flutter color
-class HexColor extends Color {
-  static int _getColorFromHex(String hexColor) {
-    hexColor = hexColor.toUpperCase().replaceAll("#", "");
-    if (hexColor.length == 6) {
-      hexColor = "FF" + hexColor;
-    }
-    return int.parse(hexColor, radix: 16);
+  SizedBox _bottomChangePassword() {
+    return SizedBox(
+      width: Get.width,
+      child: ElevatedButton.icon(
+        style: ElevatedButton.styleFrom(
+          primary: Colors.white,
+          backgroundColor: mPrimaryColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10), // <-- Radius
+          ),
+          alignment: Alignment.centerLeft,
+          padding: const EdgeInsets.all(15),
+          splashFactory: NoSplash.splashFactory,
+          elevation: 0,
+        ),
+        icon: const Icon(Icons.lock_reset, size: 28.0),
+        onPressed: () {},
+        label: const Text(
+          'Ganti Password',
+          textAlign: TextAlign.center,
+        ),
+      ),
+    );
   }
 
-  HexColor(final String hexColor) : super(_getColorFromHex(hexColor));
+  Widget _bottomAuth() {
+    return InkWell(
+      onTap: () {
+        if (mounted) {
+          setState(() {
+            beoAuth = beoAuth ? false : true;
+          });
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+        width: Get.width,
+        decoration: BoxDecoration(
+          color: mPrimaryColor,
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                Container(
+                  margin: const EdgeInsets.only(left: 10),
+                  child: const Icon(
+                    Icons.fingerprint,
+                    color: Colors.white,
+                  ),
+                ),
+                Container(
+                  margin: const EdgeInsets.only(left: 10),
+                  child: const Text(
+                    'Beomatric Authentication',
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                )
+              ],
+            ),
+            Switch(
+              activeColor: Colors.red[900],
+              value: beoAuth,
+              onChanged: (bool value) {
+                setState(() {
+                  beoAuth = value;
+                });
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  SizedBox _bottomLogout(BuildContext context) {
+    return SizedBox(
+      width: Get.width,
+      child: ElevatedButton.icon(
+        style: ElevatedButton.styleFrom(
+          primary: Colors.white,
+          backgroundColor: mPrimaryColor,
+          alignment: Alignment.centerLeft,
+          padding: const EdgeInsets.all(16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10), // <-- Radius
+          ),
+          splashFactory: NoSplash.splashFactory,
+          elevation: 0,
+        ),
+        icon: const Icon(Icons.logout, size: 20),
+        onPressed: () {
+          if (defaultTargetPlatform == deviceAndroid) {
+            alertDialogAndroidLogout(
+              context,
+              titleDialogWarning,
+              messageeDialoglogout,
+            );
+          } else if (defaultTargetPlatform == deviceIos) {
+            AlertDialogIosLogout(
+              context,
+              titleDialogWarning,
+              messageeDialoglogout,
+            );
+          }
+        },
+        label: const Text(
+          'Logout',
+          textAlign: TextAlign.center,
+        ),
+      ),
+    );
+  }
 }
-
-Color primary = HexColor("#EE2649");
-Color avatarColor = HexColor("#4B64E2");
-Color textEmail = HexColor("#767E89");
-
-double spacingColumn = 15;
-double buttonRadius = 8;
-double buttonWidth = 350;
-double buttonHeight = 40;
