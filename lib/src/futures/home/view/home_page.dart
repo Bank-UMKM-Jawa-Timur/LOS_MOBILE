@@ -70,7 +70,6 @@ class _HomePageState extends State<HomePage> {
       bagian = "${spref.getString("bagian")}";
       role = "${spref.getString("role")}";
       kodeCabang = "${spref.getString("kode_cabang")}";
-      print("ROLEEEE $role");
     });
   }
 
@@ -80,17 +79,12 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  List ketPembayaranList = [
-    'Semua cabang',
-    'Surabaya',
-    'Lumajang',
-  ];
-
   final colorListData = <Color>[
     mGreenFlatColor,
     mPrimaryColor,
     mYellowColor,
   ];
+
   final colorListPosisi = <Color>[
     mBlueFlatColor,
     mAmberFlatColor,
@@ -98,14 +92,6 @@ class _HomePageState extends State<HomePage> {
     mPinkLightColor,
     mBlueLightColor,
   ];
-
-  Map<String, double> dataMapPosisi = {
-    "Pincab": 51,
-    "PBP": 10,
-    "PBO": 21,
-    "Penyelia": 21,
-    "Staff": 21,
-  };
 
   @override
   Widget build(BuildContext context) {
@@ -121,13 +107,13 @@ class _HomePageState extends State<HomePage> {
                       ? const ShimmerHomePage()
                       : Scaffold(
                           backgroundColor: mBgColor,
-                          appBar: _BuildAppBar(heightStatusBar),
-                          body: _BuildBody(),
+                          appBar: _buildAppBar(heightStatusBar),
+                          body: _buildBody(),
                         ),
     );
   }
 
-  AppBar _BuildAppBar(double heightStatusBar) {
+  AppBar _buildAppBar(double heightStatusBar) {
     return AppBar(
       backgroundColor: mPrimaryColor,
       toolbarHeight: heightStatusBar + 20,
@@ -184,7 +170,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Container _BuildBody() {
+  Container _buildBody() {
     return Container(
       child: Stack(
         children: [
@@ -205,8 +191,7 @@ class _HomePageState extends State<HomePage> {
             child: SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 25),
-                child: Container(
-                  // margin: EdgeInsets.only(top: 0),
+                child: SizedBox(
                   width: Get.width,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -266,275 +251,239 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Container _ratingCabang() {
-    return Container(
-      width: Get.width,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        color: Colors.white,
-        boxShadow: const [
-          shadowMedium,
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  SizedBox _formDate() {
+    return SizedBox(
+      width: double.infinity,
+      height: 65,
+      child: GridView.count(
+        crossAxisCount: 2,
+        physics: const NeverScrollableScrollPhysics(),
+        crossAxisSpacing: 10,
+        children: <Widget>[
+          SizedBox(
+            width: double.infinity,
+            height: 70,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  "Rating Cabang",
-                  style: textBoldDarkLarge,
+                  "Tanggal awal",
+                  style: textBoldDarkMedium,
                 ),
-                Row(
-                  children: [
-                    legendChart("Tertinggi", mGreenFlatColor),
-                    spaceWidthSmall,
-                    legendChart("Terendah", mPrimaryColor),
-                  ],
-                )
-              ],
-            ),
-            spaceHeightMedium,
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                    flex: 1,
-                    child: ListView.builder(
-                      itemCount: ratingCabangController
-                              .ratingCabangModel?.data.tertinggi.length ??
-                          0,
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) {
-                        return Container(
-                          margin: const EdgeInsets.only(bottom: 4),
-                          height: 33,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(6),
-                            border: Border.all(
-                                color: mGreyVeryLightColor, width: 1),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                const SizedBox(height: 5),
+                InkWell(
+                  onTap: () async {
+                    if (defaultTargetPlatform == deviceAndroid) {
+                      final date = await datePicker(context, DateTime.now());
+                      if (mounted) {
+                        setState(() {
+                          ratingCabangController.firstDateFilter = date!;
+                        });
+                      }
+                    } else if (defaultTargetPlatform == deviceIos) {
+                      showCupertinoModalPopup(
+                        context: context,
+                        builder: (_) => Container(
+                          height: 500,
+                          color: const Color.fromARGB(255, 255, 255, 255),
+                          child: Column(
                             children: [
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    width: 33,
-                                    height: 33,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(6),
-                                      color: mGreenFlatColor,
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        "${ratingCabangController.ratingCabangModel?.data.tertinggi[index].kodeCabang}",
-                                        style: textBoldLightMedium,
-                                      ),
-                                    ),
-                                  ),
-                                  spaceWidthVerySmall,
-                                  Text(
-                                    "${ratingCabangController.ratingCabangModel?.data.tertinggi[index].cabang}",
-                                    style: textBoldDarkSmall,
-                                  )
-                                ],
+                              SizedBox(
+                                height: 400,
+                                child: CupertinoDatePicker(
+                                    initialDateTime: DateTime.now(),
+                                    mode: CupertinoDatePickerMode.date,
+                                    onDateTimeChanged: (val) {
+                                      setState(() {
+                                        ratingCabangController.firstDateFilter =
+                                            val;
+                                        // print(val);
+                                        // firstDate = val;
+                                      });
+                                    }),
                               ),
-                              Padding(
-                                padding: const EdgeInsets.only(right: 10),
-                                child: Text(
-                                  "${ratingCabangController.ratingCabangModel?.data.tertinggi[index].total}",
-                                  style: textBoldDarkSmall,
-                                ),
-                              )
-                            ],
-                          ),
-                        );
-                      },
-                    )),
-                spaceWidthVerySmall,
-                Expanded(
-                    flex: 1,
-                    child: ListView.builder(
-                      itemCount: ratingCabangController
-                              .ratingCabangModel?.data.terendah.length ??
-                          0,
-                      shrinkWrap: true,
-                      reverse: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        return Container(
-                          margin: const EdgeInsets.only(bottom: 4),
-                          height: 33,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(6),
-                            border: Border.all(
-                                color: mGreyVeryLightColor, width: 1),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    width: 33,
-                                    height: 33,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(6),
-                                      color: mPrimaryColor,
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        "${ratingCabangController.ratingCabangModel?.data.terendah[index].kodeCabang}",
-                                        style: textBoldLightMedium,
-                                      ),
-                                    ),
-                                  ),
-                                  spaceWidthVerySmall,
-                                  Text(
-                                    "${ratingCabangController.ratingCabangModel?.data.terendah[index].cabang}",
-                                    style: textBoldDarkSmall,
-                                  )
-                                ],
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(right: 10),
-                                child: Text(
-                                  "${ratingCabangController.ratingCabangModel?.data.terendah[index].total}",
-                                  style: textBoldDarkSmall,
-                                ),
-                              )
-                            ],
-                          ),
-                        );
-                      },
-                    )),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
-  Container _posisiPengajuan() {
-    return Container(
-      width: Get.width,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        color: Colors.white,
-        boxShadow: const [
-          shadowMedium,
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Posisi Pengajuan",
-              style: textBoldDarkLarge,
-            ),
-            spaceHeightLarge,
-            posisiPengajuanController.posisiPengajuanModel!.data.isEmpty
-                ? Container()
-                : pieChart(
-                    context,
-                    {
-                      "Pincab": double.parse(
-                        "${posisiPengajuanController.posisiPengajuanModel?.data[0].pincab}",
-                      ),
-                      "PBP": double.parse(
-                        "${posisiPengajuanController.posisiPengajuanModel?.data[0].pbp}",
-                      ),
-                      "PBO": double.parse(
-                        "${posisiPengajuanController.posisiPengajuanModel?.data[0].pbo}",
-                      ),
-                      "Penyelia": double.parse(
-                        "${posisiPengajuanController.posisiPengajuanModel?.data[0].penyelia}",
-                      ),
-                      "Staff": double.parse(
-                        "${posisiPengajuanController.posisiPengajuanModel?.data[0].staff}",
-                      ),
-                    },
-                    colorListPosisi,
-                    posisiPengajuanController.totalPosisi.toString(),
+                              // Close the modal
+                              CupertinoButton(
+                                child: const Text('OK'),
+                                onPressed: () => Navigator.of(context).pop(),
+                              )
+                            ],
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                  child: Container(
+                    width: double.infinity,
+                    decoration: decorationFormTgl(),
+                    height: 35,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.date_range_outlined,
+                                size: 21,
+                                color: mPrimaryColor,
+                              ),
+                              spaceWidthVerySmall,
+                              Text(
+                                ratingCabangController.firstDateFilter
+                                    .simpleDate(),
+                                style: textBoldDarkMedium,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-            spaceHeightSmall,
-            spaceHeightMedium,
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                legendChart("Pincab", mBlueFlatColor),
-                legendChart("PBP", mAmberFlatColor),
-                legendChart("PBO", mPurpleLightColor),
-                legendChart("Penyelia", mPinkLightColor),
-                legendChart("Staff", mBlueLightColor),
+                ),
               ],
             ),
-          ],
-        ),
+          ),
+          SizedBox(
+            width: double.infinity,
+            height: 70,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "Tanggal akhir",
+                  style: textBoldDarkMedium,
+                ),
+                const SizedBox(height: 5),
+                InkWell(
+                  onTap: () async {
+                    if (defaultTargetPlatform == deviceAndroid) {
+                      final date = await datePicker(context, DateTime.now());
+                      if (mounted) {
+                        setState(() {
+                          ratingCabangController.lastDateFilter = date!;
+                        });
+                      }
+                    } else if (defaultTargetPlatform == deviceIos) {
+                      showCupertinoModalPopup(
+                        context: context,
+                        builder: (_) => Container(
+                          height: 500,
+                          color: const Color.fromARGB(255, 255, 255, 255),
+                          child: Column(
+                            children: [
+                              SizedBox(
+                                height: 400,
+                                child: CupertinoDatePicker(
+                                    initialDateTime: DateTime.now(),
+                                    mode: CupertinoDatePickerMode.date,
+                                    onDateTimeChanged: (val) {
+                                      setState(() {
+                                        ratingCabangController.lastDateFilter =
+                                            val;
+                                      });
+                                    }),
+                              ),
+
+                              // Close the modal
+                              CupertinoButton(
+                                child: const Text('OK'),
+                                onPressed: () => Navigator.of(context).pop(),
+                              )
+                            ],
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                  child: Container(
+                    width: double.infinity,
+                    decoration: decorationFormTgl(),
+                    height: 35,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.date_range_outlined,
+                                size: 21,
+                                color: mPrimaryColor,
+                              ),
+                              spaceWidthVerySmall,
+                              Text(
+                                // dateTimeLast != null
+                                //     ? "${dateTimeLast!.day}-${dateTimeLast!.month}-${dateTimeLast!.year}"
+                                //     : 'dd-mm-yyyy',
+                                ratingCabangController.lastDateFilter
+                                    .simpleDate()
+                                    .toString(),
+                                style: textBoldDarkMedium,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Container _dataPengajuan() {
-    return Container(
-      width: Get.width,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        color: Colors.white,
-        boxShadow: const [
-          shadowMedium,
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Data Pengajuan",
-              style: textBoldDarkLarge,
+  Column _formCabang() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text("Cabang", style: textBoldDarkMedium),
+        const SizedBox(height: 5),
+        SizedBox(
+          height: 35,
+          child: DropdownButtonFormField(
+            isDense: true,
+            isExpanded: true,
+            decoration: const InputDecoration(
+              contentPadding: EdgeInsets.all(8),
+              focusedBorder: focusedBorder,
+              enabledBorder: enabledBorder,
+              border: OutlineInputBorder(),
+              filled: true,
+              fillColor: Colors.white,
             ),
-            spaceHeightLarge,
-            pieChart(
-              context,
-              {
-                'Disetujui': dataPengajuanController
-                    .dataPengajuanModel!.totalDisetujui
-                    .toDouble(),
-                'Ditolak': dataPengajuanController
-                    .dataPengajuanModel!.totalDitolak
-                    .toDouble(),
-                'On Progress': dataPengajuanController
-                    .dataPengajuanModel!.totalDiproses
-                    .toDouble(),
-              },
-              colorListData,
-              "${dataPengajuanController.totalPengajuan}",
-            ),
-            spaceHeightSmall,
-            spaceHeightMedium,
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                legendChart("Disetujui", mGreenFlatColor),
-                legendChart("Ditolak", mPrimaryColor),
-                legendChart("On Progress", mYellowColor),
-              ],
-            ),
-          ],
+            value: valueCabang,
+            hint: const Text("Semua cabang", style: textBoldDarkMedium),
+            onChanged: ((value) {
+              if (mounted) {
+                setState(() {
+                  valueCabang = value as String;
+                });
+              }
+            }),
+            items: dataCabangController.dataCabangModel?.data.map((item) {
+              return DropdownMenuItem(
+                child: Text(
+                  item.cabang,
+                  style: textBoldDarkMedium,
+                ),
+                onTap: () {
+                  filterCodeCabang = item.kodeCabang;
+                },
+                value: item.cabang,
+              );
+            }).toList(),
+          ),
         ),
-      ),
+      ],
     );
   }
 
@@ -756,237 +705,275 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Column _formCabang() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text("Cabang", style: textBoldDarkMedium),
-        const SizedBox(height: 5),
-        SizedBox(
-          height: 35,
-          child: DropdownButtonFormField(
-            isDense: true,
-            isExpanded: true,
-            decoration: const InputDecoration(
-              contentPadding: EdgeInsets.all(8),
-              focusedBorder: focusedBorder,
-              enabledBorder: enabledBorder,
-              border: OutlineInputBorder(),
-              filled: true,
-              fillColor: Colors.white,
+  Container _dataPengajuan() {
+    return Container(
+      width: Get.width,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        color: Colors.white,
+        boxShadow: const [
+          shadowMedium,
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "Data Pengajuan",
+              style: textBoldDarkLarge,
             ),
-            value: valueCabang,
-            hint: const Text("Semua cabang", style: textBoldDarkMedium),
-            onChanged: ((value) {
-              if (mounted) {
-                setState(() {
-                  valueCabang = value as String;
-                });
-              }
-            }),
-            items: dataCabangController.dataCabangModel?.data.map((item) {
-              return DropdownMenuItem(
-                child: Text(
-                  item.cabang,
-                  style: textBoldDarkMedium,
-                ),
-                onTap: () {
-                  filterCodeCabang = item.kodeCabang;
-                },
-                value: item.cabang,
-              );
-            }).toList(),
-          ),
+            spaceHeightLarge,
+            pieChart(
+              context,
+              {
+                'Disetujui': dataPengajuanController
+                    .dataPengajuanModel!.totalDisetujui
+                    .toDouble(),
+                'Ditolak': dataPengajuanController
+                    .dataPengajuanModel!.totalDitolak
+                    .toDouble(),
+                'On Progress': dataPengajuanController
+                    .dataPengajuanModel!.totalDiproses
+                    .toDouble(),
+              },
+              colorListData,
+              "${dataPengajuanController.totalPengajuan}",
+            ),
+            spaceHeightSmall,
+            spaceHeightMedium,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                legendChart("Disetujui", mGreenFlatColor),
+                legendChart("Ditolak", mPrimaryColor),
+                legendChart("On Progress", mYellowColor),
+              ],
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
-  SizedBox _formDate() {
-    return SizedBox(
-      width: double.infinity,
-      height: 65,
-      child: GridView.count(
-        crossAxisCount: 2,
-        physics: const NeverScrollableScrollPhysics(),
-        crossAxisSpacing: 10,
-        children: <Widget>[
-          SizedBox(
-            width: double.infinity,
-            height: 70,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  "Tanggal awal",
-                  style: textBoldDarkMedium,
-                ),
-                const SizedBox(height: 5),
-                InkWell(
-                  onTap: () async {
-                    if (defaultTargetPlatform == deviceAndroid) {
-                      final date = await datePicker(context, DateTime.now());
-                      if (mounted) {
-                        setState(() {
-                          ratingCabangController.firstDateFilter = date!;
-                        });
-                      }
-                    } else if (defaultTargetPlatform == deviceIos) {
-                      showCupertinoModalPopup(
-                        context: context,
-                        builder: (_) => Container(
-                          height: 500,
-                          color: const Color.fromARGB(255, 255, 255, 255),
-                          child: Column(
-                            children: [
-                              SizedBox(
-                                height: 400,
-                                child: CupertinoDatePicker(
-                                    initialDateTime: DateTime.now(),
-                                    mode: CupertinoDatePickerMode.date,
-                                    onDateTimeChanged: (val) {
-                                      setState(() {
-                                        ratingCabangController.firstDateFilter =
-                                            val;
-                                        // print(val);
-                                        // firstDate = val;
-                                      });
-                                    }),
-                              ),
-
-                              // Close the modal
-                              CupertinoButton(
-                                child: const Text('OK'),
-                                onPressed: () => Navigator.of(context).pop(),
-                              )
-                            ],
-                          ),
-                        ),
-                      );
-                    }
-                  },
-                  child: Container(
-                    width: double.infinity,
-                    decoration: decorationFormTgl(),
-                    height: 35,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: Row(
-                            children: [
-                              const Icon(
-                                Icons.date_range_outlined,
-                                size: 21,
-                                color: mPrimaryColor,
-                              ),
-                              spaceWidthVerySmall,
-                              Text(
-                                "${ratingCabangController.firstDateFilter.simpleDate()}",
-                                style: textBoldDarkMedium,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            width: double.infinity,
-            height: 70,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  "Tanggal akhir",
-                  style: textBoldDarkMedium,
-                ),
-                const SizedBox(height: 5),
-                InkWell(
-                  onTap: () async {
-                    if (defaultTargetPlatform == deviceAndroid) {
-                      final date = await datePicker(context, DateTime.now());
-                      if (mounted) {
-                        setState(() {
-                          ratingCabangController.lastDateFilter = date!;
-                        });
-                      }
-                    } else if (defaultTargetPlatform == deviceIos) {
-                      showCupertinoModalPopup(
-                        context: context,
-                        builder: (_) => Container(
-                          height: 500,
-                          color: const Color.fromARGB(255, 255, 255, 255),
-                          child: Column(
-                            children: [
-                              SizedBox(
-                                height: 400,
-                                child: CupertinoDatePicker(
-                                    initialDateTime: DateTime.now(),
-                                    mode: CupertinoDatePickerMode.date,
-                                    onDateTimeChanged: (val) {
-                                      setState(() {
-                                        ratingCabangController.lastDateFilter =
-                                            val;
-                                      });
-                                    }),
-                              ),
-
-                              // Close the modal
-                              CupertinoButton(
-                                child: const Text('OK'),
-                                onPressed: () => Navigator.of(context).pop(),
-                              )
-                            ],
-                          ),
-                        ),
-                      );
-                    }
-                  },
-                  child: Container(
-                    width: double.infinity,
-                    decoration: decorationFormTgl(),
-                    height: 35,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: Row(
-                            children: [
-                              const Icon(
-                                Icons.date_range_outlined,
-                                size: 21,
-                                color: mPrimaryColor,
-                              ),
-                              spaceWidthVerySmall,
-                              Text(
-                                // dateTimeLast != null
-                                //     ? "${dateTimeLast!.day}-${dateTimeLast!.month}-${dateTimeLast!.year}"
-                                //     : 'dd-mm-yyyy',
-                                ratingCabangController.lastDateFilter
-                                    .simpleDate()
-                                    .toString(),
-                                style: textBoldDarkMedium,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+  Container _posisiPengajuan() {
+    return Container(
+      width: Get.width,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        color: Colors.white,
+        boxShadow: const [
+          shadowMedium,
         ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "Posisi Pengajuan",
+              style: textBoldDarkLarge,
+            ),
+            spaceHeightLarge,
+            posisiPengajuanController.posisiPengajuanModel!.data.isEmpty
+                ? Container()
+                : pieChart(
+                    context,
+                    {
+                      "Pincab": double.parse(
+                        "${posisiPengajuanController.posisiPengajuanModel?.data[0].pincab}",
+                      ),
+                      "PBP": double.parse(
+                        "${posisiPengajuanController.posisiPengajuanModel?.data[0].pbp}",
+                      ),
+                      "PBO": double.parse(
+                        "${posisiPengajuanController.posisiPengajuanModel?.data[0].pbo}",
+                      ),
+                      "Penyelia": double.parse(
+                        "${posisiPengajuanController.posisiPengajuanModel?.data[0].penyelia}",
+                      ),
+                      "Staff": double.parse(
+                        "${posisiPengajuanController.posisiPengajuanModel?.data[0].staff}",
+                      ),
+                    },
+                    colorListPosisi,
+                    posisiPengajuanController.totalPosisi.toString(),
+                  ),
+            spaceHeightSmall,
+            spaceHeightMedium,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                legendChart("Pincab", mBlueFlatColor),
+                legendChart("PBP", mAmberFlatColor),
+                legendChart("PBO", mPurpleLightColor),
+                legendChart("Penyelia", mPinkLightColor),
+                legendChart("Staff", mBlueLightColor),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Container _ratingCabang() {
+    return Container(
+      width: Get.width,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        color: Colors.white,
+        boxShadow: const [
+          shadowMedium,
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  "Rating Cabang",
+                  style: textBoldDarkLarge,
+                ),
+                Row(
+                  children: [
+                    legendChart("Tertinggi", mGreenFlatColor),
+                    spaceWidthSmall,
+                    legendChart("Terendah", mPrimaryColor),
+                  ],
+                )
+              ],
+            ),
+            spaceHeightMedium,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                    flex: 1,
+                    child: ListView.builder(
+                      itemCount: ratingCabangController
+                              .ratingCabangModel?.data.tertinggi.length ??
+                          0,
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 4),
+                          height: 33,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(
+                                color: mGreyVeryLightColor, width: 1),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    width: 33,
+                                    height: 33,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(6),
+                                      color: mGreenFlatColor,
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        "${ratingCabangController.ratingCabangModel?.data.tertinggi[index].kodeCabang}",
+                                        style: textBoldLightMedium,
+                                      ),
+                                    ),
+                                  ),
+                                  spaceWidthVerySmall,
+                                  Text(
+                                    "${ratingCabangController.ratingCabangModel?.data.tertinggi[index].cabang}",
+                                    style: textBoldDarkSmall,
+                                  )
+                                ],
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(right: 10),
+                                child: Text(
+                                  "${ratingCabangController.ratingCabangModel?.data.tertinggi[index].total}",
+                                  style: textBoldDarkSmall,
+                                ),
+                              )
+                            ],
+                          ),
+                        );
+                      },
+                    )),
+                spaceWidthVerySmall,
+                Expanded(
+                  flex: 1,
+                  child: ListView.builder(
+                    itemCount: ratingCabangController
+                            .ratingCabangModel?.data.terendah.length ??
+                        0,
+                    shrinkWrap: true,
+                    reverse: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemBuilder: (context, index) {
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 4),
+                        height: 33,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(6),
+                          border:
+                              Border.all(color: mGreyVeryLightColor, width: 1),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Container(
+                                  width: 33,
+                                  height: 33,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(6),
+                                    color: mPrimaryColor,
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      "${ratingCabangController.ratingCabangModel?.data.terendah[index].kodeCabang}",
+                                      style: textBoldLightMedium,
+                                    ),
+                                  ),
+                                ),
+                                spaceWidthVerySmall,
+                                Text(
+                                  "${ratingCabangController.ratingCabangModel?.data.terendah[index].cabang}",
+                                  style: textBoldDarkSmall,
+                                )
+                              ],
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(right: 10),
+                              child: Text(
+                                "${ratingCabangController.ratingCabangModel?.data.terendah[index].total}",
+                                style: textBoldDarkSmall,
+                              ),
+                            )
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

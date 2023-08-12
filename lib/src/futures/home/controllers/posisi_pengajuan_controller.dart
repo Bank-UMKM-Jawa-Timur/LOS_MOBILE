@@ -14,12 +14,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class PosisiPengajuanController extends GetxController {
   var isLoading = false.obs;
+  int? totalPosisi;
+
+  // Get Controller
   PosisiPengajuanModel? posisiPengajuanModel;
   RatingCabangController ratingCabangController =
       Get.put(RatingCabangController());
   DataPengajuanController dataPengajuanController =
       Get.put(DataPengajuanController());
-  int? totalPosisi;
 
   @override
   Future<void> onInit() async {
@@ -28,9 +30,8 @@ class PosisiPengajuanController extends GetxController {
   }
 
   getPosisiPengajuan() async {
-    SharedPreferences spref = await SharedPreferences.getInstance();
-    // var kodeCabang = "${spref.getString("kode_cabang")}";
-    print("object ${dataPengajuanController.kodeCabang}");
+    await SharedPreferences.getInstance();
+    // print("object ${dataPengajuanController.kodeCabang}");
     var headers = {
       'Content-Type': 'application/json',
       'token': staticToken,
@@ -47,10 +48,9 @@ class PosisiPengajuanController extends GetxController {
       if (response.statusCode == 200) {
         var result = jsonDecode(response.body);
         var typeData = result['data'];
-        print(result);
         posisiPengajuanModel = PosisiPengajuanModel.fromJson(result);
         if (typeData.isEmpty) {
-          print("Kosong");
+          debugPrint("Kosong");
         } else {
           totalPosisi = typeData[0]['pincab'] +
               typeData[0]['pbp'] +

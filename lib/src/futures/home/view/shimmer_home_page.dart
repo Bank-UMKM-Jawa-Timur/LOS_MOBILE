@@ -1,8 +1,5 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:los_mobile/src/futures/home/view/home_page.dart';
 import 'package:los_mobile/src/widgets/my_shimmer.dart';
 import 'package:los_mobile/utils/colors.dart';
 import 'package:shimmer/shimmer.dart';

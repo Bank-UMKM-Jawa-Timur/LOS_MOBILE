@@ -11,12 +11,15 @@ import 'package:los_mobile/utils/preferens_user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DataPengajuanController extends GetxController {
-  var isLoading = false.obs;
+  // GET Controller
   DataPengajuanModel? dataPengajuanModel;
-  var totalPengajuan;
   RatingCabangController ratingCabangController =
       Get.put(RatingCabangController());
   PreferensUser preferensUser = Get.put(PreferensUser());
+
+  // Variable
+  var isLoading = false.obs;
+  var totalPengajuan;
   String? kodeCabang;
 
   @override

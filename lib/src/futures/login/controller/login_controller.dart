@@ -18,15 +18,15 @@ class LoginController extends GetxController {
 
   Future<void> login() async {
     var headers = {'Content-Type': 'application/json'};
+
     try {
-      var url = Uri.parse("$base_url/login");
       Map body = {
         "email": emailNipController.text,
         "password": passwordController.text,
       };
 
       http.Response response = await http.post(
-        url,
+        Uri.parse("$base_url/login"),
         body: jsonEncode(body),
         headers: headers,
       );
@@ -42,19 +42,26 @@ class LoginController extends GetxController {
             var role = json['role'];
             var data = json['data'];
             var name = data['nama'];
+            // deklarasi key jabatan
             Map<String, dynamic> jabatan = data['jabatan'];
             var nama_jabatan = jabatan['nama_jabatan'];
+
+            // Cek type entitas apkah 1 atau 2
             if (data['entitas']['type'] != 1) {
               prefs = await SharedPreferences.getInstance();
               var cab = data['entitas']['cab'];
               var kodeCabang = cab['kd_cabang'];
               await prefs?.setString('kode_cabang', kodeCabang);
             }
+
+            // Cek bagian apakah null jika tidak maka simpan bagian
             if (data['bagian'] != null) {
               prefs = await SharedPreferences.getInstance();
               var bagian = data['bagian']['nama_bagian'];
               await prefs?.setString('bagian', bagian);
             }
+
+            // Simpan ke Storage
             prefs = await SharedPreferences.getInstance();
             await prefs?.setString('email', email);
             await prefs?.setString('token', token);
@@ -94,7 +101,10 @@ class LoginController extends GetxController {
         prefs?.remove('email');
         prefs?.remove('token');
         prefs?.remove('name');
-        // prefs?.remove('jabatan');
+        prefs?.remove('jabatan');
+        prefs?.remove('kode_cabang');
+        prefs?.remove('bagian');
+        prefs?.remove('role');
         prefs?.clear();
         Get.offAll(const Login());
       } else {

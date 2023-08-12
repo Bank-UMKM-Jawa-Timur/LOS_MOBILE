@@ -44,73 +44,83 @@ class _LoginState extends State<Login> {
             children: [
               logoLogin,
               spaceHeightVeryLarge,
-              SizedBox(
-                height: 50,
-                child: TextField(
-                  style: const TextStyle(color: mSecondaryDarkColor),
-                  cursorColor: const Color(0xFF737373),
-                  decoration: const InputDecoration(
-                    hintText: 'Masukkan Email atau NIP',
-                    hintStyle:
-                        TextStyle(color: mSecondaryDarkColor, fontSize: 13),
-                    prefixIcon: Icon(
-                      Icons.email_outlined,
-                      color: mSecondaryDarkColor,
-                    ),
-                    focusedBorder: focusedBorder,
-                    enabledBorder: enabledBorder,
-                  ),
-                  autocorrect: false,
-                  maxLines: 1,
-                  controller: loginController.emailNipController,
-                  textInputAction: TextInputAction.next,
-                ),
-              ),
+              _textInputEmail(),
               spaceHeightSecondMedium,
-              SizedBox(
-                height: 50,
-                child: TextField(
-                  style: const TextStyle(color: mSecondaryDarkColor),
-                  cursorColor: const Color(0xFF737373),
-                  decoration: const InputDecoration(
-                    hintText: 'Masukkan Password',
-                    hintStyle:
-                        TextStyle(color: mSecondaryDarkColor, fontSize: 13),
-                    prefixIcon: Icon(
-                      CommunityMaterialIcons.lock_outline,
-                      color: mSecondaryDarkColor,
-                    ),
-                    focusedBorder: focusedBorder,
-                    enabledBorder: enabledBorder,
-                  ),
-                  autocorrect: false,
-                  maxLines: 1,
-                  obscureText: true,
-                  enableSuggestions: false,
-                  controller: loginController.passwordController,
-                  textInputAction: TextInputAction.next,
-                ),
-              ),
+              _textInputPassword(),
               spaceHeightSecondLarge,
-              SizedBox(
-                width: Get.width,
-                height: 40,
-                child: ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: mPrimaryColor,
-                  ),
-                  onPressed: () {
-                    loginController.login();
-                  },
-                  icon: const Icon(CommunityMaterialIcons.login),
-                  label: const Text(
-                    "Login",
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-                  ),
-                ),
-              ),
+              _buttomLogin(),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  SizedBox _textInputEmail() {
+    return SizedBox(
+      height: 50,
+      child: TextField(
+        style: const TextStyle(color: mSecondaryDarkColor),
+        cursorColor: const Color(0xFF737373),
+        decoration: const InputDecoration(
+          hintText: 'Masukkan Email atau NIP',
+          hintStyle: TextStyle(color: mSecondaryDarkColor, fontSize: 13),
+          prefixIcon: Icon(
+            Icons.email_outlined,
+            color: mSecondaryDarkColor,
+          ),
+          focusedBorder: focusedBorder,
+          enabledBorder: enabledBorder,
+        ),
+        autocorrect: false,
+        maxLines: 1,
+        controller: loginController.emailNipController,
+        textInputAction: TextInputAction.next,
+      ),
+    );
+  }
+
+  SizedBox _textInputPassword() {
+    return SizedBox(
+      height: 50,
+      child: TextField(
+        style: const TextStyle(color: mSecondaryDarkColor),
+        cursorColor: const Color(0xFF737373),
+        decoration: const InputDecoration(
+          hintText: 'Masukkan Password',
+          hintStyle: TextStyle(color: mSecondaryDarkColor, fontSize: 13),
+          prefixIcon: Icon(
+            CommunityMaterialIcons.lock_outline,
+            color: mSecondaryDarkColor,
+          ),
+          focusedBorder: focusedBorder,
+          enabledBorder: enabledBorder,
+        ),
+        autocorrect: false,
+        maxLines: 1,
+        obscureText: true,
+        enableSuggestions: false,
+        controller: loginController.passwordController,
+        textInputAction: TextInputAction.next,
+      ),
+    );
+  }
+
+  SizedBox _buttomLogin() {
+    return SizedBox(
+      width: Get.width,
+      height: 40,
+      child: ElevatedButton.icon(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: mPrimaryColor,
+        ),
+        onPressed: () {
+          loginController.login();
+        },
+        icon: const Icon(CommunityMaterialIcons.login),
+        label: const Text(
+          "Login",
+          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
         ),
       ),
     );

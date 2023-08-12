@@ -10,7 +10,6 @@ import 'package:los_mobile/utils/token.dart';
 class DataCabangController extends GetxController {
   var isLoading = false.obs;
   DataCabangModel? dataCabangModel;
-  var totalPosisiPengajuan;
   String? kodeCabang;
 
   @override
