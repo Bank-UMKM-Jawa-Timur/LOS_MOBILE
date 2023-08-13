@@ -121,7 +121,7 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: mPrimaryColor,
       toolbarHeight: defaultTargetPlatform == deviceAndroid
           ? heightStatusBar + 50
-          : heightStatusBar + 30,
+          : heightStatusBar + 25,
       titleSpacing: -30,
       leading: Padding(
         padding: const EdgeInsets.only(left: 25),
