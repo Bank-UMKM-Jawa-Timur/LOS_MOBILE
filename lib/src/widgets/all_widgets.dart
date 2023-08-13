@@ -67,3 +67,12 @@ const textBoldDarkVeryLarge = TextStyle(
   fontWeight: FontWeight.w700,
   color: Colors.black,
 );
+
+// untuk inisialisasi warna Bold
+textColorBoldDarkSmall(double size, Color color) {
+  return TextStyle(
+    fontSize: size,
+    fontWeight: FontWeight.w700,
+    color: color,
+  );
+}

@@ -2,10 +2,15 @@ import 'dart:async';
 
 import 'package:community_material_icon/community_material_icon.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:los_mobile/src/futures/home/view/home_commingsoon.dart';
 import 'package:los_mobile/src/widgets/dialog/my_alert_dialog.dart';
 import 'package:los_mobile/utils/colors.dart';
 import 'package:los_mobile/src/futures/home/view/home_page.dart';
 import 'package:los_mobile/src/futures/profile/view/profile_page.dart';
+import 'package:los_mobile/utils/preferens_user.dart';
+import 'package:los_mobile/utils/role_user.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MyBottomNavigationBar extends StatefulWidget {
   const MyBottomNavigationBar({super.key});
@@ -16,13 +21,21 @@ class MyBottomNavigationBar extends StatefulWidget {
 
 class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
   int _selectedIndex = 0;
-  static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-  static const List<Widget> _widgetOptions = <Widget>[
+  PreferensUser preferensUser = Get.put(PreferensUser());
+  String? role;
+
+  static const List _widgetOptions = [
     HomePage(),
     Text(
       'Index 1: Business',
-      style: optionStyle,
+    ),
+    ProfilePage(),
+  ];
+
+  static const List _widgetOptionsComming = [
+    HomeCommingsoon(),
+    Text(
+      'Index 1: Business',
     ),
     ProfilePage(),
   ];
@@ -38,10 +51,28 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    cekRoleUser();
+  }
+
+  cekRoleUser() async {
+    await SharedPreferences.getInstance();
+    setState(() {
+      role = preferensUser.role;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
+        child: role == administrator ||
+                role == direksi ||
+                role == pincab ||
+                role == ku
+            ? _widgetOptions.elementAt(_selectedIndex)
+            : _widgetOptionsComming.elementAt(_selectedIndex),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Container(

@@ -84,8 +84,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       Text(
                         email,
                         style: const TextStyle(
-                          color: mGreyLightColor,
-                          fontSize: 15.0,
+                          color: mGreyFlatColor,
+                          fontSize: 15,
                           fontWeight: FontWeight.normal,
                         ),
                       ),
