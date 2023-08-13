@@ -58,6 +58,8 @@ class _HomePageState extends State<HomePage> {
     getUser();
     filterCabang = "Semua cabang";
     filterRating = "Semua cabang";
+    print("filterCodeCabang $filterCabang");
+    print("kodeCabang $kodeCabang");
   }
 
   totalPengajuan() {}
@@ -634,6 +636,8 @@ class _HomePageState extends State<HomePage> {
                                 ratingCabangController.getDataRating();
                                 dataPengajuanController.getDataPengajuan();
                                 posisiPengajuanController.getPosisiPengajuan();
+                                print("filterCodeCabang 2 $filterCabang");
+                                print("kodeCabang 2 $kodeCabang");
                                 // ratingCabangController.isLoading.value ??
                                 //     showDialog(
                                 //       context: context,
@@ -687,6 +691,8 @@ class _HomePageState extends State<HomePage> {
                                           .getDataPengajuan();
                                       posisiPengajuanController
                                           .getPosisiPengajuan();
+                                      print("filterCodeCabang 2 $filterCabang");
+                                      print("kodeCabang 2 $kodeCabang");
                                     },
                                     child: const Text(
                                       "Reset",
@@ -728,15 +734,24 @@ class _HomePageState extends State<HomePage> {
             pieChart(
               context,
               {
-                'Disetujui': dataPengajuanController
-                    .dataPengajuanModel!.totalDisetujui
-                    .toDouble(),
-                'Ditolak': dataPengajuanController
-                    .dataPengajuanModel!.totalDitolak
-                    .toDouble(),
-                'On Progress': dataPengajuanController
-                    .dataPengajuanModel!.totalDiproses
-                    .toDouble(),
+                'Disetujui': dataPengajuanController.kodeCabang == null
+                    ? ratingCabangController.ratingCabangModel!.totalDisetujui
+                        .toDouble()
+                    : double.parse(
+                        "${dataPengajuanController.dataPengajuanModel?.totalDisetujui}",
+                      ),
+                'Ditolak': dataPengajuanController.kodeCabang == null
+                    ? ratingCabangController.ratingCabangModel!.totalDitolak
+                        .toDouble()
+                    : double.parse(
+                        "${dataPengajuanController.dataPengajuanModel?.totalDitolak}",
+                      ),
+                'On Progress': dataPengajuanController.kodeCabang == null
+                    ? ratingCabangController.ratingCabangModel!.totalDiproses
+                        .toDouble()
+                    : double.parse(
+                        "${dataPengajuanController.dataPengajuanModel?.totalDiproses}",
+                      ),
               },
               colorListData,
               "${dataPengajuanController.totalPengajuan}",
@@ -839,7 +854,7 @@ class _HomePageState extends State<HomePage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text(
-                  "Rating Cabang",
+                  "Ranking Cabang",
                   style: textBoldDarkLarge,
                 ),
                 Row(

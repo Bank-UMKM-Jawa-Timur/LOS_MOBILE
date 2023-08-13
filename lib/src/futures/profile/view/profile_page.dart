@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart';
 import 'package:los_mobile/src/widgets/all_widgets.dart';
 import 'package:los_mobile/src/widgets/dialog/my_alert_dialog_android.dart';
 import 'package:los_mobile/src/widgets/dialog/my_alert_dialog_ios.dart';
@@ -205,11 +204,16 @@ class _ProfilePageState extends State<ProfilePage> {
         icon: const Icon(Icons.logout, size: 20),
         onPressed: () {
           if (defaultTargetPlatform == deviceAndroid) {
-            alertDialogAndroidLogout(
+            AlertDialogIosLogout(
               context,
               titleDialogWarning,
               messageeDialoglogout,
             );
+            // alertDialogAndroidLogout(
+            //   context,
+            //   titleDialogWarning,
+            //   messageeDialoglogout,
+            // );
           } else if (defaultTargetPlatform == deviceIos) {
             AlertDialogIosLogout(
               context,
