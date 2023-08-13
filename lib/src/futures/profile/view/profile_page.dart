@@ -24,6 +24,7 @@ class _ProfilePageState extends State<ProfilePage> {
   bool beoAuth = false;
   LoginController loginController = Get.put(LoginController());
   PreferensUser preferensUser = Get.put(PreferensUser());
+  CircleAvatarWidget circleAvatarWidget = Get.put(CircleAvatarWidget());
 
   String name = "";
   String jabatan = "";
@@ -73,7 +74,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
                       // bagian avatar
-                      circleAvatarWidget(name, 50),
+                      circleAvatarWidget.circleAvatarWidget(name, 50),
                       spaceHeightMedium,
                       Text(
                         shortenLastName(name),

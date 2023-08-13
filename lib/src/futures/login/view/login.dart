@@ -36,20 +36,22 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              logoLogin,
-              spaceHeightVeryLarge,
-              _textInputEmail(),
-              spaceHeightSecondMedium,
-              _textInputPassword(),
-              spaceHeightSecondLarge,
-              _buttomLogin(),
-            ],
+      body: Obx(
+        () => Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                logoLogin,
+                spaceHeightVeryLarge,
+                _textInputEmail(),
+                spaceHeightSecondMedium,
+                _textInputPassword(),
+                spaceHeightSecondLarge,
+                _buttomLogin(),
+              ],
+            ),
           ),
         ),
       ),
@@ -118,9 +120,9 @@ class _LoginState extends State<Login> {
           loginController.login();
         },
         icon: const Icon(CommunityMaterialIcons.login),
-        label: const Text(
-          "Login",
-          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+        label: Text(
+          loginController.isLoading.value ? "Loading..." : "Login",
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
         ),
       ),
     );

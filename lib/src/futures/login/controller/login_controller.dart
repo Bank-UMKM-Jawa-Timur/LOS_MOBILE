@@ -15,11 +15,14 @@ class LoginController extends GetxController {
   TextEditingController emailNipController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   SharedPreferences? prefs;
+  var isLoading = false.obs;
 
   Future<void> login() async {
     var headers = {'Content-Type': 'application/json'};
 
     try {
+      isLoading(true);
+
       Map body = {
         "email": emailNipController.text,
         "password": passwordController.text,
@@ -37,28 +40,27 @@ class LoginController extends GetxController {
         if (response.statusCode == 200) {
           final json = jsonDecode(response.body);
           if (json["status"] == "berhasil") {
-            var token = json['access_token'];
-            var email = json['email'];
-            var role = json['role'];
             var data = json['data'];
-            var name = data['nama'];
-            // deklarasi key jabatan
-            Map<String, dynamic> jabatan = data['jabatan'];
-            var nama_jabatan = jabatan['nama_jabatan'];
+            Map<String, dynamic> entitas = data['entitas'];
 
-            // Cek type entitas apkah 1 atau 2
-            if (data['entitas']['type'] != 1) {
+            String email = json['email'];
+            String role = json['role'];
+            String token = json['access_token'];
+            String name = data['nama'];
+            String namaJabatan = data['nama_jabatan'];
+
+            if (entitas['type'] != 1) {
               prefs = await SharedPreferences.getInstance();
-              var cab = data['entitas']['cab'];
-              var kodeCabang = cab['kd_cabang'];
+              Map<String, dynamic> cab = entitas['cab'];
+              String kodeCabang = cab['kd_cabang'];
               await prefs?.setString('kode_cabang', kodeCabang);
             }
 
-            // Cek bagian apakah null jika tidak maka simpan bagian
             if (data['bagian'] != null) {
               prefs = await SharedPreferences.getInstance();
-              var bagian = data['bagian']['nama_bagian'];
-              await prefs?.setString('bagian', bagian);
+              Map<String, dynamic> bagian = data['bagian'];
+              String namaBagian = bagian['nama_bagian'];
+              await prefs?.setString('bagian', namaBagian);
             }
 
             // Simpan ke Storage
@@ -66,7 +68,7 @@ class LoginController extends GetxController {
             await prefs?.setString('email', email);
             await prefs?.setString('token', token);
             await prefs?.setString('name', name);
-            await prefs?.setString('jabatan', nama_jabatan);
+            await prefs?.setString('jabatan', namaJabatan);
             await prefs?.setString('role', role);
             emailNipController.clear();
             passwordController.clear();
@@ -81,6 +83,8 @@ class LoginController extends GetxController {
       }
     } catch (e) {
       snackbarError(e.toString());
+    } finally {
+      isLoading(false);
     }
   }
 

@@ -31,13 +31,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  RatingCabangController ratingCabangController =
-      Get.put(RatingCabangController());
+  DataCabangController dataCabangController = Get.put(DataCabangController());
   DataPengajuanController dataPengajuanController =
       Get.put(DataPengajuanController());
-  DataCabangController dataCabangController = Get.put(DataCabangController());
+  RatingCabangController ratingCabangController =
+      Get.put(RatingCabangController());
   PosisiPengajuanController posisiPengajuanController =
       Get.put(PosisiPengajuanController());
+  CircleAvatarWidget circleAvatarWidget = Get.put(CircleAvatarWidget());
   PreferensUser preferensUser = Get.put(PreferensUser());
 
   String name = "";
@@ -58,8 +59,8 @@ class _HomePageState extends State<HomePage> {
     getUser();
     filterCabang = "Semua cabang";
     filterRating = "Semua cabang";
-    print("filterCodeCabang $filterCabang");
-    print("kodeCabang $kodeCabang");
+    // print("filterCodeCabang $filterCabang");
+    // print("kodeCabang $kodeCabang");
   }
 
   totalPengajuan() {}
@@ -118,14 +119,16 @@ class _HomePageState extends State<HomePage> {
   AppBar _buildAppBar(double heightStatusBar) {
     return AppBar(
       backgroundColor: mPrimaryColor,
-      toolbarHeight: heightStatusBar + 20,
+      toolbarHeight: defaultTargetPlatform == deviceAndroid
+          ? heightStatusBar + 50
+          : heightStatusBar + 30,
       titleSpacing: -30,
       leading: Padding(
         padding: const EdgeInsets.only(left: 25),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            circleAvatarWidget(name, 21),
+            circleAvatarWidget.circleAvatarWidget(name, 21),
           ],
         ),
       ),
@@ -172,84 +175,82 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Container _buildBody() {
-    return Container(
-      child: Stack(
-        children: [
-          Container(
-            height: 45,
-            decoration: const BoxDecoration(
-              color: mPrimaryColor,
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(20),
-                bottomRight: Radius.circular(20),
-              ),
+  Widget _buildBody() {
+    return Stack(
+      children: [
+        Container(
+          height: 45,
+          decoration: const BoxDecoration(
+            color: mPrimaryColor,
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(20),
+              bottomRight: Radius.circular(20),
             ),
           ),
-          RefreshIndicator(
-            onRefresh: () {
-              return refresh();
-            },
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25),
-                child: SizedBox(
-                  width: Get.width,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      AnimatedSize(
-                        curve: Curves.ease,
-                        duration: const Duration(milliseconds: 500),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            color: Colors.white,
-                            boxShadow: const [
-                              shadowMedium,
-                            ],
-                          ),
-                          child: _cardFilter(),
+        ),
+        RefreshIndicator(
+          onRefresh: () {
+            return refresh();
+          },
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 25),
+              child: SizedBox(
+                width: Get.width,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AnimatedSize(
+                      curve: Curves.ease,
+                      duration: const Duration(milliseconds: 500),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: Colors.white,
+                          boxShadow: const [
+                            shadowMedium,
+                          ],
                         ),
+                        child: _cardFilter(),
                       ),
-                      spaceHeightMedium,
-                      _dataPengajuan(),
-                      role == pincab
-                          ? Column(
-                              children: [
-                                spaceHeightMedium,
-                                _posisiPengajuan(),
-                              ],
-                            )
-                          : const SizedBox(),
-                      filterCabang != "Semua cabang"
-                          ? Column(
-                              children: [
-                                spaceHeightMedium,
-                                _posisiPengajuan(),
-                              ],
-                            )
-                          : const SizedBox(),
-                      filterRating == "Semua cabang"
-                          ? role == pincab
-                              ? const SizedBox()
-                              : Column(
-                                  children: [
-                                    spaceHeightMedium,
-                                    _ratingCabang(),
-                                  ],
-                                )
-                          : Container(),
-                      spaceHeightMedium,
-                    ],
-                  ),
+                    ),
+                    spaceHeightMedium,
+                    _dataPengajuan(),
+                    role == pincab
+                        ? Column(
+                            children: [
+                              spaceHeightMedium,
+                              _posisiPengajuan(),
+                            ],
+                          )
+                        : const SizedBox(),
+                    filterCabang != "Semua cabang"
+                        ? Column(
+                            children: [
+                              spaceHeightMedium,
+                              _posisiPengajuan(),
+                            ],
+                          )
+                        : const SizedBox(),
+                    filterRating == "Semua cabang"
+                        ? role == pincab
+                            ? const SizedBox()
+                            : Column(
+                                children: [
+                                  spaceHeightMedium,
+                                  _ratingCabang(),
+                                ],
+                              )
+                        : Container(),
+                    spaceHeightMedium,
+                  ],
                 ),
               ),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -534,8 +535,7 @@ class _HomePageState extends State<HomePage> {
                       Text(
                         role == administrator || role == spi || role == ku
                             ? filterCabang!
-                            : dataPengajuanController
-                                .dataPengajuanModel!.data[0].cabang,
+                            : "${dataPengajuanController.dataPengajuanModel?.data[0].cabang}",
                         style: const TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
