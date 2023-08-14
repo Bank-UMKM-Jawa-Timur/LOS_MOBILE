@@ -62,7 +62,7 @@ class PosisiPengajuanController extends GetxController {
         debugPrint('error fetching data ${response.statusCode}');
       }
     } catch (e) {
-      debugPrint("Error $e");
+      debugPrint("Error $e POSISI");
     } finally {
       Timer(const Duration(seconds: 1), () {
         isLoading(false);

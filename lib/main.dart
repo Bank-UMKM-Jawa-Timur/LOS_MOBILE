@@ -4,8 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:los_mobile/src/futures/login/view/login.dart';
 import 'package:los_mobile/src/futures/splash_screen/splash_screen.dart';
+import 'package:los_mobile/src/widgets/my_bottom_navigation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
   // Solve certificate error when api request to server
@@ -27,9 +30,13 @@ class _MyAppState extends State<MyApp> {
     splash();
   }
 
-  void splash() {
+  void splash() async {
+    SharedPreferences spref = await SharedPreferences.getInstance();
+    bool biometric = spref.getBool("biometric") == null
+        ? false
+        : spref.getBool("biometric")!;
     Timer(const Duration(seconds: 3), () {
-      Get.offAll(const Login());
+      Get.offAll(Login(biometric: biometric));
     });
   }
 

@@ -637,7 +637,8 @@ class _HomePageState extends State<HomePage> {
                                 dataPengajuanController.getDataPengajuan();
                                 posisiPengajuanController.getPosisiPengajuan();
                                 print("filterCodeCabang 2 $filterCabang");
-                                print("kodeCabang 2 $kodeCabang");
+                                print(
+                                    "kodeCabang  Filter ${dataPengajuanController.kodeCabang}");
                                 // ratingCabangController.isLoading.value ??
                                 //     showDialog(
                                 //       context: context,
@@ -738,19 +739,19 @@ class _HomePageState extends State<HomePage> {
                     ? ratingCabangController.ratingCabangModel!.totalDisetujui
                         .toDouble()
                     : double.parse(
-                        "${dataPengajuanController.dataPengajuanModel?.totalDisetujui}",
+                        "${dataPengajuanController.dataPengajuanModel?.data[0].totalDisetujui}",
                       ),
                 'Ditolak': dataPengajuanController.kodeCabang == null
                     ? ratingCabangController.ratingCabangModel!.totalDitolak
                         .toDouble()
                     : double.parse(
-                        "${dataPengajuanController.dataPengajuanModel?.totalDitolak}",
+                        "${dataPengajuanController.dataPengajuanModel?.data[0].totalDitolak}",
                       ),
                 'On Progress': dataPengajuanController.kodeCabang == null
                     ? ratingCabangController.ratingCabangModel!.totalDiproses
                         .toDouble()
                     : double.parse(
-                        "${dataPengajuanController.dataPengajuanModel?.totalDiproses}",
+                        "${dataPengajuanController.dataPengajuanModel?.data[0].totalDiproses}",
                       ),
               },
               colorListData,

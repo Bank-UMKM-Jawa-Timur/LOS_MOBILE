@@ -43,6 +43,7 @@ class LoginController extends GetxController {
             var data = json['data'];
             Map<String, dynamic> entitas = data['entitas'];
 
+            int idUser = json['id'];
             String email = json['email'];
             String role = json['role'];
             String token = json['access_token'];
@@ -65,11 +66,14 @@ class LoginController extends GetxController {
 
             // Simpan ke Storage
             prefs = await SharedPreferences.getInstance();
+            await prefs?.setInt('id_user', idUser);
             await prefs?.setString('email', email);
             await prefs?.setString('token', token);
             await prefs?.setString('name', name);
             await prefs?.setString('jabatan', namaJabatan);
             await prefs?.setString('role', role);
+            await prefs?.setString('input_email_nip', emailNipController.text);
+            await prefs?.setString('password', passwordController.text);
             emailNipController.clear();
             passwordController.clear();
             Get.offAll(const MyBottomNavigationBar());
@@ -102,6 +106,7 @@ class LoginController extends GetxController {
         headers: headers,
       );
       if (response.statusCode == 200) {
+        prefs?.remove('id_user');
         prefs?.remove('email');
         prefs?.remove('token');
         prefs?.remove('name');
@@ -109,8 +114,14 @@ class LoginController extends GetxController {
         prefs?.remove('kode_cabang');
         prefs?.remove('bagian');
         prefs?.remove('role');
+        // if (prefs?.getBool("biometric") == null ||
+        //     prefs?.getBool("biometric") == false) {
+        prefs?.remove('biometric');
+        prefs?.remove('input_email_nip');
+        prefs?.remove('password');
         prefs?.clear();
-        Get.offAll(const Login());
+        // }
+        Get.offAll(Login(biometric: false));
       } else {
         snackbarError(response.statusCode.toString());
       }

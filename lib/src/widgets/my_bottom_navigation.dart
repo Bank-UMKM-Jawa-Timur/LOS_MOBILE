@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:community_material_icon/community_material_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -75,7 +73,7 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
             : _widgetOptionsComming.elementAt(_selectedIndex),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: Container(
+      floatingActionButton: SizedBox(
         width: 100,
         height: 100,
         child: Column(

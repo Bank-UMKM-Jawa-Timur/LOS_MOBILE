@@ -22,7 +22,7 @@ class DataPengajuanController extends GetxController {
   // Variable
   var isLoading = false.obs;
   var totalPengajuan;
-  var kodeCabang = null;
+  String? kodeCabang;
 
   @override
   Future<void> onInit() async {
@@ -41,7 +41,6 @@ class DataPengajuanController extends GetxController {
 
     try {
       isLoading(true);
-      print("KODE CABANG PENGAJUAN $kodeCabang");
       http.Response response = await http.get(
         Uri.parse(
           kodeCabang == null
@@ -52,19 +51,24 @@ class DataPengajuanController extends GetxController {
       );
       if (response.statusCode == 200) {
         var result = jsonDecode(response.body);
-        if (kodeCabang == null || kodeCabang == "null") {
+        if (kodeCabang == null) {
           ratingCabangModel = RatingCabangModel.fromJson(result);
+          totalPengajuan = result['total_disetujui'] +
+              result['total_ditolak'] +
+              result['total_diproses'];
         } else {
           dataPengajuanModel = DataPengajuanModel.fromJson(result);
+          List<dynamic> data = result['data'];
+          totalPengajuan = int.parse("${data[0]['total_disetujui']}") +
+              int.parse("${data[0]['total_ditolak']}") +
+              int.parse("${data[0]['total_diproses']}");
         }
-        totalPengajuan = result['total_disetujui'] +
-            result['total_ditolak'] +
-            result['total_diproses'];
+        print("RESULT PENGAJUAN = $result");
       } else {
         debugPrint('error fetching data ${response.statusCode}');
       }
     } catch (e) {
-      debugPrint("Error $e");
+      debugPrint("Error $e PENGAJUAN");
     } finally {
       isLoading(false);
     }

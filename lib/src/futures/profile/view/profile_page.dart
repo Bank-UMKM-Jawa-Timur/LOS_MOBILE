@@ -1,8 +1,10 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:los_mobile/src/widgets/all_widgets.dart';
-import 'package:los_mobile/src/widgets/dialog/my_alert_dialog_android.dart';
 import 'package:los_mobile/src/widgets/dialog/my_alert_dialog_ios.dart';
 import 'package:los_mobile/src/widgets/my_circle_avatar.dart';
 import 'package:los_mobile/src/widgets/my_shorten_last_name.dart';
@@ -21,7 +23,10 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  bool beoAuth = false;
+  bool isAuthBiometric = false;
+  late final LocalAuthentication auth;
+  bool _supportState = false;
+
   LoginController loginController = Get.put(LoginController());
   PreferensUser preferensUser = Get.put(PreferensUser());
   CircleAvatarWidget circleAvatarWidget = Get.put(CircleAvatarWidget());
@@ -35,18 +40,25 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
+    auth = LocalAuthentication();
+    auth.isDeviceSupported().then((bool isSupported) => setState(() {
+          _supportState = isSupported;
+        }));
     getUser();
   }
 
   void getUser() async {
     SharedPreferences spref = await SharedPreferences.getInstance();
-    setState(() {
-      name = "${spref.getString("name")}";
-      jabatan = "${spref.getString("jabatan")}";
-      bagian = "${spref.getString("bagian")}";
-      role = "${spref.getString("role")}";
-      email = "${spref.getString("email")}";
-    });
+    name = "${spref.getString("name")}";
+    jabatan = "${spref.getString("jabatan")}";
+    bagian = "${spref.getString("bagian")}";
+    role = "${spref.getString("role")}";
+    email = "${spref.getString("email")}";
+    isAuthBiometric = spref.getBool("biometric") == null
+        ? false
+        : spref.getBool("biometric")!;
+    print(isAuthBiometric);
+    setState(() {});
   }
 
   @override
@@ -93,8 +105,14 @@ class _ProfilePageState extends State<ProfilePage> {
                         margin: const EdgeInsets.only(top: 40),
                         child: Column(children: [
                           _bottomChangePassword(),
-                          spaceHeightMedium,
-                          _bottomAuth(),
+                          _supportState
+                              ? Column(
+                                  children: [
+                                    spaceHeightMedium,
+                                    _bottomAuth(),
+                                  ],
+                                )
+                              : Container(),
                           spaceHeightMedium,
                           _bottomLogout(context),
                         ]),
@@ -134,17 +152,20 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _bottomAuth() {
     return InkWell(
-      onTap: () {
+      onTap: () async {
         if (mounted) {
           setState(() {
-            beoAuth = beoAuth ? false : true;
+            isAuthBiometric = isAuthBiometric ? false : true;
           });
+        }
+        if (isAuthBiometric) {
+          _authenticate();
         }
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
         width: Get.width,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: mPrimaryColor,
           borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
@@ -163,7 +184,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 Container(
                   margin: const EdgeInsets.only(left: 10),
                   child: const Text(
-                    'Beomatric Authentication',
+                    'Biomatric Authentication',
                     textAlign: TextAlign.left,
                     style: TextStyle(
                       color: Colors.white,
@@ -174,11 +195,72 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             Switch(
               activeColor: Colors.red[900],
-              value: beoAuth,
-              onChanged: (bool value) {
+              value: isAuthBiometric,
+              onChanged: (bool value) async {
                 setState(() {
-                  beoAuth = value;
+                  isAuthBiometric = value;
                 });
+                if (isAuthBiometric) {
+                  showCupertinoModalPopup<void>(
+                    context: context,
+                    builder: (BuildContext context) => CupertinoAlertDialog(
+                      title: const Text("INFO"),
+                      content:
+                          const Text("Apakah Ingin Menggunakan Biometric ?"),
+                      actions: <CupertinoDialogAction>[
+                        CupertinoDialogAction(
+                          isDefaultAction: true,
+                          onPressed: () {
+                            Navigator.pop(context);
+                            isAuthBiometric = false;
+                            setState(() {});
+                          },
+                          child: const Text('No'),
+                        ),
+                        CupertinoDialogAction(
+                          isDefaultAction: true,
+                          isDestructiveAction: true,
+                          onPressed: () async {
+                            var prefs = await SharedPreferences.getInstance();
+                            prefs.setBool("biometric", true);
+                            _authenticate();
+                          },
+                          child: const Text('Yes'),
+                        ),
+                      ],
+                    ),
+                  );
+                } else {
+                  showCupertinoModalPopup<void>(
+                    context: context,
+                    builder: (BuildContext context) => CupertinoAlertDialog(
+                      title: const Text("INFO"),
+                      content:
+                          const Text("Apakah Ingin Menonaktifkan Biometric ?"),
+                      actions: <CupertinoDialogAction>[
+                        CupertinoDialogAction(
+                          isDefaultAction: true,
+                          onPressed: () {
+                            Navigator.pop(context);
+                            setState(() {});
+                          },
+                          child: const Text('No'),
+                        ),
+                        CupertinoDialogAction(
+                          isDefaultAction: true,
+                          isDestructiveAction: true,
+                          onPressed: () async {
+                            var prefs = await SharedPreferences.getInstance();
+                            prefs.remove("biometric");
+                            prefs.setBool("biometric", false);
+                            Get.back();
+                          },
+                          child: const Text('Yes'),
+                        ),
+                      ],
+                    ),
+                  );
+                }
               },
             ),
           ],
@@ -230,4 +312,31 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
     );
   }
+
+  Future<void> _authenticate() async {
+    try {
+      bool authenticated = await auth.authenticate(
+        localizedReason: "Subcribe or you will",
+        options: const AuthenticationOptions(
+          stickyAuth: true,
+          biometricOnly: true,
+        ),
+      );
+      if (authenticated) {
+        Get.back();
+      }
+    } on PlatformException catch (e) {
+      print(e);
+    }
+  }
+
+  // Future<void> _getAvailableBiometrics() async {
+  //   List<BiometricType> availableBiometrics =
+  //       await auth.getAvailableBiometrics();
+  //   print("List of available Biometrics : $availableBiometrics");
+
+  //   if (!mounted) {
+  //     return;
+  //   }
+  // }
 }
