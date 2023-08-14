@@ -169,7 +169,11 @@ class _LoginState extends State<Login> {
                           sprefs.getString("input_email_nip") &&
                       loginController.passwordController.text ==
                           sprefs.getString("password")) {
-                    Get.offAll(const MyBottomNavigationBar());
+                    if (cekSessionLogin.cekSessionModel?.status == "sukses") {
+                      Get.offAll(const MyBottomNavigationBar());
+                    } else {
+                      loginController.login();
+                    }
                   } else {
                     snackbarError("Email atau NIP Tidak di temukan");
                   }
