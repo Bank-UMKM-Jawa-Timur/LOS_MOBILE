@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:los_mobile/src/widgets/all_widgets.dart';
 import 'package:los_mobile/utils/colors.dart';
 
 class MyAlertDialog {
@@ -8,54 +8,51 @@ class MyAlertDialog {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15),
       ),
-      child: Stack(
-        children: [
-          Container(
-            width: 550,
-            height: 270,
-            padding: EdgeInsets.all(5),
-            margin: EdgeInsets.only(top: 50),
+      child: SizedBox(
+        height: 265,
+        child: Center(
+          child: SizedBox(
             child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Image.asset(
                     "assets/icon/ingfo.png",
                   ),
-                  SizedBox(height: 20),
-                  Text("Coming Soon!",
+                  const SizedBox(height: 20),
+                  const Text("Coming Soon!",
                       style: TextStyle(
-                        fontSize: 30,
+                        fontSize: 23,
                         fontWeight: FontWeight.bold,
                         letterSpacing: -0.4,
                       )),
-                  SizedBox(height: 20),
-                  Container(
+                  spaceHeightMedium,
+                  const SizedBox(
                     width: 200,
                     child: Text(
                         "Mohon maaf untuk saat ini fitur masih dikembangkan!",
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: 11,
                           color: Colors.grey,
                           fontWeight: FontWeight.bold,
                         )),
                   ),
-                  SizedBox(height: 20),
+                  spaceHeightLarge,
                   SizedBox(
                     width: 100,
                     child: ElevatedButton(
-                        style: ButtonStyle(
+                        style: const ButtonStyle(
                             backgroundColor:
                                 MaterialStatePropertyAll(mPrimaryColor)),
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
-                        child: Text("Oke")),
+                        child: const Text("Oke")),
                   ),
                 ]),
-          )
-        ],
+          ),
+        ),
       ),
     );
   }

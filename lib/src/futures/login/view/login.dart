@@ -39,20 +39,6 @@ class _LoginState extends State<Login> {
         }));
   }
 
-  // checkToken() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   isAuthBiometric = prefs.getBool("biometric") == null
-  //       ? false
-  //       : prefs.getBool("biometric")!;
-  //   if (isAuthBiometric == true) {
-  //     _authenticate();
-  //   } else {}
-  //   setState(() {});
-  //   if (prefs.getString("token") != null) {
-  //     Get.offAll(const MyBottomNavigationBar());
-  //   }
-  // }
-
   Future<void> _authenticate() async {
     try {
       bool authenticated = await auth.authenticate(
@@ -162,25 +148,30 @@ class _LoginState extends State<Login> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: mPrimaryColor,
               ),
-              onPressed: () async {
-                if (cekSessionLogin.cekSessionModel?.status == "sukses") {
-                  var sprefs = await SharedPreferences.getInstance();
-                  if (loginController.emailNipController.text ==
-                          sprefs.getString("input_email_nip") &&
-                      loginController.passwordController.text ==
-                          sprefs.getString("password")) {
-                    if (cekSessionLogin.cekSessionModel?.status == "sukses") {
-                      Get.offAll(const MyBottomNavigationBar());
-                    } else {
-                      loginController.login();
-                    }
-                  } else {
-                    snackbarError("Email atau NIP Tidak di temukan");
-                  }
-                } else {
-                  loginController.login();
-                }
-              },
+              onPressed: loginController.isLoading.value
+                  ? null
+                  : () async {
+                      if (cekSessionLogin.cekSessionModel?.status == "sukses") {
+                        var sprefs = await SharedPreferences.getInstance();
+                        if ((loginController.emailNipController.text ==
+                                    sprefs.getString("email") ||
+                                loginController.emailNipController.text ==
+                                    sprefs.getString("nip")) &&
+                            loginController.passwordController.text ==
+                                sprefs.getString("password")) {
+                          if (cekSessionLogin.cekSessionModel?.status ==
+                              "sukses") {
+                            Get.offAll(const MyBottomNavigationBar());
+                          } else {
+                            loginController.login();
+                          }
+                        } else {
+                          snackbarError("Email atau NIP Tidak di temukan");
+                        }
+                      } else {
+                        loginController.login();
+                      }
+                    },
               icon: const Icon(CommunityMaterialIcons.login),
               label: Text(
                 loginController.isLoading.value ? "Loading..." : "Login",

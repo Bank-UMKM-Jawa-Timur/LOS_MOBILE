@@ -10,7 +10,6 @@ import 'package:los_mobile/utils/constant.dart';
 class RatingCabangController extends GetxController {
   var isLoading = false.obs;
   RatingCabangModel? ratingCabangModel;
-  //
   DateTime firstDateFilter =
       DateTime(DateTime.now().year, DateTime.now().month, 01);
   DateTime lastDateFilter =

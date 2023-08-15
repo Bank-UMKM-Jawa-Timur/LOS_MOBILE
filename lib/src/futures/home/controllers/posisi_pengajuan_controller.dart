@@ -3,7 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:los_mobile/src/futures/home/controllers/data_pengajuan_controller.dart';
+import 'package:los_mobile/src/futures/home/controllers/data_cabang_controller.dart';
 import 'package:los_mobile/src/futures/home/controllers/rating_cabang_controller.dart';
 import 'package:los_mobile/src/futures/home/models/posisi_pengajuan.dart';
 import 'package:http/http.dart' as http;
@@ -20,18 +20,18 @@ class PosisiPengajuanController extends GetxController {
   PosisiPengajuanModel? posisiPengajuanModel;
   RatingCabangController ratingCabangController =
       Get.put(RatingCabangController());
-  DataPengajuanController dataPengajuanController =
-      Get.put(DataPengajuanController());
+  var cabangC = Get.find<DataCabangController>();
 
   @override
   Future<void> onInit() async {
     super.onInit();
-    getPosisiPengajuan();
+    if (cabangC.selectKodeCabang.value.isNotEmpty) {
+      getPosisiPengajuan();
+    }
   }
 
   getPosisiPengajuan() async {
     await SharedPreferences.getInstance();
-    // print("object ${dataPengajuanController.kodeCabang}");
     var headers = {
       'Content-Type': 'application/json',
       'token': staticToken,
@@ -41,7 +41,7 @@ class PosisiPengajuanController extends GetxController {
       isLoading(true);
       http.Response response = await http.get(
         Uri.parse(
-          '$base_url/v1/get-posisi-pengajuan?tAwal=${ratingCabangController.firstDateFilter.simpleDate()}&tAkhir=${ratingCabangController.lastDateFilter.simpleDate()}&cabang=${dataPengajuanController.kodeCabang}',
+          '$base_url/v1/get-posisi-pengajuan?tAwal=${ratingCabangController.firstDateFilter.simpleDate()}&tAkhir=${ratingCabangController.lastDateFilter.simpleDate()}&cabang=${cabangC.selectKodeCabang.value}',
         ),
         headers: headers,
       );
@@ -50,7 +50,7 @@ class PosisiPengajuanController extends GetxController {
         var typeData = result['data'];
         posisiPengajuanModel = PosisiPengajuanModel.fromJson(result);
         if (typeData.isEmpty) {
-          debugPrint("Kosong");
+          totalPosisi = 0;
         } else {
           totalPosisi = typeData[0]['pincab'] +
               typeData[0]['pbp'] +

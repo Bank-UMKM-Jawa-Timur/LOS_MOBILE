@@ -49,6 +49,7 @@ class LoginController extends GetxController {
             String token = json['access_token'];
             String name = data['nama'];
             String namaJabatan = data['nama_jabatan'];
+            String nip = data['nip'];
 
             if (entitas['type'] != 1) {
               prefs = await SharedPreferences.getInstance();
@@ -72,7 +73,7 @@ class LoginController extends GetxController {
             await prefs?.setString('name', name);
             await prefs?.setString('jabatan', namaJabatan);
             await prefs?.setString('role', role);
-            await prefs?.setString('input_email_nip', emailNipController.text);
+            await prefs?.setString('nip', nip);
             await prefs?.setString('password', passwordController.text);
             emailNipController.clear();
             passwordController.clear();
@@ -117,7 +118,7 @@ class LoginController extends GetxController {
         // if (prefs?.getBool("biometric") == null ||
         //     prefs?.getBool("biometric") == false) {
         prefs?.remove('biometric');
-        prefs?.remove('input_email_nip');
+        prefs?.remove('nip');
         prefs?.remove('password');
         prefs?.clear();
         // }

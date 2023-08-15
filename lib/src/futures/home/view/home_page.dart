@@ -6,6 +6,11 @@ import 'package:los_mobile/src/futures/home/controllers/data_cabang_controller.d
 import 'package:los_mobile/src/futures/home/controllers/data_pengajuan_controller.dart';
 import 'package:los_mobile/src/futures/home/controllers/posisi_pengajuan_controller.dart';
 import 'package:los_mobile/src/futures/home/controllers/rating_cabang_controller.dart';
+import 'package:los_mobile/src/futures/home/controllers/skema_kredit_controller.dart';
+import 'package:los_mobile/src/futures/home/view/components/pie_chart_data_pengajuan.dart';
+import 'package:los_mobile/src/futures/home/view/components/pie_chart_posisi_pengajuan.dart';
+import 'package:los_mobile/src/futures/home/view/components/pie_chart_skema_kredit.dart';
+import 'package:los_mobile/src/futures/home/view/components/pie_chart_skema_kredit_whith_name.dart';
 import 'package:los_mobile/src/futures/home/view/shimmer_home_page.dart';
 import 'package:los_mobile/src/widgets/all_widgets.dart';
 import 'package:los_mobile/src/widgets/dialog/my_alert_dialog.dart';
@@ -13,7 +18,6 @@ import 'package:los_mobile/src/widgets/my_border_form.dart';
 import 'package:los_mobile/src/widgets/my_circle_avatar.dart';
 import 'package:los_mobile/src/widgets/date/my_date_picker_android.dart';
 import 'package:los_mobile/src/widgets/my_legends_chart.dart';
-import 'package:los_mobile/src/widgets/my_pie_chart.dart';
 import 'package:los_mobile/src/widgets/my_shadow.dart';
 import 'package:los_mobile/src/widgets/my_shorten_last_name.dart';
 import 'package:los_mobile/src/widgets/my_target_platform.dart';
@@ -39,6 +43,8 @@ class _HomePageState extends State<HomePage> {
   PosisiPengajuanController posisiPengajuanController =
       Get.put(PosisiPengajuanController());
   CircleAvatarWidget circleAvatarWidget = Get.put(CircleAvatarWidget());
+  SkemaKreditController skemaKreditController =
+      Get.put(SkemaKreditController());
   PreferensUser preferensUser = Get.put(PreferensUser());
 
   String name = "";
@@ -46,21 +52,15 @@ class _HomePageState extends State<HomePage> {
   String bagian = "";
   String role = "";
   String kodeCabang = "";
-
+  String? valueCodeCabang;
   String? valueCabang;
-  String? filterCabang;
-  String? filterRating;
-  String? filterCodeCabang;
-
+  String? valueSkemaKredit;
   bool typeFilter = false;
+
   @override
   void initState() {
     super.initState();
     getUser();
-    filterCabang = "Semua cabang";
-    filterRating = "Semua cabang";
-    // print("filterCodeCabang $filterCabang");
-    // print("kodeCabang $kodeCabang");
   }
 
   totalPengajuan() {}
@@ -76,25 +76,74 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  Future refresh() async {
-    setState(() {
-      print(1 + 1);
-    });
+  Future refreshAndFilter() async {
+    typeFilter = false;
+    dataCabangController.selectKodeCabang.value = valueCodeCabang == null
+        ? dataCabangController.selectKodeCabang.value
+        : valueCodeCabang!;
+    dataCabangController.selectCabang.value =
+        valueCabang == null ? "Semua cabang" : valueCabang!;
+    skemaKreditController.valueSkemaKredit =
+        valueSkemaKredit == null || valueSkemaKredit == "-- pilih skema --"
+            ? null
+            : valueSkemaKredit;
+
+    // Skema kredit tanpa nama
+    skemaKreditController.totalSkema.value = 0;
+    skemaKreditController.totalSkemaPkpj.value = 0;
+    skemaKreditController.totalSkemaKkb.value = 0;
+    skemaKreditController.totalSkemaUmroh.value = 0;
+    skemaKreditController.totalSkemaProkesra.value = 0;
+    skemaKreditController.totalSkemaKusuma.value = 0;
+    // Skema Kredit dengan nama
+    skemaKreditController.totalSkemaDenganNama.value = 0;
+    skemaKreditController.totalSkemaDisetujui.value = 0;
+    skemaKreditController.totalSkemaDitolak.value = 0;
+    skemaKreditController.skemaPosisiPincab.value = 0;
+    skemaKreditController.skemaPosisiPbp.value = 0;
+    skemaKreditController.skemaPosisiPbo.value = 0;
+    skemaKreditController.skemaPosisiPenyelia.value = 0;
+    skemaKreditController.skemaPosisiStaf.value = 0;
+    dataPengajuanController.getDataPengajuan();
+    posisiPengajuanController.getPosisiPengajuan();
+    ratingCabangController.getDataRating();
+    skemaKreditController.getSkemaKredit();
   }
 
-  final colorListData = <Color>[
-    mGreenFlatColor,
-    mPrimaryColor,
-    mYellowColor,
-  ];
+  Future resetFilter() async {
+    if (mounted) {
+      setState(() {
+        dataCabangController.selectCabang.value = "Semua cabang";
+        dataCabangController.selectKodeCabang.value = "";
+        typeFilter = false;
+        skemaKreditController.valueSkemaKredit = null;
+        valueCabang = null;
+        valueCodeCabang = null;
+        valueSkemaKredit = null;
 
-  final colorListPosisi = <Color>[
-    mBlueFlatColor,
-    mAmberFlatColor,
-    mPurpleLightColor,
-    mPinkLightColor,
-    mBlueLightColor,
-  ];
+        // Skema kredit tanpa nama
+        skemaKreditController.totalSkema.value = 0;
+        skemaKreditController.totalSkemaPkpj.value = 0;
+        skemaKreditController.totalSkemaKkb.value = 0;
+        skemaKreditController.totalSkemaUmroh.value = 0;
+        skemaKreditController.totalSkemaProkesra.value = 0;
+        skemaKreditController.totalSkemaKusuma.value = 0;
+        // Skema Kredit dengan nama
+        skemaKreditController.totalSkemaDenganNama.value = 0;
+        skemaKreditController.totalSkemaDisetujui.value = 0;
+        skemaKreditController.totalSkemaDitolak.value = 0;
+        skemaKreditController.skemaPosisiPincab.value = 0;
+        skemaKreditController.skemaPosisiPbp.value = 0;
+        skemaKreditController.skemaPosisiPbo.value = 0;
+        skemaKreditController.skemaPosisiPenyelia.value = 0;
+        skemaKreditController.skemaPosisiStaf.value = 0;
+      });
+    }
+    ratingCabangController.getDataRating();
+    dataPengajuanController.getDataPengajuan();
+    posisiPengajuanController.getPosisiPengajuan();
+    skemaKreditController.getSkemaKredit();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -190,7 +239,7 @@ class _HomePageState extends State<HomePage> {
         ),
         RefreshIndicator(
           onRefresh: () {
-            return refresh();
+            return refreshAndFilter();
           },
           child: SingleChildScrollView(
             child: Padding(
@@ -217,6 +266,20 @@ class _HomePageState extends State<HomePage> {
                     ),
                     spaceHeightMedium,
                     _dataPengajuan(),
+                    if (skemaKreditController.valueSkemaKredit != null)
+                      Column(
+                        children: [
+                          spaceHeightMedium,
+                          _skemaKreditWithNameSkema(),
+                        ],
+                      )
+                    else
+                      Column(
+                        children: [
+                          spaceHeightMedium,
+                          _skemaKredit(),
+                        ],
+                      ),
                     role == pincab
                         ? Column(
                             children: [
@@ -225,15 +288,15 @@ class _HomePageState extends State<HomePage> {
                             ],
                           )
                         : const SizedBox(),
-                    filterCabang != "Semua cabang"
-                        ? Column(
+                    dataCabangController.selectCabang.value == "Semua cabang"
+                        ? Container()
+                        : Column(
                             children: [
                               spaceHeightMedium,
                               _posisiPengajuan(),
                             ],
-                          )
-                        : const SizedBox(),
-                    filterRating == "Semua cabang"
+                          ),
+                    dataCabangController.selectCabang.value == "Semua cabang"
                         ? role == pincab
                             ? const SizedBox()
                             : Column(
@@ -297,12 +360,10 @@ class _HomePageState extends State<HomePage> {
                                     initialDateTime: DateTime.now(),
                                     mode: CupertinoDatePickerMode.date,
                                     onDateTimeChanged: (val) {
-                                      setState(() {
-                                        ratingCabangController.firstDateFilter =
-                                            val;
-                                        // print(val);
-                                        // firstDate = val;
-                                      });
+                                      ratingCabangController.firstDateFilter =
+                                          val;
+                                      print(ratingCabangController
+                                          .firstDateFilter);
                                     }),
                               ),
 
@@ -421,9 +482,6 @@ class _HomePageState extends State<HomePage> {
                               ),
                               spaceWidthVerySmall,
                               Text(
-                                // dateTimeLast != null
-                                //     ? "${dateTimeLast!.day}-${dateTimeLast!.month}-${dateTimeLast!.year}"
-                                //     : 'dd-mm-yyyy',
                                 ratingCabangController.lastDateFilter
                                     .simpleDate()
                                     .toString(),
@@ -463,13 +521,17 @@ class _HomePageState extends State<HomePage> {
               filled: true,
               fillColor: Colors.white,
             ),
-            value: valueCabang,
-            hint: const Text("Semua cabang", style: textBoldDarkMedium),
+            value: valueCodeCabang,
+            hint: Text(dataCabangController.selectCabang.value,
+                style: textBoldDarkMedium),
+            // hint: Text(
+            //     valueCabang == null
+            //         ? "Semua cabang"
+            //         : dataCabangController.selectCabang.value,
+            //     style: textBoldDarkMedium),
             onChanged: ((value) {
               if (mounted) {
-                setState(() {
-                  valueCabang = value as String;
-                });
+                valueCodeCabang = value!;
               }
             }),
             items: dataCabangController.dataCabangModel?.data.map((item) {
@@ -479,9 +541,9 @@ class _HomePageState extends State<HomePage> {
                   style: textBoldDarkMedium,
                 ),
                 onTap: () {
-                  filterCodeCabang = item.kodeCabang;
+                  valueCabang = item.cabang;
                 },
-                value: item.cabang,
+                value: item.kodeCabang,
               );
             }).toList(),
           ),
@@ -534,7 +596,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                       Text(
                         role == administrator || role == spi || role == ku
-                            ? filterCabang!
+                            ? dataCabangController.selectCabang.value
                             : "${dataPengajuanController.dataPengajuanModel?.data[0].cabang}",
                         style: const TextStyle(
                           fontSize: 11,
@@ -594,6 +656,49 @@ class _HomePageState extends State<HomePage> {
                     ),
                     spaceHeightSmall,
                     _formDate(),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text("Skema kredit", style: textBoldDarkMedium),
+                        const SizedBox(height: 5),
+                        SizedBox(
+                          height: 35,
+                          child: DropdownButtonFormField(
+                            isDense: true,
+                            isExpanded: true,
+                            decoration: const InputDecoration(
+                              contentPadding: EdgeInsets.all(8),
+                              focusedBorder: focusedBorder,
+                              enabledBorder: enabledBorder,
+                              border: OutlineInputBorder(),
+                              filled: true,
+                              fillColor: Colors.white,
+                            ),
+                            value: skemaKreditController.valueSkemaKredit,
+                            hint: Text(
+                                skemaKreditController.valueSkemaKredit == null
+                                    ? "-- pilih skema --"
+                                    : skemaKreditController.valueSkemaKredit!,
+                                style: textBoldDarkMedium),
+                            onChanged: ((value) {
+                              if (mounted) {
+                                valueSkemaKredit = value as String?;
+                              }
+                            }),
+                            items: skemaKreditController.listSkema.map((item) {
+                              return DropdownMenuItem(
+                                child: Text(
+                                  item,
+                                  style: textBoldDarkMedium,
+                                ),
+                                value: item,
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                        spaceHeightSmall,
+                      ],
+                    ),
                     role == administrator || role == spi || role == ku
                         ? _formCabang()
                         : Container(),
@@ -613,48 +718,7 @@ class _HomePageState extends State<HomePage> {
                                 ),
                               ),
                               onPressed: () {
-                                if (mounted) {
-                                  typeFilter = false;
-                                  filterCabang = valueCabang == null
-                                      ? "Semua cabang"
-                                      : valueCabang!;
-                                  filterRating = valueCabang == null
-                                      ? "Semua cabang"
-                                      : valueCabang!;
-                                  if (role == administrator ||
-                                      role == spi ||
-                                      role == ku ||
-                                      role == direksi) {
-                                    dataPengajuanController.kodeCabang =
-                                        filterCodeCabang;
-                                  } else {
-                                    dataPengajuanController.kodeCabang =
-                                        kodeCabang;
-                                  }
-                                  print("kodeCabang $filterCodeCabang");
-                                }
-                                ratingCabangController.getDataRating();
-                                dataPengajuanController.getDataPengajuan();
-                                posisiPengajuanController.getPosisiPengajuan();
-                                print("filterCodeCabang 2 $filterCabang");
-                                print(
-                                    "kodeCabang  Filter ${dataPengajuanController.kodeCabang}");
-                                // ratingCabangController.isLoading.value ??
-                                //     showDialog(
-                                //       context: context,
-                                //       builder: (context) {
-                                //         return Transform.scale(
-                                //           scale: 3,
-                                //           child: Center(
-                                //             child: CircularProgressIndicator(
-                                //               valueColor:
-                                //                   AlwaysStoppedAnimation<Color>(
-                                //                       Colors.white),
-                                //             ),
-                                //           ),
-                                //         );
-                                //       },
-                                //     );
+                                refreshAndFilter();
                               },
                               child: const Text(
                                 "FILTER",
@@ -662,45 +726,33 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ),
                           ),
-                          filterCabang == "Semua cabang"
-                              ? Container()
-                              : spaceWidthSmall,
-                          filterCabang == "Semua cabang"
-                              ? Container()
-                              : Expanded(
-                                  child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color(0xFFFFE5E4),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(
-                                            20), // <-- Radius
-                                      ),
-                                    ),
-                                    onPressed: () {
-                                      if (mounted) {
-                                        setState(() {
-                                          filterRating = "Semua cabang";
-                                          filterCabang = "Semua cabang";
-                                          dataPengajuanController.kodeCabang =
-                                              null;
-                                          valueCabang = null;
-                                          typeFilter = false;
-                                        });
-                                      }
-                                      ratingCabangController.getDataRating();
-                                      dataPengajuanController
-                                          .getDataPengajuan();
-                                      posisiPengajuanController
-                                          .getPosisiPengajuan();
-                                      print("filterCodeCabang 2 $filterCabang");
-                                      print("kodeCabang 2 $kodeCabang");
-                                    },
-                                    child: const Text(
-                                      "Reset",
-                                      style: TextStyle(color: mPrimaryColor),
-                                    ),
+                          if (dataCabangController.selectCabang.value ==
+                              "Semua cabang")
+                            Container()
+                          else
+                            spaceWidthSmall,
+                          if (dataCabangController.selectCabang.value ==
+                              "Semua cabang")
+                            Container()
+                          else
+                            Expanded(
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFFFFE5E4),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.circular(20), // <-- Radius
                                   ),
-                                )
+                                ),
+                                onPressed: () {
+                                  resetFilter();
+                                },
+                                child: const Text(
+                                  "Reset",
+                                  style: TextStyle(color: mPrimaryColor),
+                                ),
+                              ),
+                            )
                         ],
                       ),
                     )
@@ -712,127 +764,78 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Container _dataPengajuan() {
-    return Container(
-      width: Get.width,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        color: Colors.white,
-        boxShadow: const [
-          shadowMedium,
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Data Pengajuan",
-              style: textBoldDarkLarge,
-            ),
-            spaceHeightLarge,
-            pieChart(
-              context,
-              {
-                'Disetujui': dataPengajuanController.kodeCabang == null
-                    ? ratingCabangController.ratingCabangModel!.totalDisetujui
-                        .toDouble()
-                    : double.parse(
-                        "${dataPengajuanController.dataPengajuanModel?.data[0].totalDisetujui}",
-                      ),
-                'Ditolak': dataPengajuanController.kodeCabang == null
-                    ? ratingCabangController.ratingCabangModel!.totalDitolak
-                        .toDouble()
-                    : double.parse(
-                        "${dataPengajuanController.dataPengajuanModel?.data[0].totalDitolak}",
-                      ),
-                'On Progress': dataPengajuanController.kodeCabang == null
-                    ? ratingCabangController.ratingCabangModel!.totalDiproses
-                        .toDouble()
-                    : double.parse(
-                        "${dataPengajuanController.dataPengajuanModel?.data[0].totalDiproses}",
-                      ),
-              },
-              colorListData,
-              "${dataPengajuanController.totalPengajuan}",
-            ),
-            spaceHeightSmall,
-            spaceHeightMedium,
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                legendChart("Disetujui", mGreenFlatColor),
-                legendChart("Ditolak", mPrimaryColor),
-                legendChart("On Progress", mYellowColor),
-              ],
-            ),
-          ],
-        ),
-      ),
+  Widget _dataPengajuan() {
+    return componentDataPengajuan(
+      context,
+      "${dataPengajuanController.totalPengajuan.value}",
+      dataCabangController.selectKodeCabang.value == ""
+          ? ratingCabangController.ratingCabangModel!.totalDisetujui.toDouble()
+          : dataPengajuanController.dataPengajuanModel!.data.isEmpty
+              ? 0
+              : double.parse(
+                  "${dataPengajuanController.dataPengajuanModel?.data[0].totalDisetujui}",
+                ),
+      dataCabangController.selectKodeCabang.value == ""
+          ? ratingCabangController.ratingCabangModel!.totalDitolak.toDouble()
+          : dataPengajuanController.dataPengajuanModel!.data.isEmpty
+              ? 0
+              : double.parse(
+                  "${dataPengajuanController.dataPengajuanModel?.data[0].totalDitolak}",
+                ),
+      dataCabangController.selectKodeCabang.value == ""
+          ? ratingCabangController.ratingCabangModel!.totalDiproses.toDouble()
+          : dataPengajuanController.dataPengajuanModel!.data.isEmpty
+              ? 0
+              : double.parse(
+                  "${dataPengajuanController.dataPengajuanModel?.data[0].totalDiproses}",
+                ),
+    );
+  }
+
+  Widget _skemaKreditWithNameSkema() {
+    return componentSkemaKreditWithNameSkema(
+      context,
+      skemaKreditController.totalSkemaDenganNama.value.toString(),
+      skemaKreditController.totalSkemaDisetujui.value.toDouble(),
+      skemaKreditController.totalSkemaDitolak.value.toDouble(),
+      skemaKreditController.skemaPosisiPincab.value.toDouble(),
+      skemaKreditController.skemaPosisiPbp.value.toDouble(),
+      skemaKreditController.skemaPosisiPbo.value.toDouble(),
+      skemaKreditController.skemaPosisiPenyelia.value.toDouble(),
+      skemaKreditController.skemaPosisiStaf.value.toDouble(),
+    );
+  }
+
+  Container _skemaKredit() {
+    return componentSkemaKreditWithoutNameSkema(
+      context,
+      skemaKreditController.totalSkema.value.toString(),
+      skemaKreditController.totalSkemaPkpj.value.toDouble(),
+      skemaKreditController.totalSkemaKkb.value.toDouble(),
+      skemaKreditController.totalSkemaUmroh.value.toDouble(),
+      skemaKreditController.totalSkemaProkesra.value.toDouble(),
+      skemaKreditController.totalSkemaKusuma.value.toDouble(),
     );
   }
 
   Container _posisiPengajuan() {
-    return Container(
-      width: Get.width,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        color: Colors.white,
-        boxShadow: const [
-          shadowMedium,
-        ],
+    return componentPosisiPengajuan(
+      context,
+      posisiPengajuanController.totalPosisi.toString(),
+      double.parse(
+        "${posisiPengajuanController.posisiPengajuanModel?.data[0].pincab}",
       ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Posisi Pengajuan",
-              style: textBoldDarkLarge,
-            ),
-            spaceHeightLarge,
-            posisiPengajuanController.posisiPengajuanModel!.data.isEmpty
-                ? Container()
-                : pieChart(
-                    context,
-                    {
-                      "Pincab": double.parse(
-                        "${posisiPengajuanController.posisiPengajuanModel?.data[0].pincab}",
-                      ),
-                      "PBP": double.parse(
-                        "${posisiPengajuanController.posisiPengajuanModel?.data[0].pbp}",
-                      ),
-                      "PBO": double.parse(
-                        "${posisiPengajuanController.posisiPengajuanModel?.data[0].pbo}",
-                      ),
-                      "Penyelia": double.parse(
-                        "${posisiPengajuanController.posisiPengajuanModel?.data[0].penyelia}",
-                      ),
-                      "Staff": double.parse(
-                        "${posisiPengajuanController.posisiPengajuanModel?.data[0].staff}",
-                      ),
-                    },
-                    colorListPosisi,
-                    posisiPengajuanController.totalPosisi.toString(),
-                  ),
-            spaceHeightSmall,
-            spaceHeightMedium,
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                legendChart("Pincab", mBlueFlatColor),
-                legendChart("PBP", mAmberFlatColor),
-                legendChart("PBO", mPurpleLightColor),
-                legendChart("Penyelia", mPinkLightColor),
-                legendChart("Staff", mBlueLightColor),
-              ],
-            ),
-          ],
-        ),
+      double.parse(
+        "${posisiPengajuanController.posisiPengajuanModel?.data[0].pbp}",
+      ),
+      double.parse(
+        "${posisiPengajuanController.posisiPengajuanModel?.data[0].pbo}",
+      ),
+      double.parse(
+        "${posisiPengajuanController.posisiPengajuanModel?.data[0].penyelia}",
+      ),
+      double.parse(
+        "${posisiPengajuanController.posisiPengajuanModel?.data[0].staff}",
       ),
     );
   }

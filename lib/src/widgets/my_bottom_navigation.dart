@@ -74,14 +74,14 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: SizedBox(
-        width: 100,
-        height: 100,
+        width: 110,
+        height: 110,
         child: Column(
           children: [
             Container(
               margin: const EdgeInsets.only(top: 27),
-              width: 55,
-              height: 55,
+              width: 60,
+              height: 60,
               child: Material(
                 type: MaterialType.transparency,
                 child: Ink(
