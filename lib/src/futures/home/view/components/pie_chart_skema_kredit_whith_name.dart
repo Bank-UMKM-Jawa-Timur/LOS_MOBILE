@@ -26,6 +26,7 @@ Container componentSkemaKreditWithNameSkema(
   double pbo,
   double penyelia,
   double staf,
+  bool isMobile,
 ) {
   return Container(
     width: Get.width,
@@ -62,30 +63,44 @@ Container componentSkemaKreditWithNameSkema(
           ),
           spaceHeightSmall,
           spaceHeightMedium,
-          Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  legendChart("Disetujui", mGreenFlatColor),
-                  legendChart("Ditolak", mPrimaryColor),
-                  legendChart("Pincab", mBlueFlatColor),
-                  legendChart("PBP", mAmberFlatColor),
-                ],
-              ),
-              spaceHeightSmall,
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  legendChart("PBO", mPurpleLightColor),
-                  legendChart("Penyelia", mPinkLightColor),
-                  legendChart("Staf", mBlueLightColor),
-                ],
-              ),
-            ],
-          ),
+          isMobile
+              ? Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        legendChart("Disetujui", mGreenFlatColor),
+                        legendChart("Ditolak", mPrimaryColor),
+                        legendChart("Pincab", mBlueFlatColor),
+                        legendChart("PBP", mAmberFlatColor),
+                      ],
+                    ),
+                    spaceHeightSmall,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        legendChart("PBO", mPurpleLightColor),
+                        legendChart("Penyelia", mPinkLightColor),
+                        legendChart("Staf", mBlueLightColor),
+                      ],
+                    ),
+                  ],
+                )
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    legendChart("Disetujui", mGreenFlatColor),
+                    legendChart("Ditolak", mPrimaryColor),
+                    legendChart("Pincab", mBlueFlatColor),
+                    legendChart("PBP", mAmberFlatColor),
+                    legendChart("PBO", mPurpleLightColor),
+                    legendChart("Penyelia", mPinkLightColor),
+                    legendChart("Staf", mBlueLightColor),
+                  ],
+                ),
         ],
       ),
     ),

@@ -148,6 +148,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     double heightStatusBar = MediaQuery.of(context).viewPadding.top;
+    final isMobile = MediaQuery.of(context).size.shortestSide < 600;
     return Obx(
       () => dataPengajuanController.isLoading.value
           ? const ShimmerHomePage()
@@ -159,39 +160,19 @@ class _HomePageState extends State<HomePage> {
                       ? const ShimmerHomePage()
                       : Scaffold(
                           backgroundColor: mBgColor,
-                          appBar: _buildAppBar(heightStatusBar),
-                          body: _buildBody(),
-                          // body: StreamBuilder(
-                          //   stream: Connectivity().onConnectivityChanged,
-                          //   builder: (context,
-                          //       AsyncSnapshot<ConnectivityResult> snapshot) {
-                          //     if (snapshot.hasData) {
-                          //       ConnectivityResult? result = snapshot.data;
-                          //       if (result == ConnectivityResult.mobile) {
-                          //         return _buildBody();
-                          //       } else if (result == ConnectivityResult.wifi) {
-                          //         return _buildBody();
-                          //       } else {
-                          //         return losConnectionPage();
-                          //       }
-                          //     } else {
-                          //       return const Center(
-                          //         child: CircularProgressIndicator(),
-                          //       );
-                          //     }
-                          //   },
-                          // ),
+                          appBar: _buildAppBar(heightStatusBar, isMobile),
+                          body: _buildBody(isMobile),
                         ),
     );
   }
 
-  AppBar _buildAppBar(double heightStatusBar) {
+  AppBar _buildAppBar(double heightStatusBar, bool isMobile) {
     return AppBar(
       backgroundColor: mPrimaryColor,
       toolbarHeight: defaultTargetPlatform == deviceAndroid
           ? heightStatusBar + 50
           : heightStatusBar + 25,
-      titleSpacing: -30,
+      titleSpacing: isMobile ? -30 : -140,
       leading: Padding(
         padding: const EdgeInsets.only(left: 25),
         child: Row(
@@ -244,7 +225,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildBody() {
+  Widget _buildBody(bool isMobile) {
     return Stack(
       children: [
         Container(
@@ -290,7 +271,7 @@ class _HomePageState extends State<HomePage> {
                       Column(
                         children: [
                           spaceHeightMedium,
-                          _skemaKreditWithNameSkema(),
+                          _skemaKreditWithNameSkema(isMobile),
                         ],
                       )
                     else
@@ -809,7 +790,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _skemaKreditWithNameSkema() {
+  Widget _skemaKreditWithNameSkema(bool isMobile) {
     return componentSkemaKreditWithNameSkema(
       context,
       skemaKreditController.totalSkemaDenganNama.value.toString(),
@@ -820,6 +801,7 @@ class _HomePageState extends State<HomePage> {
       skemaKreditController.skemaPosisiPbo.value.toDouble(),
       skemaKreditController.skemaPosisiPenyelia.value.toDouble(),
       skemaKreditController.skemaPosisiStaf.value.toDouble(),
+      isMobile,
     );
   }
 
