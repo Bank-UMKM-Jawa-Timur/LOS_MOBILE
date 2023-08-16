@@ -1,4 +1,5 @@
 import 'package:community_material_icon/community_material_icon.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -78,7 +79,7 @@ class _LoginState extends State<Login> {
                         ],
                       ),
                       spaceHeightSecondLarge,
-                      _buttomLogin(),
+                      _buttomLogin()
                     ],
                   ),
                 ),
@@ -187,6 +188,54 @@ class _LoginState extends State<Login> {
                 flex: 1,
                 child: InkWell(
                   onTap: _authenticate,
+                  child: Container(
+                    height: 40,
+                    decoration: BoxDecoration(
+                        color: mPrimaryColor,
+                        borderRadius: BorderRadius.circular(5)),
+                    child: const Icon(
+                      CommunityMaterialIcons.fingerprint,
+                      size: 30,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              )
+            : Container()
+      ],
+    );
+  }
+
+  Widget _buttomLoginLosConnection() {
+    return Row(
+      children: [
+        Expanded(
+          flex: 4,
+          child: SizedBox(
+            height: 40,
+            child: ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: mPrimaryColor,
+              ),
+              onPressed: () async {
+                snackbarError("Koneksi Anda Terputus!");
+              },
+              icon: const Icon(CommunityMaterialIcons.login),
+              label: const Text(
+                "Login",
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+              ),
+            ),
+          ),
+        ),
+        widget.biometric == true ? spaceWidthVerySmall : const SizedBox(),
+        widget.biometric == true
+            ? Expanded(
+                flex: 1,
+                child: InkWell(
+                  onTap: () {
+                    snackbarError("Koneksi Anda Terputus!");
+                  },
                   child: Container(
                     height: 40,
                     decoration: BoxDecoration(

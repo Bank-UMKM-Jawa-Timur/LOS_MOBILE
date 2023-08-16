@@ -1,4 +1,5 @@
 import 'package:community_material_icon/community_material_icon.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:los_mobile/src/futures/home/view/home_commingsoon.dart';
@@ -21,13 +22,14 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
   int _selectedIndex = 0;
   PreferensUser preferensUser = Get.put(PreferensUser());
   String? role;
+  ConnectivityResult? connectivityResult;
 
-  static const List _widgetOptions = [
-    HomePage(),
-    Text(
+  static final List _widgetOptions = [
+    const HomePage(),
+    const Text(
       'Index 1: Business',
     ),
-    ProfilePage(),
+    const ProfilePage(),
   ];
 
   static const List _widgetOptionsComming = [
@@ -56,6 +58,7 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
 
   cekRoleUser() async {
     await SharedPreferences.getInstance();
+    connectivityResult = await (Connectivity().checkConnectivity());
     setState(() {
       role = preferensUser.role;
     });
@@ -73,77 +76,84 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
             : _widgetOptionsComming.elementAt(_selectedIndex),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: SizedBox(
-        width: 110,
-        height: 110,
-        child: Column(
-          children: [
-            Container(
-              margin: const EdgeInsets.only(top: 27),
-              width: 60,
-              height: 60,
-              child: Material(
-                type: MaterialType.transparency,
-                child: Ink(
-                  decoration: BoxDecoration(
-                      border: Border.all(color: Colors.white, width: 4),
-                      color: mPrimaryColor,
-                      // shape: BoxShape.circle,
-                      borderRadius: BorderRadius.circular(15)),
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(500.0),
-                    onTap: () {
-                      showDialog(
-                          context: context,
-                          builder: (context) {
-                            return MyAlertDialog().alertdialog(context);
-                          });
-                    },
-                    child: const Icon(
-                      Icons.credit_card,
-                      size: 27,
-                      color: Colors.white,
-                    ),
+      floatingActionButton: _floatingActionBottom(context),
+      bottomNavigationBar: _bottomNavigationBar(),
+    );
+  }
+
+  Widget _bottomNavigationBar() {
+    return BottomNavigationBar(
+      backgroundColor: Colors.white,
+      items: const [
+        BottomNavigationBarItem(
+          icon: Icon(
+            CommunityMaterialIcons.home_outline,
+            size: 25,
+          ),
+          label: 'Home',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(
+            CommunityMaterialIcons.home_outline,
+            size: 0,
+          ),
+          label: '',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(
+            Icons.person_2_outlined,
+            size: 25,
+          ),
+          label: 'Profile',
+        ),
+      ],
+      currentIndex: _selectedIndex,
+      selectedItemColor: mPrimaryColor,
+      onTap: _onItemTapped,
+    );
+  }
+
+  Widget _floatingActionBottom(BuildContext context) {
+    return SizedBox(
+      width: 110,
+      height: 110,
+      child: Column(
+        children: [
+          Container(
+            margin: const EdgeInsets.only(top: 27),
+            width: 60,
+            height: 60,
+            child: Material(
+              type: MaterialType.transparency,
+              child: Ink(
+                decoration: BoxDecoration(
+                    border: Border.all(color: Colors.white, width: 4),
+                    color: mPrimaryColor,
+                    // shape: BoxShape.circle,
+                    borderRadius: BorderRadius.circular(15)),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(500.0),
+                  onTap: () {
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return MyAlertDialog().alertdialog(context);
+                        });
+                  },
+                  child: const Icon(
+                    Icons.credit_card,
+                    size: 27,
+                    color: Colors.white,
                   ),
                 ),
               ),
             ),
-            const Text(
-              "Analisa",
-              style:
-                  TextStyle(fontWeight: FontWeight.w500, color: mPrimaryColor),
-            )
-          ],
-        ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.white,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(
-              CommunityMaterialIcons.home_outline,
-              size: 25,
-            ),
-            label: 'Home',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              CommunityMaterialIcons.home_outline,
-              size: 0,
-            ),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.person_2_outlined,
-              size: 25,
-            ),
-            label: 'Profile',
-          ),
+          const Text(
+            "Analisa",
+            style: TextStyle(fontWeight: FontWeight.w500, color: mPrimaryColor),
+          )
         ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: mPrimaryColor,
-        onTap: _onItemTapped,
       ),
     );
   }

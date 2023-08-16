@@ -6,6 +6,7 @@ import 'package:los_mobile/src/futures/home/models/data_cabang.dart';
 import 'package:http/http.dart' as http;
 import 'package:los_mobile/utils/base_url.dart';
 import 'package:los_mobile/utils/token.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DataCabangController extends GetxController {
   var isLoading = false.obs;
@@ -16,6 +17,8 @@ class DataCabangController extends GetxController {
   @override
   Future<void> onInit() async {
     super.onInit();
+    var prefs = await SharedPreferences.getInstance();
+    selectKodeCabang.value = "${prefs.getString("kode_cabang")}";
     getDataCabang();
   }
 

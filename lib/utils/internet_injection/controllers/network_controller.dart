@@ -4,6 +4,8 @@ import 'package:get/get.dart';
 
 class NetworkController extends GetxController {
   final Connectivity _connectivity = Connectivity();
+  ConnectivityResult? result;
+  var checkConnection = false.obs;
 
   @override
   void onInit() {
@@ -37,7 +39,5 @@ class NetworkController extends GetxController {
         Get.closeCurrentSnackbar();
       }
     }
-    print(connectivityResult);
-    print(ConnectivityResult.none);
   }
 }

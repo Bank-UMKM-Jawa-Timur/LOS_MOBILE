@@ -14,7 +14,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class PosisiPengajuanController extends GetxController {
   var isLoading = false.obs;
-  int? totalPosisi;
+  var totalPosisi = 0.obs;
+  var totalPosisiPincab = 0.obs;
+  var totalPosisiPbp = 0.obs;
+  var totalPosisiPbo = 0.obs;
+  var totalPosisiPenyelia = 0.obs;
+  var totalPosisiStaf = 0.obs;
 
   // Get Controller
   PosisiPengajuanModel? posisiPengajuanModel;
@@ -25,6 +30,7 @@ class PosisiPengajuanController extends GetxController {
   @override
   Future<void> onInit() async {
     super.onInit();
+    await SharedPreferences.getInstance();
     if (cabangC.selectKodeCabang.value.isNotEmpty) {
       getPosisiPengajuan();
     }
@@ -50,13 +56,13 @@ class PosisiPengajuanController extends GetxController {
         var typeData = result['data'];
         posisiPengajuanModel = PosisiPengajuanModel.fromJson(result);
         if (typeData.isEmpty) {
-          totalPosisi = 0;
+          totalPosisi.value = 0;
         } else {
-          totalPosisi = typeData[0]['pincab'] +
-              typeData[0]['pbp'] +
-              typeData[0]['pbo'] +
-              typeData[0]['penyelia'] +
-              typeData[0]['staff'];
+          totalPosisi.value = posisiPengajuanModel!.data[0].pincab +
+              posisiPengajuanModel!.data[0].pbp +
+              posisiPengajuanModel!.data[0].pbo +
+              posisiPengajuanModel!.data[0].penyelia +
+              posisiPengajuanModel!.data[0].staff;
         }
       } else {
         debugPrint('error fetching data ${response.statusCode}');

@@ -9,6 +9,7 @@ import 'package:los_mobile/src/futures/home/models/skema_kredit/skema_kredit.dar
 import 'package:los_mobile/src/futures/home/models/skema_kredit/skema_kredit_with_name_skema.dart';
 import 'package:los_mobile/utils/base_url.dart';
 import 'package:los_mobile/utils/constant.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SkemaKreditController extends GetxController {
   var isLoading = false.obs;
@@ -52,6 +53,7 @@ class SkemaKreditController extends GetxController {
   }
 
   getSkemaKredit() async {
+    await SharedPreferences.getInstance();
     var headers = {
       'Content-Type': 'application/json',
       'token':

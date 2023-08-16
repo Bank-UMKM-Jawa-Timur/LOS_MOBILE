@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,7 @@ import 'package:los_mobile/src/futures/home/view/components/pie_chart_posisi_pen
 import 'package:los_mobile/src/futures/home/view/components/pie_chart_skema_kredit.dart';
 import 'package:los_mobile/src/futures/home/view/components/pie_chart_skema_kredit_whith_name.dart';
 import 'package:los_mobile/src/futures/home/view/shimmer_home_page.dart';
+import 'package:los_mobile/src/futures/los_connection/los_connection_page.dart';
 import 'package:los_mobile/src/widgets/all_widgets.dart';
 import 'package:los_mobile/src/widgets/dialog/my_alert_dialog.dart';
 import 'package:los_mobile/src/widgets/my_border_form.dart';
@@ -51,7 +53,6 @@ class _HomePageState extends State<HomePage> {
   String jabatan = "";
   String bagian = "";
   String role = "";
-  String kodeCabang = "";
   String? valueCodeCabang;
   String? valueCabang;
   String? valueSkemaKredit;
@@ -72,7 +73,6 @@ class _HomePageState extends State<HomePage> {
       jabatan = "${spref.getString("jabatan")}";
       bagian = "${spref.getString("bagian")}";
       role = "${spref.getString("role")}";
-      kodeCabang = "${spref.getString("kode_cabang")}";
     });
   }
 
@@ -161,6 +161,26 @@ class _HomePageState extends State<HomePage> {
                           backgroundColor: mBgColor,
                           appBar: _buildAppBar(heightStatusBar),
                           body: _buildBody(),
+                          // body: StreamBuilder(
+                          //   stream: Connectivity().onConnectivityChanged,
+                          //   builder: (context,
+                          //       AsyncSnapshot<ConnectivityResult> snapshot) {
+                          //     if (snapshot.hasData) {
+                          //       ConnectivityResult? result = snapshot.data;
+                          //       if (result == ConnectivityResult.mobile) {
+                          //         return _buildBody();
+                          //       } else if (result == ConnectivityResult.wifi) {
+                          //         return _buildBody();
+                          //       } else {
+                          //         return losConnectionPage();
+                          //       }
+                          //     } else {
+                          //       return const Center(
+                          //         child: CircularProgressIndicator(),
+                          //       );
+                          //     }
+                          //   },
+                          // ),
                         ),
     );
   }
@@ -350,23 +370,20 @@ class _HomePageState extends State<HomePage> {
                       showCupertinoModalPopup(
                         context: context,
                         builder: (_) => Container(
-                          height: 500,
+                          height: 400,
                           color: const Color.fromARGB(255, 255, 255, 255),
                           child: Column(
                             children: [
                               SizedBox(
-                                height: 400,
+                                height: 300,
                                 child: CupertinoDatePicker(
                                     initialDateTime: DateTime.now(),
                                     mode: CupertinoDatePickerMode.date,
                                     onDateTimeChanged: (val) {
                                       ratingCabangController.firstDateFilter =
                                           val;
-                                      print(ratingCabangController
-                                          .firstDateFilter);
                                     }),
                               ),
-
                               // Close the modal
                               CupertinoButton(
                                 child: const Text('OK'),
@@ -768,21 +785,21 @@ class _HomePageState extends State<HomePage> {
     return componentDataPengajuan(
       context,
       "${dataPengajuanController.totalPengajuan.value}",
-      dataCabangController.selectKodeCabang.value == ""
+      dataCabangController.selectKodeCabang.value.isEmpty
           ? ratingCabangController.ratingCabangModel!.totalDisetujui.toDouble()
           : dataPengajuanController.dataPengajuanModel!.data.isEmpty
               ? 0
               : double.parse(
                   "${dataPengajuanController.dataPengajuanModel?.data[0].totalDisetujui}",
                 ),
-      dataCabangController.selectKodeCabang.value == ""
+      dataCabangController.selectKodeCabang.value.isEmpty
           ? ratingCabangController.ratingCabangModel!.totalDitolak.toDouble()
           : dataPengajuanController.dataPengajuanModel!.data.isEmpty
               ? 0
               : double.parse(
                   "${dataPengajuanController.dataPengajuanModel?.data[0].totalDitolak}",
                 ),
-      dataCabangController.selectKodeCabang.value == ""
+      dataCabangController.selectKodeCabang.value.isEmpty
           ? ratingCabangController.ratingCabangModel!.totalDiproses.toDouble()
           : dataPengajuanController.dataPengajuanModel!.data.isEmpty
               ? 0
@@ -821,7 +838,7 @@ class _HomePageState extends State<HomePage> {
   Container _posisiPengajuan() {
     return componentPosisiPengajuan(
       context,
-      posisiPengajuanController.totalPosisi.toString(),
+      posisiPengajuanController.totalPosisi.value.toString(),
       double.parse(
         "${posisiPengajuanController.posisiPengajuanModel?.data[0].pincab}",
       ),
