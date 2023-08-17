@@ -7,8 +7,6 @@ import 'package:los_mobile/src/widgets/my_shadow.dart';
 import 'package:los_mobile/utils/colors.dart';
 
 final colorListSkema = <Color>[
-  mGreenFlatColor,
-  mPrimaryColor,
   mBlueFlatColor,
   mAmberFlatColor,
   mPurpleLightColor,
@@ -19,8 +17,6 @@ final colorListSkema = <Color>[
 Container componentSkemaKreditWithNameSkema(
   BuildContext context,
   String total,
-  double disetujui,
-  double ditolak,
   double pincab,
   double pbp,
   double pbo,
@@ -43,15 +39,13 @@ Container componentSkemaKreditWithNameSkema(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            "Skema Kredit",
+            "Proses Skema Kredit",
             style: textBoldDarkLarge,
           ),
           spaceHeightLarge,
           pieChart(
             context,
             {
-              "Disetujui": disetujui,
-              "Ditolak": ditolak,
               "Pincab": pincab,
               "PBP": pbp,
               "PBO": pbo,
@@ -63,44 +57,17 @@ Container componentSkemaKreditWithNameSkema(
           ),
           spaceHeightSmall,
           spaceHeightMedium,
-          isMobile
-              ? Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        legendChart("Disetujui", mGreenFlatColor),
-                        legendChart("Ditolak", mPrimaryColor),
-                        legendChart("Pincab", mBlueFlatColor),
-                        legendChart("PBP", mAmberFlatColor),
-                      ],
-                    ),
-                    spaceHeightSmall,
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        legendChart("PBO", mPurpleLightColor),
-                        legendChart("Penyelia", mPinkLightColor),
-                        legendChart("Staf", mBlueLightColor),
-                      ],
-                    ),
-                  ],
-                )
-              : Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    legendChart("Disetujui", mGreenFlatColor),
-                    legendChart("Ditolak", mPrimaryColor),
-                    legendChart("Pincab", mBlueFlatColor),
-                    legendChart("PBP", mAmberFlatColor),
-                    legendChart("PBO", mPurpleLightColor),
-                    legendChart("Penyelia", mPinkLightColor),
-                    legendChart("Staf", mBlueLightColor),
-                  ],
-                ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              legendChart("Pincab", mBlueFlatColor),
+              legendChart("PBP", mAmberFlatColor),
+              legendChart("PBO", mPurpleLightColor),
+              legendChart("Penyelia", mPinkLightColor),
+              legendChart("Staf", mBlueLightColor),
+            ],
+          ),
         ],
       ),
     ),

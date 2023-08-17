@@ -7,6 +7,7 @@ import 'package:los_mobile/src/futures/home/controllers/rating_cabang_controller
 import 'package:los_mobile/src/futures/home/models/data_pengajuan.dart';
 import 'package:http/http.dart' as http;
 import 'package:los_mobile/src/futures/home/models/rating_cabang.dart';
+import 'package:los_mobile/src/futures/home/models/skema_kredit/skema_kredit_with_name_skema.dart';
 import 'package:los_mobile/utils/base_url.dart';
 import 'package:los_mobile/utils/constant.dart';
 import 'package:los_mobile/utils/preferens_user.dart';
@@ -16,9 +17,11 @@ class DataPengajuanController extends GetxController {
   // GET Controller
   DataPengajuanModel? dataPengajuanModel;
   RatingCabangModel? ratingCabangModel;
+  SkemaKreditWithNameSkemaModel? skemaKreditWithNameSkemaModel;
   RatingCabangController ratingCabangController =
       Get.put(RatingCabangController());
   var cabangC = Get.find<DataCabangController>();
+  // var skemaC = Get.put(SkemaKreditController());
   PreferensUser preferensUser = Get.put(PreferensUser());
 
   var isLoading = false.obs;
@@ -43,11 +46,9 @@ class DataPengajuanController extends GetxController {
     try {
       isLoading(true);
       http.Response response = await http.get(
-        Uri.parse(
-          cabangC.selectKodeCabang.value.isEmpty
-              ? '$base_url/v1/get-sum-cabang?tanggal_awal=${ratingCabangController.firstDateFilter.simpleDate()}&tanggal_akhir=${ratingCabangController.lastDateFilter.simpleDate()}'
-              : '$base_url/v1/get-count-pengajuan?tAwal=${ratingCabangController.firstDateFilter.simpleDate()}&tAkhir=${ratingCabangController.lastDateFilter.simpleDate()}&cabang=${cabangC.selectKodeCabang.value}',
-        ),
+        Uri.parse(cabangC.selectKodeCabang.value.isEmpty
+            ? '$base_url/v1/get-sum-cabang?tanggal_awal=${ratingCabangController.firstDateFilter.simpleDate()}&tanggal_akhir=${ratingCabangController.lastDateFilter.simpleDate()}'
+            : '$base_url/v1/get-count-pengajuan?tAwal=${ratingCabangController.firstDateFilter.simpleDate()}&tAkhir=${ratingCabangController.lastDateFilter.simpleDate()}&cabang=${cabangC.selectKodeCabang.value}'),
         headers: headers,
       );
       if (response.statusCode == 200) {

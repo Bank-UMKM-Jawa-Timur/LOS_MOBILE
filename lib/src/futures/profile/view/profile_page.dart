@@ -151,120 +151,117 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _bottomAuth() {
-    return InkWell(
-      onTap: () async {
-        if (mounted) {
-          setState(() {
-            isAuthBiometric = isAuthBiometric ? false : true;
-          });
-        }
-        if (isAuthBiometric) {
-          _authenticate();
-        }
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-        width: Get.width,
-        decoration: const BoxDecoration(
-          color: mPrimaryColor,
-          borderRadius: BorderRadius.all(Radius.circular(10)),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              children: [
-                Container(
-                  margin: const EdgeInsets.only(left: 10),
-                  child: const Icon(
-                    Icons.fingerprint,
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+      width: Get.width,
+      decoration: const BoxDecoration(
+        color: mPrimaryColor,
+        borderRadius: BorderRadius.all(Radius.circular(10)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              Container(
+                margin: const EdgeInsets.only(left: 10),
+                child: const Icon(
+                  Icons.fingerprint,
+                  color: Colors.white,
+                ),
+              ),
+              Container(
+                margin: const EdgeInsets.only(left: 10),
+                child: const Text(
+                  'Biomatric Authentication',
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
                     color: Colors.white,
                   ),
                 ),
-                Container(
-                  margin: const EdgeInsets.only(left: 10),
-                  child: const Text(
-                    'Biomatric Authentication',
-                    textAlign: TextAlign.left,
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
+              )
+            ],
+          ),
+          Switch(
+            activeColor: Colors.red[900],
+            value: isAuthBiometric,
+            onChanged: (bool value) async {
+              setState(() {
+                isAuthBiometric = value;
+              });
+              if (isAuthBiometric) {
+                showCupertinoModalPopup<void>(
+                  barrierDismissible: false,
+                  context: context,
+                  builder: (BuildContext context) => CupertinoAlertDialog(
+                    title: const Text("INFO"),
+                    content: const Text("Apakah Ingin Menggunakan Biometric ?"),
+                    actions: <CupertinoDialogAction>[
+                      CupertinoDialogAction(
+                        isDefaultAction: true,
+                        onPressed: () async {
+                          var prefs = await SharedPreferences.getInstance();
+                          prefs.remove("biometric");
+                          prefs.setBool("biometric", false);
+                          isAuthBiometric = false;
+                          Navigator.pop(context);
+                          setState(() {});
+                        },
+                        child: const Text('No'),
+                      ),
+                      CupertinoDialogAction(
+                        isDefaultAction: true,
+                        isDestructiveAction: true,
+                        onPressed: () async {
+                          var prefs = await SharedPreferences.getInstance();
+                          prefs.setBool("biometric", true);
+                          isAuthBiometric = true;
+                          setState(() {});
+                          _authenticate();
+                        },
+                        child: const Text('Yes'),
+                      ),
+                    ],
                   ),
-                )
-              ],
-            ),
-            Switch(
-              activeColor: Colors.red[900],
-              value: isAuthBiometric,
-              onChanged: (bool value) async {
-                setState(() {
-                  isAuthBiometric = value;
-                });
-                if (isAuthBiometric) {
-                  showCupertinoModalPopup<void>(
-                    context: context,
-                    builder: (BuildContext context) => CupertinoAlertDialog(
-                      title: const Text("INFO"),
-                      content:
-                          const Text("Apakah Ingin Menggunakan Biometric ?"),
-                      actions: <CupertinoDialogAction>[
-                        CupertinoDialogAction(
-                          isDefaultAction: true,
-                          onPressed: () {
-                            Navigator.pop(context);
-                            isAuthBiometric = false;
-                            setState(() {});
-                          },
-                          child: const Text('No'),
-                        ),
-                        CupertinoDialogAction(
-                          isDefaultAction: true,
-                          isDestructiveAction: true,
-                          onPressed: () async {
-                            var prefs = await SharedPreferences.getInstance();
-                            prefs.setBool("biometric", true);
-                            _authenticate();
-                          },
-                          child: const Text('Yes'),
-                        ),
-                      ],
-                    ),
-                  );
-                } else {
-                  showCupertinoModalPopup<void>(
-                    context: context,
-                    builder: (BuildContext context) => CupertinoAlertDialog(
-                      title: const Text("INFO"),
-                      content:
-                          const Text("Apakah Ingin Menonaktifkan Biometric ?"),
-                      actions: <CupertinoDialogAction>[
-                        CupertinoDialogAction(
-                          isDefaultAction: true,
-                          onPressed: () {
-                            Navigator.pop(context);
-                            setState(() {});
-                          },
-                          child: const Text('No'),
-                        ),
-                        CupertinoDialogAction(
-                          isDefaultAction: true,
-                          isDestructiveAction: true,
-                          onPressed: () async {
-                            var prefs = await SharedPreferences.getInstance();
-                            prefs.remove("biometric");
-                            prefs.setBool("biometric", false);
-                            Get.back();
-                          },
-                          child: const Text('Yes'),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-              },
-            ),
-          ],
-        ),
+                );
+              } else {
+                showCupertinoModalPopup<void>(
+                  barrierDismissible: false,
+                  context: context,
+                  builder: (BuildContext context) => CupertinoAlertDialog(
+                    title: const Text("INFO"),
+                    content:
+                        const Text("Apakah Ingin Menonaktifkan Biometric ?"),
+                    actions: <CupertinoDialogAction>[
+                      CupertinoDialogAction(
+                        isDefaultAction: true,
+                        onPressed: () async {
+                          isAuthBiometric = true;
+                          setState(() {});
+                          Get.back();
+                        },
+                        child: const Text('No'),
+                      ),
+                      CupertinoDialogAction(
+                        isDefaultAction: true,
+                        isDestructiveAction: true,
+                        onPressed: () async {
+                          var prefs = await SharedPreferences.getInstance();
+                          prefs.remove("biometric");
+                          prefs.setBool("biometric", false);
+                          isAuthBiometric = false;
+                          setState(() {});
+                          Get.back();
+                        },
+                        child: const Text('Yes'),
+                      ),
+                    ],
+                  ),
+                );
+              }
+            },
+          ),
+        ],
       ),
     );
   }
@@ -316,7 +313,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<void> _authenticate() async {
     try {
       bool authenticated = await auth.authenticate(
-        localizedReason: "Subcribe or you will",
+        localizedReason: "Use your Finger or Face",
         options: const AuthenticationOptions(
           stickyAuth: true,
           biometricOnly: true,

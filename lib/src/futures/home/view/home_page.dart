@@ -1,4 +1,3 @@
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -13,10 +12,10 @@ import 'package:los_mobile/src/futures/home/view/components/pie_chart_posisi_pen
 import 'package:los_mobile/src/futures/home/view/components/pie_chart_skema_kredit.dart';
 import 'package:los_mobile/src/futures/home/view/components/pie_chart_skema_kredit_whith_name.dart';
 import 'package:los_mobile/src/futures/home/view/shimmer_home_page.dart';
-import 'package:los_mobile/src/futures/los_connection/los_connection_page.dart';
 import 'package:los_mobile/src/widgets/all_widgets.dart';
 import 'package:los_mobile/src/widgets/dialog/my_alert_dialog.dart';
 import 'package:los_mobile/src/widgets/my_border_form.dart';
+import 'package:los_mobile/src/widgets/my_bottom_navigation.dart';
 import 'package:los_mobile/src/widgets/my_circle_avatar.dart';
 import 'package:los_mobile/src/widgets/date/my_date_picker_android.dart';
 import 'package:los_mobile/src/widgets/my_legends_chart.dart';
@@ -84,9 +83,11 @@ class _HomePageState extends State<HomePage> {
     dataCabangController.selectCabang.value =
         valueCabang == null ? "Semua cabang" : valueCabang!;
     skemaKreditController.valueSkemaKredit =
-        valueSkemaKredit == null || valueSkemaKredit == "-- pilih skema --"
+        valueSkemaKredit == null || valueSkemaKredit == "-- pilih semua --"
             ? null
             : valueSkemaKredit;
+
+    print(skemaKreditController.totalProsesSkema.value);
 
     // Skema kredit tanpa nama
     skemaKreditController.totalSkema.value = 0;
@@ -96,7 +97,8 @@ class _HomePageState extends State<HomePage> {
     skemaKreditController.totalSkemaProkesra.value = 0;
     skemaKreditController.totalSkemaKusuma.value = 0;
     // Skema Kredit dengan nama
-    skemaKreditController.totalSkemaDenganNama.value = 0;
+    skemaKreditController.totalProsesSkema.value = 0;
+    skemaKreditController.totalPengajuanSkema.value = 0;
     skemaKreditController.totalSkemaDisetujui.value = 0;
     skemaKreditController.totalSkemaDitolak.value = 0;
     skemaKreditController.skemaPosisiPincab.value = 0;
@@ -105,44 +107,47 @@ class _HomePageState extends State<HomePage> {
     skemaKreditController.skemaPosisiPenyelia.value = 0;
     skemaKreditController.skemaPosisiStaf.value = 0;
     dataPengajuanController.getDataPengajuan();
-    posisiPengajuanController.getPosisiPengajuan();
+    dataCabangController.selectKodeCabang.value.isEmpty
+        ? null
+        : posisiPengajuanController.getPosisiPengajuan();
     ratingCabangController.getDataRating();
     skemaKreditController.getSkemaKredit();
   }
 
   Future resetFilter() async {
-    if (mounted) {
-      setState(() {
-        dataCabangController.selectCabang.value = "Semua cabang";
-        dataCabangController.selectKodeCabang.value = "";
-        typeFilter = false;
-        skemaKreditController.valueSkemaKredit = null;
-        valueCabang = null;
-        valueCodeCabang = null;
-        valueSkemaKredit = null;
+    // if (mounted) {
+    //   setState(() {
+    //     dataCabangController.selectCabang.value = "Semua cabang";
+    //     dataCabangController.selectKodeCabang.value = "";
+    //     typeFilter = false;
+    //     skemaKreditController.valueSkemaKredit = null;
+    //     valueCabang = null;
+    //     valueCodeCabang = null;
+    //     valueSkemaKredit = null;
 
-        // Skema kredit tanpa nama
-        skemaKreditController.totalSkema.value = 0;
-        skemaKreditController.totalSkemaPkpj.value = 0;
-        skemaKreditController.totalSkemaKkb.value = 0;
-        skemaKreditController.totalSkemaUmroh.value = 0;
-        skemaKreditController.totalSkemaProkesra.value = 0;
-        skemaKreditController.totalSkemaKusuma.value = 0;
-        // Skema Kredit dengan nama
-        skemaKreditController.totalSkemaDenganNama.value = 0;
-        skemaKreditController.totalSkemaDisetujui.value = 0;
-        skemaKreditController.totalSkemaDitolak.value = 0;
-        skemaKreditController.skemaPosisiPincab.value = 0;
-        skemaKreditController.skemaPosisiPbp.value = 0;
-        skemaKreditController.skemaPosisiPbo.value = 0;
-        skemaKreditController.skemaPosisiPenyelia.value = 0;
-        skemaKreditController.skemaPosisiStaf.value = 0;
-      });
-    }
-    ratingCabangController.getDataRating();
-    dataPengajuanController.getDataPengajuan();
-    posisiPengajuanController.getPosisiPengajuan();
-    skemaKreditController.getSkemaKredit();
+    //     // Skema kredit tanpa nama
+    //     skemaKreditController.totalSkema.value = 0;
+    //     skemaKreditController.totalSkemaPkpj.value = 0;
+    //     skemaKreditController.totalSkemaKkb.value = 0;
+    //     skemaKreditController.totalSkemaUmroh.value = 0;
+    //     skemaKreditController.totalSkemaProkesra.value = 0;
+    //     skemaKreditController.totalSkemaKusuma.value = 0;
+    //     // Skema Kredit dengan nama
+    //     skemaKreditController.totalSkemaDenganNama.value = 0;
+    //     skemaKreditController.totalSkemaDisetujui.value = 0;
+    //     skemaKreditController.totalSkemaDitolak.value = 0;
+    //     skemaKreditController.skemaPosisiPincab.value = 0;
+    //     skemaKreditController.skemaPosisiPbp.value = 0;
+    //     skemaKreditController.skemaPosisiPbo.value = 0;
+    //     skemaKreditController.skemaPosisiPenyelia.value = 0;
+    //     skemaKreditController.skemaPosisiStaf.value = 0;
+    //   });
+    // }
+    // ratingCabangController.getDataRating();
+    // dataPengajuanController.getDataPengajuan();
+    // posisiPengajuanController.getPosisiPengajuan();
+    // skemaKreditController.getSkemaKredit();
+    Get.offAll(const MyBottomNavigationBar());
   }
 
   @override
@@ -282,21 +287,25 @@ class _HomePageState extends State<HomePage> {
                         ],
                       ),
                     role == pincab
-                        ? Column(
-                            children: [
-                              spaceHeightMedium,
-                              _posisiPengajuan(),
-                            ],
-                          )
+                        ? skemaKreditController.valueSkemaKredit != null
+                            ? Container()
+                            : Column(
+                                children: [
+                                  spaceHeightMedium,
+                                  _posisiPengajuan(),
+                                ],
+                              )
                         : const SizedBox(),
                     dataCabangController.selectCabang.value == "Semua cabang"
                         ? Container()
-                        : Column(
-                            children: [
-                              spaceHeightMedium,
-                              _posisiPengajuan(),
-                            ],
-                          ),
+                        : skemaKreditController.valueSkemaKredit != null
+                            ? Container()
+                            : Column(
+                                children: [
+                                  spaceHeightMedium,
+                                  _posisiPengajuan(),
+                                ],
+                              ),
                     dataCabangController.selectCabang.value == "Semua cabang"
                         ? role == pincab
                             ? const SizedBox()
@@ -359,10 +368,13 @@ class _HomePageState extends State<HomePage> {
                                 height: 300,
                                 child: CupertinoDatePicker(
                                     initialDateTime: DateTime.now(),
+                                    maximumDate: DateTime.now(),
                                     mode: CupertinoDatePickerMode.date,
                                     onDateTimeChanged: (val) {
-                                      ratingCabangController.firstDateFilter =
-                                          val;
+                                      setState(() {
+                                        ratingCabangController.firstDateFilter =
+                                            val;
+                                      });
                                     }),
                               ),
                               // Close the modal
@@ -433,14 +445,15 @@ class _HomePageState extends State<HomePage> {
                       showCupertinoModalPopup(
                         context: context,
                         builder: (_) => Container(
-                          height: 500,
+                          height: 400,
                           color: const Color.fromARGB(255, 255, 255, 255),
                           child: Column(
                             children: [
                               SizedBox(
-                                height: 400,
+                                height: 300,
                                 child: CupertinoDatePicker(
                                     initialDateTime: DateTime.now(),
+                                    maximumDate: DateTime.now(),
                                     mode: CupertinoDatePickerMode.date,
                                     onDateTimeChanged: (val) {
                                       setState(() {
@@ -585,6 +598,28 @@ class _HomePageState extends State<HomePage> {
                   Row(
                     children: [
                       const Text(
+                        "Skema   : ",
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: mPrimaryColor,
+                        ),
+                      ),
+                      Text(
+                        skemaKreditController.valueSkemaKredit == null
+                            ? "Semua skema"
+                            : skemaKreditController.valueSkemaKredit!,
+                        style: const TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      const Text(
                         "Cabang : ",
                         style: TextStyle(
                           fontSize: 11,
@@ -675,7 +710,7 @@ class _HomePageState extends State<HomePage> {
                             value: skemaKreditController.valueSkemaKredit,
                             hint: Text(
                                 skemaKreditController.valueSkemaKredit == null
-                                    ? "-- pilih skema --"
+                                    ? "-- pilih semua --"
                                     : skemaKreditController.valueSkemaKredit!,
                                 style: textBoldDarkMedium),
                             onChanged: ((value) {
@@ -765,37 +800,52 @@ class _HomePageState extends State<HomePage> {
   Widget _dataPengajuan() {
     return componentDataPengajuan(
       context,
-      "${dataPengajuanController.totalPengajuan.value}",
+      skemaKreditController.valueSkemaKredit == null
+          ? "${dataPengajuanController.totalPengajuan.value}"
+          : skemaKreditController.totalPengajuanSkema.value.toString(),
       dataCabangController.selectKodeCabang.value.isEmpty
-          ? ratingCabangController.ratingCabangModel!.totalDisetujui.toDouble()
+          ? skemaKreditController.valueSkemaKredit == null
+              ? ratingCabangController.ratingCabangModel!.totalDisetujui
+                  .toDouble()
+              : skemaKreditController.totalSkemaDisetujui.value.toDouble()
           : dataPengajuanController.dataPengajuanModel!.data.isEmpty
               ? 0
-              : double.parse(
-                  "${dataPengajuanController.dataPengajuanModel?.data[0].totalDisetujui}",
-                ),
+              : skemaKreditController.valueSkemaKredit == null
+                  ? double.parse(
+                      "${dataPengajuanController.dataPengajuanModel?.data[0].totalDisetujui}",
+                    )
+                  : skemaKreditController.totalSkemaDisetujui.value.toDouble(),
       dataCabangController.selectKodeCabang.value.isEmpty
-          ? ratingCabangController.ratingCabangModel!.totalDitolak.toDouble()
+          ? skemaKreditController.valueSkemaKredit == null
+              ? ratingCabangController.ratingCabangModel!.totalDitolak
+                  .toDouble()
+              : skemaKreditController.totalSkemaDitolak.value.toDouble()
           : dataPengajuanController.dataPengajuanModel!.data.isEmpty
               ? 0
-              : double.parse(
-                  "${dataPengajuanController.dataPengajuanModel?.data[0].totalDitolak}",
-                ),
+              : skemaKreditController.valueSkemaKredit == null
+                  ? double.parse(
+                      "${dataPengajuanController.dataPengajuanModel?.data[0].totalDitolak}",
+                    )
+                  : skemaKreditController.totalSkemaDitolak.value.toDouble(),
       dataCabangController.selectKodeCabang.value.isEmpty
-          ? ratingCabangController.ratingCabangModel!.totalDiproses.toDouble()
+          ? skemaKreditController.valueSkemaKredit == null
+              ? ratingCabangController.ratingCabangModel!.totalDiproses
+                  .toDouble()
+              : skemaKreditController.totalProsesSkema.value.toDouble()
           : dataPengajuanController.dataPengajuanModel!.data.isEmpty
               ? 0
-              : double.parse(
-                  "${dataPengajuanController.dataPengajuanModel?.data[0].totalDiproses}",
-                ),
+              : skemaKreditController.valueSkemaKredit == null
+                  ? double.parse(
+                      "${dataPengajuanController.dataPengajuanModel?.data[0].totalDiproses}",
+                    )
+                  : skemaKreditController.totalProsesSkema.value.toDouble(),
     );
   }
 
   Widget _skemaKreditWithNameSkema(bool isMobile) {
     return componentSkemaKreditWithNameSkema(
       context,
-      skemaKreditController.totalSkemaDenganNama.value.toString(),
-      skemaKreditController.totalSkemaDisetujui.value.toDouble(),
-      skemaKreditController.totalSkemaDitolak.value.toDouble(),
+      skemaKreditController.totalProsesSkema.value.toString(),
       skemaKreditController.skemaPosisiPincab.value.toDouble(),
       skemaKreditController.skemaPosisiPbp.value.toDouble(),
       skemaKreditController.skemaPosisiPbo.value.toDouble(),

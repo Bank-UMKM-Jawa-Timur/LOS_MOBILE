@@ -25,7 +25,8 @@ class SkemaKreditController extends GetxController {
   var totalSkemaKusuma = 0.obs;
 
   // skema kredit dengan nama skema
-  var totalSkemaDenganNama = 0.obs;
+  var totalProsesSkema = 0.obs;
+  var totalPengajuanSkema = 0.obs;
   var totalSkemaDisetujui = 0.obs;
   var totalSkemaDitolak = 0.obs;
   var skemaPosisiPincab = 0.obs;
@@ -38,7 +39,7 @@ class SkemaKreditController extends GetxController {
   var dataCabangC = Get.find<DataCabangController>();
 
   List<dynamic> listSkema = [
-    '-- pilih skema --',
+    '-- pilih semua --',
     'PKPJ',
     'KKB',
     'Umroh',
@@ -126,12 +127,18 @@ class SkemaKreditController extends GetxController {
                   skemaKreditWithNameSkemaModel!.data[i].posisiPenyelia);
               skemaPosisiStaf.value +=
                   int.parse(skemaKreditWithNameSkemaModel!.data[i].posisiStaf);
-
-              totalSkemaDenganNama.value +=
-                  skemaKreditWithNameSkemaModel!.data[i].total;
             }
+            totalProsesSkema.value = skemaPosisiPincab.value +
+                skemaPosisiPbp.value +
+                skemaPosisiPbo.value +
+                skemaPosisiPenyelia.value +
+                skemaPosisiStaf.value;
+            totalPengajuanSkema.value = totalProsesSkema.value +
+                totalSkemaDisetujui.value +
+                totalSkemaDitolak.value;
           } else {
-            totalSkemaDenganNama.value = 0;
+            totalProsesSkema.value = 0;
+            totalPengajuanSkema.value = 0;
             totalSkemaDisetujui.value = 0;
             totalSkemaDitolak.value = 0;
             skemaPosisiPincab.value = 0;

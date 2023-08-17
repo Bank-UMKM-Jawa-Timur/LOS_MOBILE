@@ -96,6 +96,7 @@ class LoginController extends GetxController {
   Future<void> logout() async {
     prefs = await SharedPreferences.getInstance();
     var token = prefs?.getString("token");
+    print(token);
     var headers = {
       'Content-Type': 'application/json',
       HttpHeaders.authorizationHeader: "Bearer $token"
@@ -115,13 +116,10 @@ class LoginController extends GetxController {
         prefs?.remove('kode_cabang');
         prefs?.remove('bagian');
         prefs?.remove('role');
-        // if (prefs?.getBool("biometric") == null ||
-        //     prefs?.getBool("biometric") == false) {
         prefs?.remove('biometric');
         prefs?.remove('nip');
         prefs?.remove('password');
         prefs?.clear();
-        // }
         Get.offAll(Login(biometric: false));
       } else {
         snackbarError(response.statusCode.toString());
