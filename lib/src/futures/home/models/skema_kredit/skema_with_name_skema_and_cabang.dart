@@ -1,39 +1,36 @@
 import 'dart:convert';
 
-SkemaKreditWithNameSkemaModel skemaKreditWithNameSkemaModelFromJson(
+SkemaWithNameSkemaAndCabangModel skemaWithNameSkemaAndCabangModelFromJson(
         String str) =>
-    SkemaKreditWithNameSkemaModel.fromJson(json.decode(str));
+    SkemaWithNameSkemaAndCabangModel.fromJson(json.decode(str));
 
-String skemaKreditWithNameSkemaModelToJson(
-        SkemaKreditWithNameSkemaModel data) =>
+String skemaWithNameSkemaAndCabangModelToJson(
+        SkemaWithNameSkemaAndCabangModel data) =>
     json.encode(data.toJson());
 
-class SkemaKreditWithNameSkemaModel {
+class SkemaWithNameSkemaAndCabangModel {
   String status;
   String message;
   List<Datum> data;
-  Ranking ranking;
 
-  SkemaKreditWithNameSkemaModel({
+  SkemaWithNameSkemaAndCabangModel({
     required this.status,
     required this.message,
     required this.data,
-    required this.ranking,
   });
 
-  factory SkemaKreditWithNameSkemaModel.fromJson(Map<String, dynamic> json) =>
-      SkemaKreditWithNameSkemaModel(
+  factory SkemaWithNameSkemaAndCabangModel.fromJson(
+          Map<String, dynamic> json) =>
+      SkemaWithNameSkemaAndCabangModel(
         status: json["status"],
         message: json["message"],
         data: List<Datum>.from(json["data"].map((x) => Datum.fromJson(x))),
-        ranking: Ranking.fromJson(json["ranking"]),
       );
 
   Map<String, dynamic> toJson() => {
         "status": status,
         "message": message,
         "data": List<dynamic>.from(data.map((x) => x.toJson())),
-        "ranking": ranking.toJson(),
       };
 }
 
@@ -86,50 +83,5 @@ class Datum {
         "posisi_pbo": posisiPbo,
         "posisi_penyelia": posisiPenyelia,
         "posisi_staf": posisiStaf,
-      };
-}
-
-class Ranking {
-  List<Ter> tertinggi;
-  List<Ter> terendah;
-
-  Ranking({
-    required this.tertinggi,
-    required this.terendah,
-  });
-
-  factory Ranking.fromJson(Map<String, dynamic> json) => Ranking(
-        tertinggi:
-            List<Ter>.from(json["tertinggi"].map((x) => Ter.fromJson(x))),
-        terendah: List<Ter>.from(json["terendah"].map((x) => Ter.fromJson(x))),
-      );
-
-  Map<String, dynamic> toJson() => {
-        "tertinggi": List<dynamic>.from(tertinggi.map((x) => x.toJson())),
-        "terendah": List<dynamic>.from(terendah.map((x) => x.toJson())),
-      };
-}
-
-class Ter {
-  int total;
-  String kodeCabang;
-  String cabang;
-
-  Ter({
-    required this.total,
-    required this.kodeCabang,
-    required this.cabang,
-  });
-
-  factory Ter.fromJson(Map<String, dynamic> json) => Ter(
-        total: json["total"],
-        kodeCabang: json["kode_cabang"],
-        cabang: json["cabang"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "total": total,
-        "kode_cabang": kodeCabang,
-        "cabang": cabang,
       };
 }

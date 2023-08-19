@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:los_mobile/src/futures/home/controllers/data_cabang_controller.dart';
-import 'package:los_mobile/src/futures/home/controllers/rating_cabang_controller.dart';
+import 'package:los_mobile/src/futures/home/controllers/ranking/rating_cabang_controller.dart';
 import 'package:los_mobile/src/futures/home/models/skema_kredit/skema_kredit.dart';
 import 'package:los_mobile/src/futures/home/models/skema_kredit/skema_kredit_with_name_skema.dart';
+import 'package:los_mobile/src/futures/home/models/skema_kredit/skema_with_name_skema_and_cabang.dart';
 import 'package:los_mobile/utils/base_url.dart';
 import 'package:los_mobile/utils/constant.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,6 +17,7 @@ class SkemaKreditController extends GetxController {
   String? valueSkemaKredit;
   SkemaKreditModel? skemaKreditModel;
   SkemaKreditWithNameSkemaModel? skemaKreditWithNameSkemaModel;
+  SkemaWithNameSkemaAndCabangModel? skemaWithNameSkemaAndCabangModel;
   // Skema kredit tanpa nama skema
   var totalSkema = 0.obs;
   var totalSkemaPkpj = 0.obs;
@@ -35,7 +37,7 @@ class SkemaKreditController extends GetxController {
   var skemaPosisiPenyelia = 0.obs;
   var skemaPosisiStaf = 0.obs;
 
-  var ratingCabangC = Get.find<RatingCabangController>();
+  var ratingCabangC = Get.put(RatingCabangController());
   var dataCabangC = Get.find<DataCabangController>();
 
   List<dynamic> listSkema = [
@@ -107,46 +109,81 @@ class SkemaKreditController extends GetxController {
 
           // JIka tidak menggunakan nama skema
         } else {
-          skemaKreditWithNameSkemaModel =
-              SkemaKreditWithNameSkemaModel.fromJson(result);
-          if (skemaKreditWithNameSkemaModel!.data.isNotEmpty) {
-            for (var i = 0;
-                i < skemaKreditWithNameSkemaModel!.data.length;
-                i++) {
-              totalSkemaDisetujui.value += int.parse(
-                  skemaKreditWithNameSkemaModel!.data[i].totalDisetujui);
-              totalSkemaDitolak.value += int.parse(
-                  skemaKreditWithNameSkemaModel!.data[i].totalDitolak);
-              skemaPosisiPincab.value += int.parse(
-                  skemaKreditWithNameSkemaModel!.data[i].posisiPincab);
-              skemaPosisiPbp.value +=
-                  int.parse(skemaKreditWithNameSkemaModel!.data[i].posisiPbp);
-              skemaPosisiPbo.value +=
-                  int.parse(skemaKreditWithNameSkemaModel!.data[i].posisiPbo);
-              skemaPosisiPenyelia.value += int.parse(
-                  skemaKreditWithNameSkemaModel!.data[i].posisiPenyelia);
-              skemaPosisiStaf.value +=
-                  int.parse(skemaKreditWithNameSkemaModel!.data[i].posisiStaf);
+          if (dataCabangC.selectKodeCabang.value.isEmpty) {
+            skemaKreditWithNameSkemaModel =
+                SkemaKreditWithNameSkemaModel.fromJson(result);
+            if (skemaKreditWithNameSkemaModel!.data.isNotEmpty) {
+              for (var i = 0;
+                  i < skemaKreditWithNameSkemaModel!.data.length;
+                  i++) {
+                totalSkemaDisetujui.value += int.parse(
+                    skemaKreditWithNameSkemaModel!.data[i].totalDisetujui);
+                totalSkemaDitolak.value += int.parse(
+                    skemaKreditWithNameSkemaModel!.data[i].totalDitolak);
+                skemaPosisiPincab.value += int.parse(
+                    skemaKreditWithNameSkemaModel!.data[i].posisiPincab);
+                skemaPosisiPbp.value +=
+                    int.parse(skemaKreditWithNameSkemaModel!.data[i].posisiPbp);
+                skemaPosisiPbo.value +=
+                    int.parse(skemaKreditWithNameSkemaModel!.data[i].posisiPbo);
+                skemaPosisiPenyelia.value += int.parse(
+                    skemaKreditWithNameSkemaModel!.data[i].posisiPenyelia);
+                skemaPosisiStaf.value += int.parse(
+                    skemaKreditWithNameSkemaModel!.data[i].posisiStaf);
+              }
+            } else {
+              totalProsesSkema.value = 0;
+              totalPengajuanSkema.value = 0;
+              totalSkemaDisetujui.value = 0;
+              totalSkemaDitolak.value = 0;
+              skemaPosisiPincab.value = 0;
+              skemaPosisiPbp.value = 0;
+              skemaPosisiPbo.value = 0;
+              skemaPosisiPenyelia.value = 0;
+              skemaPosisiStaf.value = 0;
             }
-            totalProsesSkema.value = skemaPosisiPincab.value +
-                skemaPosisiPbp.value +
-                skemaPosisiPbo.value +
-                skemaPosisiPenyelia.value +
-                skemaPosisiStaf.value;
-            totalPengajuanSkema.value = totalProsesSkema.value +
-                totalSkemaDisetujui.value +
-                totalSkemaDitolak.value;
           } else {
-            totalProsesSkema.value = 0;
-            totalPengajuanSkema.value = 0;
-            totalSkemaDisetujui.value = 0;
-            totalSkemaDitolak.value = 0;
-            skemaPosisiPincab.value = 0;
-            skemaPosisiPbp.value = 0;
-            skemaPosisiPbo.value = 0;
-            skemaPosisiPenyelia.value = 0;
-            skemaPosisiStaf.value = 0;
+            skemaWithNameSkemaAndCabangModel =
+                SkemaWithNameSkemaAndCabangModel.fromJson(result);
+            if (skemaWithNameSkemaAndCabangModel!.data.isNotEmpty) {
+              for (var i = 0;
+                  i < skemaWithNameSkemaAndCabangModel!.data.length;
+                  i++) {
+                totalSkemaDisetujui.value += int.parse(
+                    skemaWithNameSkemaAndCabangModel!.data[i].totalDisetujui);
+                totalSkemaDitolak.value += int.parse(
+                    skemaWithNameSkemaAndCabangModel!.data[i].totalDitolak);
+                skemaPosisiPincab.value += int.parse(
+                    skemaWithNameSkemaAndCabangModel!.data[i].posisiPincab);
+                skemaPosisiPbp.value += int.parse(
+                    skemaWithNameSkemaAndCabangModel!.data[i].posisiPbp);
+                skemaPosisiPbo.value += int.parse(
+                    skemaWithNameSkemaAndCabangModel!.data[i].posisiPbo);
+                skemaPosisiPenyelia.value += int.parse(
+                    skemaWithNameSkemaAndCabangModel!.data[i].posisiPenyelia);
+                skemaPosisiStaf.value += int.parse(
+                    skemaWithNameSkemaAndCabangModel!.data[i].posisiStaf);
+              }
+            } else {
+              totalProsesSkema.value = 0;
+              totalPengajuanSkema.value = 0;
+              totalSkemaDisetujui.value = 0;
+              totalSkemaDitolak.value = 0;
+              skemaPosisiPincab.value = 0;
+              skemaPosisiPbp.value = 0;
+              skemaPosisiPbo.value = 0;
+              skemaPosisiPenyelia.value = 0;
+              skemaPosisiStaf.value = 0;
+            }
           }
+          totalProsesSkema.value = skemaPosisiPincab.value +
+              skemaPosisiPbp.value +
+              skemaPosisiPbo.value +
+              skemaPosisiPenyelia.value +
+              skemaPosisiStaf.value;
+          totalPengajuanSkema.value = totalProsesSkema.value +
+              totalSkemaDisetujui.value +
+              totalSkemaDitolak.value;
         }
       } else {
         debugPrint('error fetching data ${response.statusCode} SKEMA KREDIT');

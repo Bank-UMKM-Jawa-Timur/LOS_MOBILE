@@ -5,7 +5,8 @@ import 'package:get/get.dart';
 import 'package:los_mobile/src/futures/home/controllers/data_cabang_controller.dart';
 import 'package:los_mobile/src/futures/home/controllers/data_pengajuan_controller.dart';
 import 'package:los_mobile/src/futures/home/controllers/posisi_pengajuan_controller.dart';
-import 'package:los_mobile/src/futures/home/controllers/rating_cabang_controller.dart';
+import 'package:los_mobile/src/futures/home/controllers/ranking/ranking_skema_controller.dart';
+import 'package:los_mobile/src/futures/home/controllers/ranking/rating_cabang_controller.dart';
 import 'package:los_mobile/src/futures/home/controllers/skema_kredit_controller.dart';
 import 'package:los_mobile/src/futures/home/view/components/pie_chart_data_pengajuan.dart';
 import 'package:los_mobile/src/futures/home/view/components/pie_chart_posisi_pengajuan.dart';
@@ -44,9 +45,10 @@ class _HomePageState extends State<HomePage> {
   PosisiPengajuanController posisiPengajuanController =
       Get.put(PosisiPengajuanController());
   CircleAvatarWidget circleAvatarWidget = Get.put(CircleAvatarWidget());
-  SkemaKreditController skemaKreditController =
-      Get.put(SkemaKreditController());
+  var skemaKreditController = Get.put(SkemaKreditController());
   PreferensUser preferensUser = Get.put(PreferensUser());
+  RankingSkemaController rankingSkemaController =
+      Get.put(RankingSkemaController());
 
   String name = "";
   String jabatan = "";
@@ -76,6 +78,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future refreshAndFilter() async {
+    Get.find<SkemaKreditController>();
     typeFilter = false;
     dataCabangController.selectKodeCabang.value = valueCodeCabang == null
         ? dataCabangController.selectKodeCabang.value
@@ -112,6 +115,8 @@ class _HomePageState extends State<HomePage> {
         : posisiPengajuanController.getPosisiPengajuan();
     ratingCabangController.getDataRating();
     skemaKreditController.getSkemaKredit();
+    rankingSkemaController.getRankingSkema();
+    setState(() {});
   }
 
   Future resetFilter() async {
@@ -163,11 +168,13 @@ class _HomePageState extends State<HomePage> {
                   ? const ShimmerHomePage()
                   : posisiPengajuanController.isLoading.value
                       ? const ShimmerHomePage()
-                      : Scaffold(
-                          backgroundColor: mBgColor,
-                          appBar: _buildAppBar(heightStatusBar, isMobile),
-                          body: _buildBody(isMobile),
-                        ),
+                      : skemaKreditController.isLoading.value
+                          ? const ShimmerHomePage()
+                          : Scaffold(
+                              backgroundColor: mBgColor,
+                              appBar: _buildAppBar(heightStatusBar, isMobile),
+                              body: _buildBody(isMobile),
+                            ),
     );
   }
 
@@ -920,17 +927,76 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
             spaceHeightMedium,
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
+            if (skemaKreditController.valueSkemaKredit == null)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                      flex: 1,
+                      child: ListView.builder(
+                        itemCount: ratingCabangController
+                                .ratingCabangModel?.data.tertinggi.length ??
+                            0,
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) {
+                          return Container(
+                            margin: const EdgeInsets.only(bottom: 4),
+                            height: 33,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(
+                                  color: mGreyVeryLightColor, width: 1),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      width: 33,
+                                      height: 33,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(6),
+                                        color: mGreenFlatColor,
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          "${ratingCabangController.ratingCabangModel?.data.tertinggi[index].kodeCabang}",
+                                          style: textBoldLightMedium,
+                                        ),
+                                      ),
+                                    ),
+                                    spaceWidthVerySmall,
+                                    Text(
+                                      "${ratingCabangController.ratingCabangModel?.data.tertinggi[index].cabang}",
+                                      style: textBoldDarkSmall,
+                                    )
+                                  ],
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 10),
+                                  child: Text(
+                                    "${ratingCabangController.ratingCabangModel?.data.tertinggi[index].total}",
+                                    style: textBoldDarkSmall,
+                                  ),
+                                )
+                              ],
+                            ),
+                          );
+                        },
+                      )),
+                  spaceWidthVerySmall,
+                  Expanded(
                     flex: 1,
                     child: ListView.builder(
                       itemCount: ratingCabangController
-                              .ratingCabangModel?.data.tertinggi.length ??
+                              .ratingCabangModel?.data.terendah.length ??
                           0,
-                      physics: const NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
+                      reverse: true,
+                      physics: const NeverScrollableScrollPhysics(),
                       itemBuilder: (context, index) {
                         return Container(
                           margin: const EdgeInsets.only(bottom: 4),
@@ -951,18 +1017,18 @@ class _HomePageState extends State<HomePage> {
                                     height: 33,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(6),
-                                      color: mGreenFlatColor,
+                                      color: mPrimaryColor,
                                     ),
                                     child: Center(
                                       child: Text(
-                                        "${ratingCabangController.ratingCabangModel?.data.tertinggi[index].kodeCabang}",
+                                        "${ratingCabangController.ratingCabangModel?.data.terendah[index].kodeCabang}",
                                         style: textBoldLightMedium,
                                       ),
                                     ),
                                   ),
                                   spaceWidthVerySmall,
                                   Text(
-                                    "${ratingCabangController.ratingCabangModel?.data.tertinggi[index].cabang}",
+                                    "${ratingCabangController.ratingCabangModel?.data.terendah[index].cabang}",
                                     style: textBoldDarkSmall,
                                   )
                                 ],
@@ -970,7 +1036,7 @@ class _HomePageState extends State<HomePage> {
                               Padding(
                                 padding: const EdgeInsets.only(right: 10),
                                 child: Text(
-                                  "${ratingCabangController.ratingCabangModel?.data.tertinggi[index].total}",
+                                  "${ratingCabangController.ratingCabangModel?.data.terendah[index].total}",
                                   style: textBoldDarkSmall,
                                 ),
                               )
@@ -978,68 +1044,137 @@ class _HomePageState extends State<HomePage> {
                           ),
                         );
                       },
-                    )),
-                spaceWidthVerySmall,
-                Expanded(
-                  flex: 1,
-                  child: ListView.builder(
-                    itemCount: ratingCabangController
-                            .ratingCabangModel?.data.terendah.length ??
-                        0,
-                    shrinkWrap: true,
-                    reverse: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemBuilder: (context, index) {
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 4),
-                        height: 33,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(6),
-                          border:
-                              Border.all(color: mGreyVeryLightColor, width: 1),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
+                    ),
+                  ),
+                ],
+              )
+            else
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                      flex: 1,
+                      child: ListView.builder(
+                        itemCount: rankingSkemaController
+                                .skemaKreditWithNameSkemaModel
+                                ?.ranking
+                                .tertinggi
+                                .length ??
+                            0,
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) {
+                          return Container(
+                            margin: const EdgeInsets.only(bottom: 4),
+                            height: 33,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(
+                                  color: mGreyVeryLightColor, width: 1),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Container(
-                                  width: 33,
-                                  height: 33,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(6),
-                                    color: mPrimaryColor,
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      "${ratingCabangController.ratingCabangModel?.data.terendah[index].kodeCabang}",
-                                      style: textBoldLightMedium,
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      width: 33,
+                                      height: 33,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(6),
+                                        color: mGreenFlatColor,
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          "${rankingSkemaController.skemaKreditWithNameSkemaModel?.ranking.tertinggi[index].kodeCabang}",
+                                          style: textBoldLightMedium,
+                                        ),
+                                      ),
                                     ),
-                                  ),
+                                    spaceWidthVerySmall,
+                                    Text(
+                                      "${rankingSkemaController.skemaKreditWithNameSkemaModel?.ranking.tertinggi[index].cabang}",
+                                      style: textBoldDarkSmall,
+                                    )
+                                  ],
                                 ),
-                                spaceWidthVerySmall,
-                                Text(
-                                  "${ratingCabangController.ratingCabangModel?.data.terendah[index].cabang}",
-                                  style: textBoldDarkSmall,
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 10),
+                                  child: Text(
+                                    "${rankingSkemaController.skemaKreditWithNameSkemaModel?.ranking.tertinggi[index].total}",
+                                    style: textBoldDarkSmall,
+                                  ),
                                 )
                               ],
                             ),
-                            Padding(
-                              padding: const EdgeInsets.only(right: 10),
-                              child: Text(
-                                "${ratingCabangController.ratingCabangModel?.data.terendah[index].total}",
-                                style: textBoldDarkSmall,
+                          );
+                        },
+                      )),
+                  spaceWidthVerySmall,
+                  Expanded(
+                    flex: 1,
+                    child: ListView.builder(
+                      itemCount: rankingSkemaController
+                              .skemaKreditWithNameSkemaModel
+                              ?.ranking
+                              .terendah
+                              .length ??
+                          0,
+                      shrinkWrap: true,
+                      reverse: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 4),
+                          height: 33,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(
+                                color: mGreyVeryLightColor, width: 1),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    width: 33,
+                                    height: 33,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(6),
+                                      color: mPrimaryColor,
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        "${rankingSkemaController.skemaKreditWithNameSkemaModel?.ranking.terendah[index].kodeCabang}",
+                                        style: textBoldLightMedium,
+                                      ),
+                                    ),
+                                  ),
+                                  spaceWidthVerySmall,
+                                  Text(
+                                    "${rankingSkemaController.skemaKreditWithNameSkemaModel?.ranking.terendah[index].cabang}",
+                                    style: textBoldDarkSmall,
+                                  )
+                                ],
                               ),
-                            )
-                          ],
-                        ),
-                      );
-                    },
+                              Padding(
+                                padding: const EdgeInsets.only(right: 10),
+                                child: Text(
+                                  "${rankingSkemaController.skemaKreditWithNameSkemaModel?.ranking.terendah[index].total}",
+                                  style: textBoldDarkSmall,
+                                ),
+                              )
+                            ],
+                          ),
+                        );
+                      },
+                    ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
           ],
         ),
       ),

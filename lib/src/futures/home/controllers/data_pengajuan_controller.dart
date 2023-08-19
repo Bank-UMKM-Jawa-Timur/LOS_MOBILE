@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:los_mobile/src/futures/home/controllers/data_cabang_controller.dart';
-import 'package:los_mobile/src/futures/home/controllers/rating_cabang_controller.dart';
+import 'package:los_mobile/src/futures/home/controllers/ranking/rating_cabang_controller.dart';
 import 'package:los_mobile/src/futures/home/models/data_pengajuan.dart';
 import 'package:http/http.dart' as http;
 import 'package:los_mobile/src/futures/home/models/rating_cabang.dart';

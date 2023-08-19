@@ -4,12 +4,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:los_mobile/src/futures/home/models/rating_cabang.dart';
 import 'package:http/http.dart' as http;
+import 'package:los_mobile/src/futures/home/models/skema_kredit/skema_kredit_with_name_skema.dart';
 import 'package:los_mobile/utils/base_url.dart';
 import 'package:los_mobile/utils/constant.dart';
 
 class RatingCabangController extends GetxController {
   var isLoading = false.obs;
   RatingCabangModel? ratingCabangModel;
+  SkemaKreditWithNameSkemaModel? skemaKreditWithNameSkemaModel;
   DateTime firstDateFilter =
       DateTime(DateTime.now().year, DateTime.now().month, 01);
   DateTime lastDateFilter =
@@ -31,8 +33,7 @@ class RatingCabangController extends GetxController {
       isLoading(true);
       http.Response response = await http.get(
         Uri.parse(
-          '$base_url/v1/get-sum-cabang?tanggal_awal=${firstDateFilter.simpleDate()}&tanggal_akhir=${lastDateFilter.simpleDate()}',
-        ),
+            '$base_url/v1/get-sum-cabang?tanggal_awal=${firstDateFilter.simpleDate()}&tanggal_akhir=${lastDateFilter.simpleDate()}'),
         headers: headers,
       );
       if (response.statusCode == 200) {

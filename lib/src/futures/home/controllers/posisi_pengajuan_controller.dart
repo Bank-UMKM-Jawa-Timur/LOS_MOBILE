@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:los_mobile/src/futures/home/controllers/data_cabang_controller.dart';
-import 'package:los_mobile/src/futures/home/controllers/rating_cabang_controller.dart';
+import 'package:los_mobile/src/futures/home/controllers/ranking/rating_cabang_controller.dart';
 import 'package:los_mobile/src/futures/home/models/posisi_pengajuan.dart';
 import 'package:http/http.dart' as http;
 import 'package:los_mobile/utils/base_url.dart';
@@ -23,8 +23,7 @@ class PosisiPengajuanController extends GetxController {
 
   // Get Controller
   PosisiPengajuanModel? posisiPengajuanModel;
-  RatingCabangController ratingCabangController =
-      Get.put(RatingCabangController());
+  var ratingCabangController = Get.put(RatingCabangController());
   var cabangC = Get.find<DataCabangController>();
 
   @override

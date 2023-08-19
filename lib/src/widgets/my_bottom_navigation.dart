@@ -3,6 +3,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:los_mobile/src/futures/home/view/home_commingsoon.dart';
+import 'package:los_mobile/src/futures/home/view/home_test.dart';
 import 'package:los_mobile/src/widgets/dialog/my_alert_dialog.dart';
 import 'package:los_mobile/utils/colors.dart';
 import 'package:los_mobile/src/futures/home/view/home_page.dart';
@@ -139,6 +140,7 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
                         builder: (context) {
                           return MyAlertDialog().alertdialog(context);
                         });
+                    // Get.to(HomeTest());
                   },
                   child: const Icon(
                     Icons.credit_card,
