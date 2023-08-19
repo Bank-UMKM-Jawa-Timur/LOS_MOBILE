@@ -86,7 +86,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
                       // bagian avatar
-                      circleAvatarWidget.circleAvatarWidget(name, 50),
+                      circleAvatarWidget.circleAvatarWidget(name, 50, 50),
                       spaceHeightMedium,
                       Text(
                         shortenLastName(name),

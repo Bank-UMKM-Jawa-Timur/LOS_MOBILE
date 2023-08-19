@@ -190,7 +190,7 @@ class _HomePageState extends State<HomePage> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            circleAvatarWidget.circleAvatarWidget(name, 21),
+            circleAvatarWidget.circleAvatarWidget(name, 21, 21),
           ],
         ),
       ),
