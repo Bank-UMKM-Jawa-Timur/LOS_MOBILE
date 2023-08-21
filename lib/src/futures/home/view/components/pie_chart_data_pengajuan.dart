@@ -1,10 +1,10 @@
-import 'package:d_chart/d_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:los_mobile/src/futures/home/view/components/empty_chart.dart';
 import 'package:los_mobile/src/widgets/all_widgets.dart';
 import 'package:los_mobile/src/widgets/my_shadow.dart';
 import 'package:los_mobile/utils/colors.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 
 Widget componentDataPengajuan2(
   String total,
@@ -31,52 +31,71 @@ Widget componentDataPengajuan2(
             style: textBoldDarkLarge,
           ),
         ),
-        AspectRatio(
-          aspectRatio: 15 / 9,
-          child: Stack(
-            children: [
-              if (disetujui == 0 && ditolak == 0 && diproses == 0)
-                emptyChart()
-              else
-                DChartPie(
-                  data: [
-                    {'domain': 'Disetujui', 'measure': disetujui},
-                    {'domain': 'Ditolak', 'measure': ditolak},
-                    {'domain': 'Diproses', 'measure': diproses},
-                  ],
-                  fillColor: (pieData, index) {
-                    switch (pieData['domain']) {
-                      case 'Disetujui':
-                        return mGreenFlatColor;
-                      case 'Ditolak':
-                        return mPrimaryColor;
-                      default:
-                        return mYellowColor;
-                    }
-                  },
-                  donutWidth: 32,
-                  labelLineThickness: 1.5,
-                  labelColor: Colors.black,
-                  labelFontSize: 9,
-                  strokeWidth: 0,
-                  labelLinelength: 15,
-                  labelLineColor: mPrimaryColor,
-                  pieLabel: (pieData, index) {
-                    return "${pieData['domain']}\n${pieData['measure']}";
-                  },
-                  labelPosition: PieLabelPosition.outside,
-                ),
-              Align(
-                child: Text(
-                  total,
-                  style: textColorBoldDarkSmall(30, Colors.black),
-                ),
-              ),
-            ],
+        SizedBox(
+          width: Get.width,
+          height: 230,
+          child: Center(
+            child: SfCircularChart(
+              margin: const EdgeInsets.all(0),
+              annotations: [
+                CircularChartAnnotation(
+                  widget: SizedBox(
+                    child: Text(
+                      total,
+                      style: textColorBoldDarkSmall(25, Colors.black),
+                    ),
+                  ),
+                )
+              ],
+              series: [
+                if (disetujui == 0 && ditolak == 0 && diproses == 0)
+                  emptyChartDougnut()
+                else
+                  DoughnutSeries<_CatChartData, String>(
+                    animationDuration: 1000,
+                    dataSource: [
+                      _CatChartData('Disetujui', disetujui, mGreenFlatColor),
+                      _CatChartData('Ditolak', ditolak, mPrimaryColor),
+                      _CatChartData('Diproses', diproses, mYellowColor),
+                    ],
+                    radius: '70%',
+                    explode: false,
+                    xValueMapper: (_CatChartData data, _) => data.category,
+                    yValueMapper: (_CatChartData data, _) => data.total,
+                    pointColorMapper: (_CatChartData data, _) => data.color,
+                    dataLabelSettings: DataLabelSettings(
+                      isVisible: true,
+                      builder: (dynamic data, dynamic point, dynamic series,
+                          int pointIndex, int seriesIndex) {
+                        return Text(
+                          data.category + '\n' + "${data.total}",
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                              fontSize: 11, color: Colors.black),
+                        );
+                      },
+                      connectorLineSettings: const ConnectorLineSettings(
+                          type: ConnectorType.line,
+                          length: "10",
+                          width: 1.5,
+                          color: Colors.black),
+                      showZeroValue: false,
+                      labelPosition: ChartDataLabelPosition.outside,
+                    ),
+                  )
+              ],
+            ),
           ),
         ),
-        spaceHeightMedium,
       ],
     ),
   );
+}
+
+class _CatChartData {
+  _CatChartData(this.category, this.total, this.color);
+
+  final String category;
+  final num total;
+  final Color color;
 }

@@ -54,6 +54,7 @@ class _HomePageState extends State<HomePage> {
   String jabatan = "";
   String bagian = "";
   String role = "";
+  String subDivisi = "";
   String? valueCodeCabang;
   String? valueCabang;
   String? valueSkemaKredit;
@@ -74,6 +75,7 @@ class _HomePageState extends State<HomePage> {
       jabatan = "${spref.getString("jabatan")}";
       bagian = "${spref.getString("bagian")}";
       role = "${spref.getString("role")}";
+      subDivisi = "${spref.getString("sub_divisi")}";
     });
   }
 
@@ -124,38 +126,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future resetFilter() async {
-    // if (mounted) {
-    //   setState(() {
-    //     dataCabangController.selectCabang.value = "Semua cabang";
-    //     dataCabangController.selectKodeCabang.value = "";
-    //     typeFilter = false;
-    //     skemaKreditController.valueSkemaKredit = null;
-    //     valueCabang = null;
-    //     valueCodeCabang = null;
-    //     valueSkemaKredit = null;
-
-    //     // Skema kredit tanpa nama
-    //     skemaKreditController.totalSkema.value = 0;
-    //     skemaKreditController.totalSkemaPkpj.value = 0;
-    //     skemaKreditController.totalSkemaKkb.value = 0;
-    //     skemaKreditController.totalSkemaUmroh.value = 0;
-    //     skemaKreditController.totalSkemaProkesra.value = 0;
-    //     skemaKreditController.totalSkemaKusuma.value = 0;
-    //     // Skema Kredit dengan nama
-    //     skemaKreditController.totalSkemaDenganNama.value = 0;
-    //     skemaKreditController.totalSkemaDisetujui.value = 0;
-    //     skemaKreditController.totalSkemaDitolak.value = 0;
-    //     skemaKreditController.skemaPosisiPincab.value = 0;
-    //     skemaKreditController.skemaPosisiPbp.value = 0;
-    //     skemaKreditController.skemaPosisiPbo.value = 0;
-    //     skemaKreditController.skemaPosisiPenyelia.value = 0;
-    //     skemaKreditController.skemaPosisiStaf.value = 0;
-    //   });
-    // }
-    // ratingCabangController.getDataRating();
-    // dataPengajuanController.getDataPengajuan();
-    // posisiPengajuanController.getPosisiPengajuan();
-    // skemaKreditController.getSkemaKredit();
     Get.offAll(const MyBottomNavigationBar());
   }
 
@@ -242,32 +212,30 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildBody(bool isMobile) {
-    return Stack(
-      children: [
-        Container(
-          height: 45,
-          decoration: const BoxDecoration(
-            color: mPrimaryColor,
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(20),
-              bottomRight: Radius.circular(20),
-            ),
-          ),
-        ),
-        RefreshIndicator(
-          onRefresh: () {
-            return refreshAndFilter();
-          },
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 25),
-              child: SizedBox(
-                width: Get.width,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AnimatedSize(
+    return RefreshIndicator(
+      onRefresh: () {
+        return refreshAndFilter();
+      },
+      child: SingleChildScrollView(
+        child: Container(
+          width: Get.width,
+          child: Stack(
+            children: [
+              Container(
+                height: 45,
+                decoration: const BoxDecoration(
+                  color: mPrimaryColor,
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(20),
+                    bottomRight: Radius.circular(20),
+                  ),
+                ),
+              ),
+              Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 25),
+                    child: AnimatedSize(
                       curve: Curves.ease,
                       duration: const Duration(milliseconds: 500),
                       child: Container(
@@ -281,60 +249,71 @@ class _HomePageState extends State<HomePage> {
                         child: _cardFilter(),
                       ),
                     ),
-                    spaceHeightMedium,
-                    _dataPengajuan(),
-                    if (skemaKreditController.valueSkemaKredit != null)
-                      Column(
-                        children: [
-                          spaceHeightMedium,
-                          _skemaKreditWithNameSkema(isMobile),
-                        ],
-                      )
-                    else
-                      Column(
-                        children: [
-                          spaceHeightMedium,
-                          _skemaKredit(isMobile),
-                        ],
-                      ),
-                    role == pincab
-                        ? skemaKreditController.valueSkemaKredit != null
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 25),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        spaceHeightMedium,
+                        _dataPengajuan(),
+                        if (skemaKreditController.valueSkemaKredit != null)
+                          Column(
+                            children: [
+                              spaceHeightMedium,
+                              _skemaKreditWithNameSkema(isMobile),
+                            ],
+                          )
+                        else
+                          Column(
+                            children: [
+                              spaceHeightMedium,
+                              _skemaKredit(isMobile),
+                            ],
+                          ),
+                        role == pincab
+                            ? skemaKreditController.valueSkemaKredit != null
+                                ? Container()
+                                : Column(
+                                    children: [
+                                      spaceHeightMedium,
+                                      _posisiPengajuan(isMobile),
+                                    ],
+                                  )
+                            : const SizedBox(),
+                        dataCabangController.selectCabang.value ==
+                                "Semua cabang"
                             ? Container()
-                            : Column(
-                                children: [
-                                  spaceHeightMedium,
-                                  _posisiPengajuan(isMobile),
-                                ],
-                              )
-                        : const SizedBox(),
-                    dataCabangController.selectCabang.value == "Semua cabang"
-                        ? Container()
-                        : skemaKreditController.valueSkemaKredit != null
-                            ? Container()
-                            : Column(
-                                children: [
-                                  spaceHeightMedium,
-                                  _posisiPengajuan(isMobile),
-                                ],
-                              ),
-                    dataCabangController.selectCabang.value == "Semua cabang"
-                        ? role == pincab
-                            ? const SizedBox()
-                            : Column(
-                                children: [
-                                  spaceHeightMedium,
-                                  _ratingCabang(),
-                                ],
-                              )
-                        : Container(),
-                    spaceHeightMedium,
-                  ],
-                ),
+                            : skemaKreditController.valueSkemaKredit != null
+                                ? Container()
+                                : Column(
+                                    children: [
+                                      spaceHeightMedium,
+                                      _posisiPengajuan(isMobile),
+                                    ],
+                                  ),
+                        dataCabangController.selectCabang.value ==
+                                "Semua cabang"
+                            ? role == pincab
+                                ? const SizedBox()
+                                : Column(
+                                    children: [
+                                      spaceHeightMedium,
+                                      _ratingCabang(),
+                                    ],
+                                  )
+                            : Container(),
+                        spaceHeightMedium,
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            ),
+            ],
           ),
         ),
-      ],
+      ),
     );
   }
 
@@ -639,7 +618,10 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       Text(
-                        role == administrator || role == spi || role == ku
+                        role == administrator ||
+                                role == spi ||
+                                role == ku ||
+                                role == direksi
                             ? dataCabangController.selectCabang.value
                             : "${dataPengajuanController.dataPengajuanModel?.data[0].cabang}",
                         style: const TextStyle(
@@ -743,7 +725,10 @@ class _HomePageState extends State<HomePage> {
                         spaceHeightSmall,
                       ],
                     ),
-                    role == administrator || role == spi || role == ku
+                    role == administrator ||
+                            role == spi ||
+                            role == ku ||
+                            role == direksi
                         ? _formCabang()
                         : Container(),
                     spaceHeightMedium,

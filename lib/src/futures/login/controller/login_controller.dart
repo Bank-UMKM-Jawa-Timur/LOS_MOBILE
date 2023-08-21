@@ -3,6 +3,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:los_mobile/src/futures/login/models/login_admin_model.dart';
+import 'package:los_mobile/src/futures/login/models/login_entitas_type_two_model.dart';
+import 'package:los_mobile/src/futures/login/models/login_type_null.dart';
 
 import 'package:los_mobile/src/futures/login/view/login.dart';
 import 'package:los_mobile/src/widgets/my_bottom_navigation.dart';
@@ -15,6 +18,9 @@ class LoginController extends GetxController {
   TextEditingController emailNipController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   SharedPreferences? prefs;
+  LoginAdminModel? loginAdminModel;
+  LoginTypeNullModel? loginTypeNullModel;
+  LoginEntitasTypeTwoModel? loginEntitasTypeTwoModel;
   var isLoading = false.obs;
 
   Future<void> login() async {
@@ -39,41 +45,79 @@ class LoginController extends GetxController {
       } else {
         if (response.statusCode == 200) {
           final json = jsonDecode(response.body);
+
           if (json["status"] == "berhasil") {
-            var data = json['data'];
-            Map<String, dynamic> entitas = data['entitas'];
-
-            int idUser = json['id'];
-            String email = json['email'];
             String role = json['role'];
-            String token = json['access_token'];
-            String name = data['nama'];
-            String namaJabatan = data['nama_jabatan'];
-            String nip = data['nip'];
 
-            if (entitas['type'] != 1) {
+            // Response login setiap user berbeda maka dibuat 3 model
+            // Cek Jika Direksi maka pake model direksi
+            if (role == 'Direksi') {
               prefs = await SharedPreferences.getInstance();
-              Map<String, dynamic> cab = entitas['cab'];
-              String kodeCabang = cab['kd_cabang'];
-              await prefs?.setString('kode_cabang', kodeCabang);
+              loginTypeNullModel = LoginTypeNullModel.fromJson(json);
+              await prefs?.setInt('id_user', loginTypeNullModel!.id);
+              await prefs?.setString('email', loginTypeNullModel!.email);
+              await prefs?.setString('token', loginTypeNullModel!.accessToken);
+              await prefs?.setString('name', loginTypeNullModel!.data.nama);
+              // Dikarenakan Direksi jabatan null maka untuk menampilkan ke Home jabatan menggunakan role
+              await prefs?.setString('jabatan', loginTypeNullModel!.role);
+              await prefs?.setString('role', loginTypeNullModel!.role);
+            } else {
+              var data = json['data'];
+              Map<String, dynamic> entitas = data['entitas'];
+
+              //Jika Entitas type 1 maka menggunakan model LoginAdminModel
+              //Jika Entitas type 2 maka menggunakan model LoginEntitasTypeTwoModel
+              if (entitas['type'] == 1) {
+                prefs = await SharedPreferences.getInstance();
+                loginAdminModel = LoginAdminModel.fromJson(json);
+                await prefs?.setInt('id_user', loginAdminModel!.id);
+                await prefs?.setString('email', loginAdminModel!.email);
+                await prefs?.setString('token', loginAdminModel!.accessToken);
+                await prefs?.setString('name', loginAdminModel!.data.nama);
+                await prefs?.setString(
+                    'jabatan', loginAdminModel!.data.namaJabatan);
+                await prefs?.setString('role', loginAdminModel!.role);
+                await prefs?.setString('nip', loginAdminModel!.data.nip);
+                // Pengecekan jika type entitas 1 dan role PSD maka menggunakan sub_divisi
+                if (loginAdminModel!.data.namaJabatan == "PSD") {
+                  var subDivisi =
+                      json['data']['entitas']['subDiv']['nama_subdivisi'];
+                  print("SUB DIVISI = $subDivisi");
+                  await prefs?.setString('bagian', subDivisi);
+                  // Cek jika jabatan PIMDIV maka bagian menggunakan divisi
+                } else if (loginAdminModel!.data.namaJabatan == "PIMDIV") {
+                  var divisi = json['data']['entitas']['div']['nama_divisi'];
+                  await prefs?.setString('bagian', divisi);
+                } else {
+                  await prefs?.setString(
+                      'bagian', loginAdminModel!.data.bagian['nama_bagian']);
+                }
+              } else {
+                prefs = await SharedPreferences.getInstance();
+                loginEntitasTypeTwoModel =
+                    LoginEntitasTypeTwoModel.fromJson(json);
+                await prefs?.setInt('id_user', loginEntitasTypeTwoModel!.id);
+                await prefs?.setString(
+                    'email', loginEntitasTypeTwoModel!.email);
+                await prefs?.setString(
+                    'token', loginEntitasTypeTwoModel!.accessToken);
+                await prefs?.setString(
+                    'name', loginEntitasTypeTwoModel!.data.nama);
+                await prefs?.setString(
+                    'jabatan', loginEntitasTypeTwoModel!.data.namaJabatan);
+                await prefs?.setString('role', loginEntitasTypeTwoModel!.role);
+                await prefs?.setString(
+                    'nip', loginEntitasTypeTwoModel!.data.nip);
+                await prefs?.setString('kode_cabang',
+                    loginEntitasTypeTwoModel!.data.entitas.cab.kdCabang);
+                // Melakukan Pengecekan jika key bagian tidak null
+                if (json['data']['bagian'] != null) {
+                  await prefs?.setString('bagian',
+                      loginEntitasTypeTwoModel!.data.bagian['nama_bagian']);
+                }
+              }
             }
 
-            if (data['bagian'] != null) {
-              prefs = await SharedPreferences.getInstance();
-              Map<String, dynamic> bagian = data['bagian'];
-              String namaBagian = bagian['nama_bagian'];
-              await prefs?.setString('bagian', namaBagian);
-            }
-
-            // Simpan ke Storage
-            prefs = await SharedPreferences.getInstance();
-            await prefs?.setInt('id_user', idUser);
-            await prefs?.setString('email', email);
-            await prefs?.setString('token', token);
-            await prefs?.setString('name', name);
-            await prefs?.setString('jabatan', namaJabatan);
-            await prefs?.setString('role', role);
-            await prefs?.setString('nip', nip);
             await prefs?.setString('password', passwordController.text);
             emailNipController.clear();
             passwordController.clear();
@@ -96,7 +140,6 @@ class LoginController extends GetxController {
   Future<void> logout() async {
     prefs = await SharedPreferences.getInstance();
     var token = prefs?.getString("token");
-    print(token);
     var headers = {
       'Content-Type': 'application/json',
       HttpHeaders.authorizationHeader: "Bearer $token"
@@ -119,6 +162,7 @@ class LoginController extends GetxController {
         prefs?.remove('biometric');
         prefs?.remove('nip');
         prefs?.remove('password');
+        prefs?.remove('sub_divisi');
         prefs?.clear();
         Get.offAll(Login(biometric: false));
       } else {
