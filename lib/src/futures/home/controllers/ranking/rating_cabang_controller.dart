@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:los_mobile/src/futures/home/controllers/data_cabang_controller.dart';
 import 'package:los_mobile/src/futures/home/models/rating_cabang.dart';
 import 'package:http/http.dart' as http;
 import 'package:los_mobile/src/futures/home/models/skema_kredit/skema_kredit_with_name_skema.dart';
@@ -16,11 +17,14 @@ class RatingCabangController extends GetxController {
       DateTime(DateTime.now().year, DateTime.now().month, 01);
   DateTime lastDateFilter =
       DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+  var cabangC = Get.find<DataCabangController>();
 
   @override
   Future<void> onInit() async {
     super.onInit();
-    getDataRating();
+    if (cabangC.selectKodeCabang.value.isEmpty) {
+      getDataRating();
+    }
   }
 
   getDataRating() async {

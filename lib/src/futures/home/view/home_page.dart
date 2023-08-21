@@ -113,9 +113,13 @@ class _HomePageState extends State<HomePage> {
     dataCabangController.selectKodeCabang.value.isEmpty
         ? null
         : posisiPengajuanController.getPosisiPengajuan();
-    ratingCabangController.getDataRating();
+    dataCabangController.selectKodeCabang.value.isEmpty
+        ? ratingCabangController.getDataRating()
+        : null;
     skemaKreditController.getSkemaKredit();
-    rankingSkemaController.getRankingSkema();
+    skemaKreditController.valueSkemaKredit == null
+        ? null
+        : rankingSkemaController.getRankingSkema();
     setState(() {});
   }
 
@@ -184,7 +188,7 @@ class _HomePageState extends State<HomePage> {
       toolbarHeight: defaultTargetPlatform == deviceAndroid
           ? heightStatusBar + 50
           : heightStatusBar + 25,
-      titleSpacing: isMobile ? -30 : -140,
+      titleSpacing: isMobile ? -25 : -140,
       leading: Padding(
         padding: const EdgeInsets.only(left: 25),
         child: Row(
@@ -290,7 +294,7 @@ class _HomePageState extends State<HomePage> {
                       Column(
                         children: [
                           spaceHeightMedium,
-                          _skemaKredit(),
+                          _skemaKredit(isMobile),
                         ],
                       ),
                     role == pincab
@@ -299,7 +303,7 @@ class _HomePageState extends State<HomePage> {
                             : Column(
                                 children: [
                                   spaceHeightMedium,
-                                  _posisiPengajuan(),
+                                  _posisiPengajuan(isMobile),
                                 ],
                               )
                         : const SizedBox(),
@@ -310,7 +314,7 @@ class _HomePageState extends State<HomePage> {
                             : Column(
                                 children: [
                                   spaceHeightMedium,
-                                  _posisiPengajuan(),
+                                  _posisiPengajuan(isMobile),
                                 ],
                               ),
                     dataCabangController.selectCabang.value == "Semua cabang"
@@ -805,94 +809,79 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _dataPengajuan() {
-    return componentDataPengajuan(
-      context,
+    return componentDataPengajuan2(
       skemaKreditController.valueSkemaKredit == null
           ? "${dataPengajuanController.totalPengajuan.value}"
           : skemaKreditController.totalPengajuanSkema.value.toString(),
       dataCabangController.selectKodeCabang.value.isEmpty
           ? skemaKreditController.valueSkemaKredit == null
               ? ratingCabangController.ratingCabangModel!.totalDisetujui
-                  .toDouble()
-              : skemaKreditController.totalSkemaDisetujui.value.toDouble()
+              : skemaKreditController.totalSkemaDisetujui.value
           : dataPengajuanController.dataPengajuanModel!.data.isEmpty
               ? 0
               : skemaKreditController.valueSkemaKredit == null
-                  ? double.parse(
+                  ? int.parse(
                       "${dataPengajuanController.dataPengajuanModel?.data[0].totalDisetujui}",
                     )
-                  : skemaKreditController.totalSkemaDisetujui.value.toDouble(),
+                  : skemaKreditController.totalSkemaDisetujui.value,
       dataCabangController.selectKodeCabang.value.isEmpty
           ? skemaKreditController.valueSkemaKredit == null
               ? ratingCabangController.ratingCabangModel!.totalDitolak
-                  .toDouble()
-              : skemaKreditController.totalSkemaDitolak.value.toDouble()
+              : skemaKreditController.totalSkemaDitolak.value
           : dataPengajuanController.dataPengajuanModel!.data.isEmpty
               ? 0
               : skemaKreditController.valueSkemaKredit == null
-                  ? double.parse(
+                  ? int.parse(
                       "${dataPengajuanController.dataPengajuanModel?.data[0].totalDitolak}",
                     )
-                  : skemaKreditController.totalSkemaDitolak.value.toDouble(),
+                  : skemaKreditController.totalSkemaDitolak.value,
       dataCabangController.selectKodeCabang.value.isEmpty
           ? skemaKreditController.valueSkemaKredit == null
               ? ratingCabangController.ratingCabangModel!.totalDiproses
-                  .toDouble()
-              : skemaKreditController.totalProsesSkema.value.toDouble()
+              : skemaKreditController.totalProsesSkema.value
           : dataPengajuanController.dataPengajuanModel!.data.isEmpty
               ? 0
               : skemaKreditController.valueSkemaKredit == null
-                  ? double.parse(
+                  ? int.parse(
                       "${dataPengajuanController.dataPengajuanModel?.data[0].totalDiproses}",
                     )
-                  : skemaKreditController.totalProsesSkema.value.toDouble(),
+                  : skemaKreditController.totalProsesSkema.value,
     );
   }
 
   Widget _skemaKreditWithNameSkema(bool isMobile) {
-    return componentSkemaKreditWithNameSkema(
-      context,
+    return componentSkemaKreditWithNameSkema2(
       skemaKreditController.totalProsesSkema.value.toString(),
-      skemaKreditController.skemaPosisiPincab.value.toDouble(),
-      skemaKreditController.skemaPosisiPbp.value.toDouble(),
-      skemaKreditController.skemaPosisiPbo.value.toDouble(),
-      skemaKreditController.skemaPosisiPenyelia.value.toDouble(),
-      skemaKreditController.skemaPosisiStaf.value.toDouble(),
+      skemaKreditController.skemaPosisiPincab.value,
+      skemaKreditController.skemaPosisiPbp.value,
+      skemaKreditController.skemaPosisiPbo.value,
+      skemaKreditController.skemaPosisiPenyelia.value,
+      skemaKreditController.skemaPosisiStaf.value,
       isMobile,
     );
   }
 
-  Container _skemaKredit() {
-    return componentSkemaKreditWithoutNameSkema(
-      context,
+  Widget _skemaKredit(bool isMobile) {
+    return componentSkemaKreditWithoutNameSkema2(
       skemaKreditController.totalSkema.value.toString(),
-      skemaKreditController.totalSkemaPkpj.value.toDouble(),
-      skemaKreditController.totalSkemaKkb.value.toDouble(),
-      skemaKreditController.totalSkemaUmroh.value.toDouble(),
-      skemaKreditController.totalSkemaProkesra.value.toDouble(),
-      skemaKreditController.totalSkemaKusuma.value.toDouble(),
+      skemaKreditController.totalSkemaPkpj.value,
+      skemaKreditController.totalSkemaKkb.value,
+      skemaKreditController.totalSkemaUmroh.value,
+      skemaKreditController.totalSkemaProkesra.value,
+      skemaKreditController.totalSkemaKusuma.value,
+      isMobile,
     );
   }
 
-  Container _posisiPengajuan() {
-    return componentPosisiPengajuan(
-      context,
+  Widget _posisiPengajuan(bool isMobile) {
+    return componentPosisiPengajuan2(
       posisiPengajuanController.totalPosisi.value.toString(),
-      double.parse(
-        "${posisiPengajuanController.posisiPengajuanModel?.data[0].pincab}",
-      ),
-      double.parse(
-        "${posisiPengajuanController.posisiPengajuanModel?.data[0].pbp}",
-      ),
-      double.parse(
-        "${posisiPengajuanController.posisiPengajuanModel?.data[0].pbo}",
-      ),
-      double.parse(
-        "${posisiPengajuanController.posisiPengajuanModel?.data[0].penyelia}",
-      ),
-      double.parse(
-        "${posisiPengajuanController.posisiPengajuanModel?.data[0].staff}",
-      ),
+      posisiPengajuanController.posisiPengajuanModel!.data[0].pincab,
+      posisiPengajuanController.posisiPengajuanModel!.data[0].pbp,
+      posisiPengajuanController.posisiPengajuanModel!.data[0].pbo,
+      posisiPengajuanController.posisiPengajuanModel!.data[0].penyelia,
+      posisiPengajuanController.posisiPengajuanModel!.data[0].staff,
+      isMobile,
     );
   }
 

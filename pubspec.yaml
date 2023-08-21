@@ -41,6 +41,7 @@ dependencies:
   pie_chart: ^5.3.2
   shared_preferences: ^2.2.0
   shimmer: ^3.0.0
+  d_chart: ^2.3.0
 
 flutter_intl:
   main_locale: id_ID

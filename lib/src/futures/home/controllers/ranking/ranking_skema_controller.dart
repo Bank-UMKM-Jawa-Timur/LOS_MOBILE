@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:los_mobile/src/futures/home/controllers/data_cabang_controller.dart';
 import 'package:los_mobile/src/futures/home/controllers/ranking/rating_cabang_controller.dart';
 import 'package:los_mobile/src/futures/home/controllers/skema_kredit_controller.dart';
 import 'package:los_mobile/src/futures/home/models/skema_kredit/skema_kredit_with_name_skema.dart';
@@ -12,7 +13,16 @@ class RankingSkemaController extends GetxController {
   SkemaKreditWithNameSkemaModel? skemaKreditWithNameSkemaModel;
   var skemaC = Get.find<SkemaKreditController>();
   var ratingCabangC = Get.put(RatingCabangController());
+  var cabangC = Get.find<DataCabangController>();
   var isLoading = false.obs;
+
+  @override
+  Future<void> onInit() async {
+    super.onInit();
+    if (cabangC.selectKodeCabang.value.isEmpty) {
+      getRankingSkema();
+    }
+  }
 
   getRankingSkema() async {
     var headers = {
