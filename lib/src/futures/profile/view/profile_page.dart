@@ -173,7 +173,7 @@ class _ProfilePageState extends State<ProfilePage> {
               Container(
                 margin: const EdgeInsets.only(left: 10),
                 child: const Text(
-                  'Biomatric Authentication',
+                  'Biometrics Authentication',
                   textAlign: TextAlign.left,
                   style: TextStyle(
                     color: Colors.white,

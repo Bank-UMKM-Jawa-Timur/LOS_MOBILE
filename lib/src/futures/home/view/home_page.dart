@@ -533,11 +533,6 @@ class _HomePageState extends State<HomePage> {
             value: valueCodeCabang,
             hint: Text(dataCabangController.selectCabang.value,
                 style: textBoldDarkMedium),
-            // hint: Text(
-            //     valueCabang == null
-            //         ? "Semua cabang"
-            //         : dataCabangController.selectCabang.value,
-            //     style: textBoldDarkMedium),
             onChanged: ((value) {
               if (mounted) {
                 valueCodeCabang = value!;
@@ -575,68 +570,105 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   Row(
                     children: [
-                      const Text(
-                        "Periode : ",
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          color: mPrimaryColor,
+                      const SizedBox(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Periode",
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                                color: mPrimaryColor,
+                              ),
+                            ),
+                            Text(
+                              "Skema",
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                                color: mPrimaryColor,
+                              ),
+                            ),
+                            Text(
+                              "Cabang",
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                                color: mPrimaryColor,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      Text(
-                        "${ratingCabangController.firstDateFilter.fullDate()} s/d ${ratingCabangController.lastDateFilter.fullDate()}",
-                        style: const TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.black,
+                      Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 3),
+                        child: const Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              ":",
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                                color: mPrimaryColor,
+                              ),
+                            ),
+                            Text(
+                              ":",
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                                color: mPrimaryColor,
+                              ),
+                            ),
+                            Text(
+                              ":",
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                                color: mPrimaryColor,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      const Text(
-                        "Skema   : ",
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          color: mPrimaryColor,
-                        ),
-                      ),
-                      Text(
-                        skemaKreditController.valueSkemaKredit == null
-                            ? "Semua skema"
-                            : skemaKreditController.valueSkemaKredit!,
-                        style: const TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      const Text(
-                        "Cabang : ",
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          color: mPrimaryColor,
-                        ),
-                      ),
-                      Text(
-                        role == administrator ||
-                                role == spi ||
-                                role == ku ||
-                                role == direksi
-                            ? dataCabangController.selectCabang.value
-                            : "${dataPengajuanController.dataPengajuanModel?.data[0].cabang}",
-                        style: const TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.black,
-                        ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "${ratingCabangController.firstDateFilter.fullDate()} s/d ${ratingCabangController.lastDateFilter.fullDate()}",
+                            style: const TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.black,
+                            ),
+                          ),
+                          Text(
+                            skemaKreditController.valueSkemaKredit == null
+                                ? "Semua skema"
+                                : skemaKreditController.valueSkemaKredit!,
+                            style: const TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.black,
+                            ),
+                          ),
+                          Text(
+                            role == administrator ||
+                                    role == spi ||
+                                    role == ku ||
+                                    role == direksi
+                                ? dataCabangController.selectCabang.value
+                                : "${dataPengajuanController.dataPengajuanModel?.data[0].cabang}",
+                            style: const TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
