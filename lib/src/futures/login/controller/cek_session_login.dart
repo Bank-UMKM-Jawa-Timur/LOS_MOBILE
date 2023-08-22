@@ -10,19 +10,20 @@ class CekSessionLogin extends GetxController {
   CekSessionModel? cekSessionModel;
   var isLoading = false.obs;
   int? idUser;
+  var statusSession = "".obs;
+  var result;
 
   @override
   Future<void> onInit() async {
     var prefs = await SharedPreferences.getInstance();
     idUser = prefs.getInt("id_user") == null ? null : prefs.getInt("id_user");
-    super.onInit();
     if (idUser != null) {
       cekSession();
     }
+    super.onInit();
   }
 
   Future<void> cekSession() async {
-    print(idUser);
     var headers = {'Content-Type': 'application/json'};
     try {
       isLoading(true);
@@ -31,8 +32,27 @@ class CekSessionLogin extends GetxController {
         headers: headers,
       );
       if (response.statusCode == 200) {
-        var result = jsonDecode(response.body);
+        result = jsonDecode(response.body);
         cekSessionModel = CekSessionModel.fromJson(result);
+        statusSession.value = cekSessionModel!.status;
+        print(statusSession);
+        if (cekSessionModel!.status != "sukses") {
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          prefs.remove('biometric');
+          prefs.remove('id_user');
+          prefs.remove('email');
+          prefs.remove('token');
+          prefs.remove('name');
+          prefs.remove('jabatan');
+          prefs.remove('kode_cabang');
+          prefs.remove('bagian');
+          prefs.remove('role');
+          prefs.remove('nip');
+          prefs.remove('password');
+          prefs.remove('sub_divisi');
+          prefs.clear();
+          prefs.reload();
+        }
       } else {
         print("${response.statusCode} CEK SESSION");
       }

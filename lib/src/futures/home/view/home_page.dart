@@ -213,16 +213,14 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildBody(bool isMobile) {
     return RefreshIndicator(
-      onRefresh: () {
-        return refreshAndFilter();
-      },
-      child: SingleChildScrollView(
-        child: Container(
-          width: Get.width,
-          child: Stack(
-            children: [
-              Container(
-                height: 45,
+        onRefresh: () {
+          return refreshAndFilter();
+        },
+        child: Stack(
+          children: [
+            ClipPath(
+              child: Container(
+                height: Get.height * 0.06,
                 decoration: const BoxDecoration(
                   color: mPrimaryColor,
                   borderRadius: BorderRadius.only(
@@ -231,90 +229,100 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
-              Column(
+            ),
+            SizedBox(
+              child: Column(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 25),
-                    child: AnimatedSize(
-                      curve: Curves.ease,
-                      duration: const Duration(milliseconds: 500),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          color: Colors.white,
-                          boxShadow: const [
-                            shadowMedium,
-                          ],
+                  SizedBox(
+                    child: Column(
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 25),
+                          child: AnimatedSize(
+                            curve: Curves.ease,
+                            duration: const Duration(milliseconds: 500),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: Colors.white,
+                                boxShadow: const [
+                                  shadowMedium,
+                                ],
+                              ),
+                              child: _cardFilter(),
+                            ),
+                          ),
                         ),
-                        child: _cardFilter(),
-                      ),
+                      ],
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 25),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        spaceHeightMedium,
-                        _dataPengajuan(),
-                        if (skemaKreditController.valueSkemaKredit != null)
-                          Column(
-                            children: [
-                              spaceHeightMedium,
-                              _skemaKreditWithNameSkema(isMobile),
-                            ],
-                          )
-                        else
-                          Column(
-                            children: [
-                              spaceHeightMedium,
-                              _skemaKredit(isMobile),
-                            ],
-                          ),
-                        role == pincab
-                            ? skemaKreditController.valueSkemaKredit != null
+                  spaceHeightMedium,
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 25),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _dataPengajuan(),
+                            if (skemaKreditController.valueSkemaKredit != null)
+                              Column(
+                                children: [
+                                  spaceHeightMedium,
+                                  _skemaKreditWithNameSkema(isMobile),
+                                ],
+                              )
+                            else
+                              Column(
+                                children: [
+                                  spaceHeightMedium,
+                                  _skemaKredit(isMobile),
+                                ],
+                              ),
+                            role == pincab
+                                ? skemaKreditController.valueSkemaKredit != null
+                                    ? Container()
+                                    : Column(
+                                        children: [
+                                          spaceHeightMedium,
+                                          _posisiPengajuan(isMobile),
+                                        ],
+                                      )
+                                : const SizedBox(),
+                            dataCabangController.selectCabang.value ==
+                                    "Semua cabang"
                                 ? Container()
-                                : Column(
-                                    children: [
-                                      spaceHeightMedium,
-                                      _posisiPengajuan(isMobile),
-                                    ],
-                                  )
-                            : const SizedBox(),
-                        dataCabangController.selectCabang.value ==
-                                "Semua cabang"
-                            ? Container()
-                            : skemaKreditController.valueSkemaKredit != null
-                                ? Container()
-                                : Column(
-                                    children: [
-                                      spaceHeightMedium,
-                                      _posisiPengajuan(isMobile),
-                                    ],
-                                  ),
-                        dataCabangController.selectCabang.value ==
-                                "Semua cabang"
-                            ? role == pincab
-                                ? const SizedBox()
-                                : Column(
-                                    children: [
-                                      spaceHeightMedium,
-                                      _ratingCabang(),
-                                    ],
-                                  )
-                            : Container(),
-                        spaceHeightMedium,
-                      ],
+                                : skemaKreditController.valueSkemaKredit != null
+                                    ? Container()
+                                    : Column(
+                                        children: [
+                                          spaceHeightMedium,
+                                          _posisiPengajuan(isMobile),
+                                        ],
+                                      ),
+                            dataCabangController.selectCabang.value ==
+                                    "Semua cabang"
+                                ? role == pincab
+                                    ? const SizedBox()
+                                    : Column(
+                                        children: [
+                                          spaceHeightMedium,
+                                          _ratingCabang(),
+                                        ],
+                                      )
+                                : Container(),
+                            spaceHeightMedium,
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ],
               ),
-            ],
-          ),
-        ),
-      ),
-    );
+            )
+          ],
+        ));
   }
 
   SizedBox _formDate() {

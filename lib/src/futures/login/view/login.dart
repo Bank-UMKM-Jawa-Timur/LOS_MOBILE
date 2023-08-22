@@ -1,5 +1,4 @@
 import 'package:community_material_icon/community_material_icon.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -16,8 +15,7 @@ import 'package:los_mobile/utils/preferens_user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
-  bool biometric;
-  Login({super.key, required this.biometric});
+  const Login({super.key});
 
   @override
   State<Login> createState() => _LoginState();
@@ -30,14 +28,24 @@ class _LoginState extends State<Login> {
   bool isAuthBiometric = false;
   late final LocalAuthentication auth;
   bool supportState = false;
+  SharedPreferences? spref;
 
   @override
   void initState() {
-    super.initState();
+    cekSession();
     auth = LocalAuthentication();
     auth.isDeviceSupported().then((bool isSupported) => setState(() {
           supportState = isSupported;
         }));
+    super.initState();
+  }
+
+  cekSession() async {
+    spref = await SharedPreferences.getInstance();
+    isAuthBiometric = spref!.getBool('biometric') == null
+        ? false
+        : spref!.getBool('biometric')!;
+    setState(() {});
   }
 
   Future<void> _authenticate() async {
@@ -153,6 +161,7 @@ class _LoginState extends State<Login> {
                   ? null
                   : () async {
                       if (cekSessionLogin.cekSessionModel?.status == "sukses") {
+                        print("Session ligin dijalankan");
                         var sprefs = await SharedPreferences.getInstance();
                         if ((loginController.emailNipController.text ==
                                     sprefs.getString("email") ||
@@ -167,10 +176,11 @@ class _LoginState extends State<Login> {
                             loginController.login();
                           }
                         } else {
-                          snackbarError("Email atau NIP Tidak di temukan");
+                          snackbarError("Email atau NIP dan Password Salah");
                         }
                       } else {
                         loginController.login();
+                        print("Controller ligin dijalankan");
                       }
                     },
               icon: const Icon(CommunityMaterialIcons.login),
@@ -182,74 +192,37 @@ class _LoginState extends State<Login> {
             ),
           ),
         ),
-        widget.biometric == true ? spaceWidthVerySmall : const SizedBox(),
-        widget.biometric == true
-            ? Expanded(
-                flex: 1,
-                child: InkWell(
-                  onTap: _authenticate,
-                  child: Container(
-                    height: 40,
-                    decoration: BoxDecoration(
-                        color: mPrimaryColor,
-                        borderRadius: BorderRadius.circular(5)),
-                    child: const Icon(
-                      CommunityMaterialIcons.fingerprint,
-                      size: 30,
-                      color: Colors.white,
-                    ),
-                  ),
+        if (cekSessionLogin.cekSessionModel?.status == "sukses")
+          if (isAuthBiometric == true) spaceWidthVerySmall else const SizedBox()
+        else
+          const SizedBox(),
+        if (cekSessionLogin.statusSession.value == "sukses")
+          if (isAuthBiometric == true)
+            Expanded(
+              flex: 1,
+              child: InkWell(
+                onTap: _authenticate,
+                child: Container(
+                  height: 40,
+                  decoration: BoxDecoration(
+                      color: mPrimaryColor,
+                      borderRadius: BorderRadius.circular(5)),
+                  child: GetPlatform.isIOS
+                      ? Container(
+                          margin: const EdgeInsets.all(3),
+                          child: Image.asset("assets/icon/face_id.png"))
+                      : const Icon(
+                          CommunityMaterialIcons.fingerprint,
+                          size: 30,
+                          color: Colors.white,
+                        ),
                 ),
-              )
-            : Container()
-      ],
-    );
-  }
-
-  Widget _buttomLoginLosConnection() {
-    return Row(
-      children: [
-        Expanded(
-          flex: 4,
-          child: SizedBox(
-            height: 40,
-            child: ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: mPrimaryColor,
               ),
-              onPressed: () async {
-                snackbarError("Koneksi Anda Terputus!");
-              },
-              icon: const Icon(CommunityMaterialIcons.login),
-              label: const Text(
-                "Login",
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-              ),
-            ),
-          ),
-        ),
-        widget.biometric == true ? spaceWidthVerySmall : const SizedBox(),
-        widget.biometric == true
-            ? Expanded(
-                flex: 1,
-                child: InkWell(
-                  onTap: () {
-                    snackbarError("Koneksi Anda Terputus!");
-                  },
-                  child: Container(
-                    height: 40,
-                    decoration: BoxDecoration(
-                        color: mPrimaryColor,
-                        borderRadius: BorderRadius.circular(5)),
-                    child: const Icon(
-                      CommunityMaterialIcons.fingerprint,
-                      size: 30,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              )
-            : Container()
+            )
+          else
+            Container()
+        else
+          Container(),
       ],
     );
   }

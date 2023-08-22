@@ -25,17 +25,13 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   void initState() {
-    super.initState();
     splash();
+    super.initState();
   }
 
   void splash() async {
-    SharedPreferences spref = await SharedPreferences.getInstance();
-    bool biometric = spref.getBool("biometric") == null
-        ? false
-        : spref.getBool("biometric")!;
     Timer(const Duration(seconds: 3), () {
-      Get.offAll(Login(biometric: biometric));
+      Get.offAll(const Login());
     });
   }
 
