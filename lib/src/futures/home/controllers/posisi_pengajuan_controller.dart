@@ -20,6 +20,7 @@ class PosisiPengajuanController extends GetxController {
   var totalPosisiPbo = 0.obs;
   var totalPosisiPenyelia = 0.obs;
   var totalPosisiStaf = 0.obs;
+  var posisiPengajuanLength = 0.obs;
 
   // Get Controller
   PosisiPengajuanModel? posisiPengajuanModel;
@@ -46,22 +47,53 @@ class PosisiPengajuanController extends GetxController {
       isLoading(true);
       http.Response response = await http.get(
         Uri.parse(
-          '$base_url/v1/get-posisi-pengajuan?tAwal=${ratingCabangController.firstDateFilter.simpleDate()}&tAkhir=${ratingCabangController.lastDateFilter.simpleDate()}&cabang=${cabangC.selectKodeCabang.value}',
-        ),
+            // cabangC.selectKodeCabang.value.isNotEmpty
+            '$base_url/v1/get-posisi-pengajuan?tAwal=${ratingCabangController.firstDateFilter.simpleDate()}&tAkhir=${ratingCabangController.lastDateFilter.simpleDate()}&cabang=${cabangC.selectKodeCabang.value}'
+            // :
+            // '$base_url/v1/get-posisi-pengajuan?tAwal=${ratingCabangController.firstDateFilter.simpleDate()}&tAkhir=${ratingCabangController.lastDateFilter.simpleDate()}',
+            ),
         headers: headers,
       );
       if (response.statusCode == 200) {
         var result = jsonDecode(response.body);
         var typeData = result['data'];
         posisiPengajuanModel = PosisiPengajuanModel.fromJson(result);
+        posisiPengajuanLength.value = posisiPengajuanModel!.data.length;
+        print(posisiPengajuanLength.value);
         if (typeData.isEmpty) {
           totalPosisi.value = 0;
+          totalPosisiPincab.value = 0;
+          totalPosisiPbp.value = 0;
+          totalPosisiPbo.value = 0;
+          totalPosisiPenyelia.value = 0;
+          totalPosisiStaf.value = 0;
         } else {
+          // if (posisiPengajuanModel!.data.length != 1) {
+          //   for (var i = 0; i < posisiPengajuanModel!.data.length; i++) {
+          //     totalPosisi.value = posisiPengajuanModel!.data[i].pincab +
+          //         posisiPengajuanModel!.data[i].pbp +
+          //         posisiPengajuanModel!.data[i].pbo +
+          //         posisiPengajuanModel!.data[i].penyelia +
+          //         posisiPengajuanModel!.data[i].staff;
+          //     totalPosisiPincab.value += posisiPengajuanModel!.data[i].pincab;
+          //     totalPosisiPbp.value += posisiPengajuanModel!.data[i].pbp;
+          //     totalPosisiPbo.value += posisiPengajuanModel!.data[i].pbo;
+          //     totalPosisiPenyelia.value +=
+          //         posisiPengajuanModel!.data[i].penyelia;
+          //     totalPosisiStaf.value += posisiPengajuanModel!.data[i].staff;
+          //   }
+          // } else {
           totalPosisi.value = posisiPengajuanModel!.data[0].pincab +
               posisiPengajuanModel!.data[0].pbp +
               posisiPengajuanModel!.data[0].pbo +
               posisiPengajuanModel!.data[0].penyelia +
               posisiPengajuanModel!.data[0].staff;
+          totalPosisiPincab.value = posisiPengajuanModel!.data[0].pincab;
+          totalPosisiPbp.value = posisiPengajuanModel!.data[0].pbp;
+          totalPosisiPbo.value = posisiPengajuanModel!.data[0].pbo;
+          totalPosisiPenyelia.value = posisiPengajuanModel!.data[0].penyelia;
+          totalPosisiStaf.value = posisiPengajuanModel!.data[0].staff;
+          // }
         }
       } else {
         debugPrint('error fetching data ${response.statusCode}');

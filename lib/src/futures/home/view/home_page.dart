@@ -12,6 +12,10 @@ import 'package:los_mobile/src/futures/home/view/components/pie_chart_data_penga
 import 'package:los_mobile/src/futures/home/view/components/pie_chart_posisi_pengajuan.dart';
 import 'package:los_mobile/src/futures/home/view/components/pie_chart_skema_kredit.dart';
 import 'package:los_mobile/src/futures/home/view/components/pie_chart_skema_kredit_whith_name.dart';
+import 'package:los_mobile/src/futures/home/view/excel/posisi_pengajuan/table_posisi_pengajuan.dart';
+import 'package:los_mobile/src/futures/home/view/excel/semua_skema_dan_semua_cabang.dart/table_skema_cabang.dart';
+import 'package:los_mobile/src/futures/home/view/excel/skema_with_name/table_skema_with_name.dart';
+import 'package:los_mobile/src/futures/home/view/pdf/export_pdf.dart';
 import 'package:los_mobile/src/futures/home/view/shimmer_home_page.dart';
 import 'package:los_mobile/src/widgets/all_widgets.dart';
 import 'package:los_mobile/src/widgets/dialog/my_alert_dialog.dart';
@@ -58,6 +62,7 @@ class _HomePageState extends State<HomePage> {
   String? valueCodeCabang;
   String? valueCabang;
   String? valueSkemaKredit;
+  String? valueExportData;
   bool typeFilter = false;
 
   @override
@@ -65,6 +70,11 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     getUser();
   }
+
+  List<dynamic> exportData = [
+    'PDF',
+    'Excel',
+  ];
 
   totalPengajuan() {}
 
@@ -111,10 +121,16 @@ class _HomePageState extends State<HomePage> {
     skemaKreditController.skemaPosisiPbo.value = 0;
     skemaKreditController.skemaPosisiPenyelia.value = 0;
     skemaKreditController.skemaPosisiStaf.value = 0;
+    // data pengajuan
+    dataPengajuanController.totalPengajuan.value = 0;
+    dataPengajuanController.totalDisetujui.value = 0;
+    dataPengajuanController.totalDitolak.value = 0;
+    dataPengajuanController.totalDiproses.value = 0;
     dataPengajuanController.getDataPengajuan();
     dataCabangController.selectKodeCabang.value.isEmpty
         ? null
         : posisiPengajuanController.getPosisiPengajuan();
+    // posisiPengajuanController.getPosisiPengajuan();
     dataCabangController.selectKodeCabang.value.isEmpty
         ? ratingCabangController.getDataRating()
         : null;
@@ -122,6 +138,7 @@ class _HomePageState extends State<HomePage> {
     skemaKreditController.valueSkemaKredit == null
         ? null
         : rankingSkemaController.getRankingSkema();
+    dataCabangController.typeFilter.value = true;
     setState(() {});
   }
 
@@ -748,7 +765,9 @@ class _HomePageState extends State<HomePage> {
                                 style: textBoldDarkMedium),
                             onChanged: ((value) {
                               if (mounted) {
-                                valueSkemaKredit = value as String?;
+                                setState(() {
+                                  valueSkemaKredit = value as String?;
+                                });
                               }
                             }),
                             items: skemaKreditController.listSkema.map((item) {
@@ -771,63 +790,149 @@ class _HomePageState extends State<HomePage> {
                             role == direksi
                         ? _formCabang()
                         : Container(),
-                    spaceHeightMedium,
-                    SizedBox(
-                      width: Get.width,
-                      child: Row(
-                        children: [
-                          Expanded(
-                            flex: 1,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: mPrimaryColor,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius:
-                                      BorderRadius.circular(20), // <-- Radius
-                                ),
-                              ),
-                              onPressed: () {
-                                refreshAndFilter();
-                              },
-                              child: const Text(
-                                "FILTER",
-                                style: textBoldLightMedium,
-                              ),
-                            ),
-                          ),
-                          if (dataCabangController.selectCabang.value ==
-                              "Semua cabang")
-                            Container()
-                          else
-                            spaceWidthSmall,
-                          if (dataCabangController.selectCabang.value ==
-                              "Semua cabang")
-                            Container()
-                          else
-                            Expanded(
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFFFFE5E4),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius:
-                                        BorderRadius.circular(20), // <-- Radius
+                    // Export data
+                    dataCabangController.typeFilter.value == true
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              spaceHeightMedium,
+                              const Text("Export", style: textBoldDarkMedium),
+                              const SizedBox(height: 5),
+                              SizedBox(
+                                height: 35,
+                                child: DropdownButtonFormField(
+                                  isDense: true,
+                                  isExpanded: true,
+                                  decoration: const InputDecoration(
+                                    contentPadding: EdgeInsets.all(8),
+                                    focusedBorder: focusedBorder,
+                                    enabledBorder: enabledBorder,
+                                    border: OutlineInputBorder(),
+                                    filled: true,
+                                    fillColor: Colors.white,
                                   ),
-                                ),
-                                onPressed: () {
-                                  resetFilter();
-                                },
-                                child: const Text(
-                                  "Reset",
-                                  style: TextStyle(color: mPrimaryColor),
+                                  value: valueExportData,
+                                  hint: const Text("PDF",
+                                      style: textBoldDarkMedium),
+                                  onChanged: ((value) {
+                                    valueExportData = value as String?;
+                                    print(valueExportData);
+                                  }),
+                                  items: exportData.map((item) {
+                                    return DropdownMenuItem(
+                                      child: Text(
+                                        item,
+                                        style: textBoldDarkMedium,
+                                      ),
+                                      value: item,
+                                    );
+                                  }).toList(),
                                 ),
                               ),
-                            )
-                        ],
-                      ),
-                    )
+                            ],
+                          )
+                        : Container(),
+                    spaceHeightMedium,
+                    _bottomFilter(),
+                    dataCabangController.typeFilter.value == true
+                        ? _bottomExport()
+                        : Container(),
                   ],
                 )
               : Container(),
+        ],
+      ),
+    );
+  }
+
+  SizedBox _bottomExport() {
+    return SizedBox(
+      width: Get.width,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: mPrimaryColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20), // <-- Radius
+          ),
+        ),
+        onPressed: () {
+          if (valueExportData == null || valueExportData == "PDF") {
+            ExportPdf().printPdf();
+          } else {
+            if (dataCabangController.selectKodeCabang.isNotEmpty) {
+              if (skemaKreditController.valueSkemaKredit == null) {
+                ExportPosisiPengajuan().excelPosisiPengajuan(); //kesalahan
+              } else {
+                ExportSkemaWithName().excelSkemaWithName();
+              }
+            } else {
+              if (skemaKreditController.valueSkemaKredit == null) {
+                ExportSemuaSkemaDanSemuaCabang()
+                    .excelSemuaSkemaDanSemuaCabang();
+              } else {
+                ExportSkemaWithName().excelSkemaWithName();
+              }
+            }
+            // ExportPosisiPengajuan().excelPosisiPengajuan();
+            // ExportSkemaWithName().excelSkemaWithName();
+            // ExportSemuaSkemaDanSemuaCabang().excelSemuaSkemaDanSemuaCabang();
+          }
+        },
+        child: const Text(
+          "EXPORT",
+          style: textBoldLightMedium,
+        ),
+      ),
+    );
+  }
+
+  SizedBox _bottomFilter() {
+    return SizedBox(
+      width: Get.width,
+      child: Row(
+        children: [
+          Expanded(
+            flex: 1,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: mPrimaryColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20), // <-- Radius
+                ),
+              ),
+              onPressed: () {
+                refreshAndFilter();
+              },
+              child: const Text(
+                "FILTER",
+                style: textBoldLightMedium,
+              ),
+            ),
+          ),
+          if (dataCabangController.selectCabang.value == "Semua cabang")
+            Container()
+          else
+            spaceWidthSmall,
+          if (dataCabangController.selectCabang.value == "Semua cabang")
+            Container()
+          else
+            Expanded(
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFFFE5E4),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20), // <-- Radius
+                  ),
+                ),
+                onPressed: () {
+                  resetFilter();
+                },
+                child: const Text(
+                  "Reset",
+                  style: TextStyle(color: mPrimaryColor),
+                ),
+              ),
+            )
         ],
       ),
     );
@@ -838,39 +943,49 @@ class _HomePageState extends State<HomePage> {
       skemaKreditController.valueSkemaKredit == null
           ? "${dataPengajuanController.totalPengajuan.value}"
           : skemaKreditController.totalPengajuanSkema.value.toString(),
-      dataCabangController.selectKodeCabang.value.isEmpty
-          ? skemaKreditController.valueSkemaKredit == null
-              ? ratingCabangController.ratingCabangModel!.totalDisetujui
-              : skemaKreditController.totalSkemaDisetujui.value
-          : dataPengajuanController.dataPengajuanModel!.data.isEmpty
-              ? 0
-              : skemaKreditController.valueSkemaKredit == null
-                  ? int.parse(
-                      "${dataPengajuanController.dataPengajuanModel?.data[0].totalDisetujui}",
-                    )
-                  : skemaKreditController.totalSkemaDisetujui.value,
-      dataCabangController.selectKodeCabang.value.isEmpty
-          ? skemaKreditController.valueSkemaKredit == null
-              ? ratingCabangController.ratingCabangModel!.totalDitolak
-              : skemaKreditController.totalSkemaDitolak.value
-          : dataPengajuanController.dataPengajuanModel!.data.isEmpty
-              ? 0
-              : skemaKreditController.valueSkemaKredit == null
-                  ? int.parse(
-                      "${dataPengajuanController.dataPengajuanModel?.data[0].totalDitolak}",
-                    )
-                  : skemaKreditController.totalSkemaDitolak.value,
-      dataCabangController.selectKodeCabang.value.isEmpty
-          ? skemaKreditController.valueSkemaKredit == null
-              ? ratingCabangController.ratingCabangModel!.totalDiproses
-              : skemaKreditController.totalProsesSkema.value
-          : dataPengajuanController.dataPengajuanModel!.data.isEmpty
-              ? 0
-              : skemaKreditController.valueSkemaKredit == null
-                  ? int.parse(
-                      "${dataPengajuanController.dataPengajuanModel?.data[0].totalDiproses}",
-                    )
-                  : skemaKreditController.totalProsesSkema.value,
+      skemaKreditController.valueSkemaKredit == null
+          ? dataPengajuanController.totalDisetujui.value
+          : skemaKreditController.totalSkemaDisetujui.value,
+      skemaKreditController.valueSkemaKredit == null
+          ? dataPengajuanController.totalDitolak.value
+          : skemaKreditController.totalSkemaDitolak.value,
+      skemaKreditController.valueSkemaKredit == null
+          ? dataPengajuanController.totalDiproses.value
+          : skemaKreditController.totalProsesSkema.value,
+      // dataCabangController.selectKodeCabang.value.isEmpty
+      //     ? skemaKreditController.valueSkemaKredit == null
+      //         ? ratingCabangController.ratingCabangModel!.totalDisetujui
+      //         : skemaKreditController.totalSkemaDisetujui.value
+      //     :
+      //     dataPengajuanController.dataPengajuanModel!.data.isEmpty
+      //         ? 0
+      //         : skemaKreditController.valueSkemaKredit == null
+      //             ? int.parse(
+      //                 "${dataPengajuanController.dataPengajuanModel?.data[0].totalDisetujui}",
+      //               )
+      //             : skemaKreditController.totalSkemaDisetujui.value,
+      // dataCabangController.selectKodeCabang.value.isEmpty
+      //     ? skemaKreditController.valueSkemaKredit == null
+      //         ? ratingCabangController.ratingCabangModel!.totalDitolak
+      //         : skemaKreditController.totalSkemaDitolak.value
+      //     : dataPengajuanController.dataPengajuanModel!.data.isEmpty
+      //         ? 0
+      //         : skemaKreditController.valueSkemaKredit == null
+      //             ? int.parse(
+      //                 "${dataPengajuanController.dataPengajuanModel?.data[0].totalDitolak}",
+      //               )
+      //             : skemaKreditController.totalSkemaDitolak.value,
+      // dataCabangController.selectKodeCabang.value.isEmpty
+      //     ? skemaKreditController.valueSkemaKredit == null
+      //         ? ratingCabangController.ratingCabangModel!.totalDiproses
+      //         : skemaKreditController.totalProsesSkema.value
+      //     : dataPengajuanController.dataPengajuanModel!.data.isEmpty
+      //         ? 0
+      //         : skemaKreditController.valueSkemaKredit == null
+      //             ? int.parse(
+      //                 "${dataPengajuanController.dataPengajuanModel?.data[0].totalDiproses}",
+      //               )
+      //             : skemaKreditController.totalProsesSkema.value,
     );
   }
 

@@ -13,6 +13,7 @@ class DataCabangController extends GetxController {
   DataCabangModel? dataCabangModel;
   var selectCabang = "Semua cabang".obs;
   var selectKodeCabang = "".obs;
+  var typeFilter = false.obs;
 
   @override
   Future<void> onInit() async {

@@ -36,6 +36,8 @@ class SkemaKreditController extends GetxController {
   var skemaPosisiPbo = 0.obs;
   var skemaPosisiPenyelia = 0.obs;
   var skemaPosisiStaf = 0.obs;
+  var lengthSkemaWithoutName = 0.obs;
+  var lengthSkemaWithName = 0.obs;
 
   var ratingCabangC = Get.put(RatingCabangController());
   var dataCabangC = Get.find<DataCabangController>();
@@ -82,6 +84,7 @@ class SkemaKreditController extends GetxController {
         // Cek Skema jika menggunakan nama Skema kredit
         if (valueSkemaKredit == null) {
           skemaKreditModel = SkemaKreditModel.fromJson(result);
+          lengthSkemaWithoutName.value = skemaKreditModel!.data.length;
           if (skemaKreditModel!.data.isNotEmpty) {
             for (var i = 0; i < skemaKreditModel!.data.length; i++) {
               totalSkemaPkpj.value += int.parse(skemaKreditModel!.data[i].pkpj);
@@ -109,6 +112,7 @@ class SkemaKreditController extends GetxController {
 
           // JIka tidak menggunakan nama skema
         } else {
+          lengthSkemaWithName.value = result['data'].length;
           if (dataCabangC.selectKodeCabang.value.isEmpty) {
             skemaKreditWithNameSkemaModel =
                 SkemaKreditWithNameSkemaModel.fromJson(result);
@@ -184,6 +188,8 @@ class SkemaKreditController extends GetxController {
           totalPengajuanSkema.value = totalProsesSkema.value +
               totalSkemaDisetujui.value +
               totalSkemaDitolak.value;
+
+          print(totalProsesSkema.value);
         }
       } else {
         debugPrint('error fetching data ${response.statusCode} SKEMA KREDIT');
