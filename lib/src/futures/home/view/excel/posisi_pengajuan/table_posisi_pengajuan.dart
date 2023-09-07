@@ -187,8 +187,6 @@ class ExportPosisiPengajuan {
     cellSkema.cellStyle.hAlign = HAlignType.center;
     cellSkema.cellStyle.vAlign = VAlignType.center;
 
-    print(indexPosisiPengajuan);
-
     for (var i = indexPosisiPengajuan + 4;
         i <
             skemaKreditC.lengthSkemaWithoutName.value +
