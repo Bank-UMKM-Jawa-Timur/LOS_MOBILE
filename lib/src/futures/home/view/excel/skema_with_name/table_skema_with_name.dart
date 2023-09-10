@@ -1,22 +1,22 @@
 import 'dart:io';
 
 import 'package:get/get.dart';
-import 'package:los_mobile/src/futures/home/controllers/data_cabang_controller.dart';
-import 'package:los_mobile/src/futures/home/controllers/data_pengajuan_controller.dart';
-import 'package:los_mobile/src/futures/home/controllers/posisi_pengajuan_controller.dart';
-import 'package:los_mobile/src/futures/home/controllers/ranking/rating_cabang_controller.dart';
-import 'package:los_mobile/src/futures/home/controllers/skema_kredit_controller.dart';
+import 'package:los_mobile/src/futures/exports/controllers/export_data_cabang_controller.dart';
+import 'package:los_mobile/src/futures/exports/controllers/export_data_pengajuan_controller.dart';
+import 'package:los_mobile/src/futures/exports/controllers/export_posisi_pengajuan_controller.dart';
+import 'package:los_mobile/src/futures/exports/controllers/export_ranking/export_rating_cabang_controller.dart';
+import 'package:los_mobile/src/futures/exports/controllers/export_skema_kredit_controller.dart';
 import 'package:los_mobile/utils/constant.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:syncfusion_flutter_xlsio/xlsio.dart';
 
 class ExportSkemaWithName {
-  var dataPengajuanC = Get.find<DataPengajuanController>();
-  var posisiPengajuanC = Get.find<PosisiPengajuanController>();
-  var skemaKreditC = Get.find<SkemaKreditController>();
-  var cabangC = Get.find<DataCabangController>();
-  var ratingCabangC = Get.find<RatingCabangController>();
+  var dataPengajuanC = Get.find<ExportDataPengajuanController>();
+  var posisiPengajuanC = Get.find<ExportPosisiPengajuanController>();
+  var skemaKreditC = Get.find<ExportSkemaKreditController>();
+  var cabangC = Get.find<ExportDataCabangController>();
+  var ratingCabangC = Get.find<ExportRatingCabangController>();
 
   void excelSkemaWithName() async {
     final Workbook workbook = Workbook(1);

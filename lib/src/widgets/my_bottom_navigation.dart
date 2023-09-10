@@ -2,6 +2,7 @@ import 'package:community_material_icon/community_material_icon.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:los_mobile/src/futures/exports/view/export.dart';
 import 'package:los_mobile/src/futures/home/view/home_commingsoon.dart';
 import 'package:los_mobile/src/futures/home/view/home_test.dart';
 import 'package:los_mobile/src/widgets/dialog/my_alert_dialog.dart';
@@ -30,7 +31,7 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
     const Text(
       'Index 1: Business',
     ),
-    const ProfilePage(),
+    const ExportPage(),
   ];
 
   static const List _widgetOptionsComming = [
@@ -102,10 +103,10 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
         ),
         BottomNavigationBarItem(
           icon: Icon(
-            Icons.person_2_outlined,
+            Icons.print_outlined,
             size: 25,
           ),
-          label: 'Profile',
+          label: 'Export',
         ),
       ],
       currentIndex: _selectedIndex,

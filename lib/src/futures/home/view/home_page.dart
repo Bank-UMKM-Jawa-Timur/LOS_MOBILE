@@ -12,11 +12,8 @@ import 'package:los_mobile/src/futures/home/view/components/pie_chart_data_penga
 import 'package:los_mobile/src/futures/home/view/components/pie_chart_posisi_pengajuan.dart';
 import 'package:los_mobile/src/futures/home/view/components/pie_chart_skema_kredit.dart';
 import 'package:los_mobile/src/futures/home/view/components/pie_chart_skema_kredit_whith_name.dart';
-import 'package:los_mobile/src/futures/home/view/excel/posisi_pengajuan/table_posisi_pengajuan.dart';
-import 'package:los_mobile/src/futures/home/view/excel/semua_skema_dan_semua_cabang.dart/table_skema_cabang.dart';
-import 'package:los_mobile/src/futures/home/view/excel/skema_with_name/table_skema_with_name.dart';
-import 'package:los_mobile/src/futures/home/view/pdf/export_pdf.dart';
 import 'package:los_mobile/src/futures/home/view/shimmer_home_page.dart';
+import 'package:los_mobile/src/futures/profile/view/profile_page.dart';
 import 'package:los_mobile/src/widgets/all_widgets.dart';
 import 'package:los_mobile/src/widgets/dialog/my_alert_dialog.dart';
 import 'package:los_mobile/src/widgets/my_border_form.dart';
@@ -62,7 +59,6 @@ class _HomePageState extends State<HomePage> {
   String? valueCodeCabang;
   String? valueCabang;
   String? valueSkemaKredit;
-  String? valueExportData;
   bool typeFilter = false;
 
   @override
@@ -70,11 +66,6 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     getUser();
   }
-
-  List<dynamic> exportData = [
-    'PDF',
-    'Excel',
-  ];
 
   totalPengajuan() {}
 
@@ -178,31 +169,37 @@ class _HomePageState extends State<HomePage> {
       titleSpacing: isMobile ? -25 : -140,
       leading: Padding(
         padding: const EdgeInsets.only(left: 25),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            circleAvatarWidget.circleAvatarWidget(name, 21, 21),
-          ],
+        child: InkWell(
+          onTap: () => Get.to(const ProfilePage()),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              circleAvatarWidget.circleAvatarWidget(name, 21, 21),
+            ],
+          ),
         ),
       ),
       centerTitle: false,
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            shortenLastName(name),
-            style: textBoldLightLarge,
-          ),
-          const SizedBox(height: 3),
-          Text(
-            bagian == "null" ? jabatan : "$jabatan $bagian",
-            style: const TextStyle(
-              fontSize: 9,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFFEBEBEB),
+      title: InkWell(
+        onTap: () => Get.to(const ProfilePage()),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              shortenLastName(name),
+              style: textBoldLightLarge,
             ),
-          )
-        ],
+            const SizedBox(height: 3),
+            Text(
+              bagian == "null" ? jabatan : "$jabatan $bagian",
+              style: const TextStyle(
+                fontSize: 9,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFFEBEBEB),
+              ),
+            )
+          ],
+        ),
       ),
       actions: [
         Padding(
@@ -790,98 +787,12 @@ class _HomePageState extends State<HomePage> {
                             role == direksi
                         ? _formCabang()
                         : Container(),
-                    // Export data
-                    dataCabangController.typeFilter.value == true
-                        ? Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              spaceHeightMedium,
-                              const Text("Export", style: textBoldDarkMedium),
-                              const SizedBox(height: 5),
-                              SizedBox(
-                                height: 35,
-                                child: DropdownButtonFormField(
-                                  isDense: true,
-                                  isExpanded: true,
-                                  decoration: const InputDecoration(
-                                    contentPadding: EdgeInsets.all(8),
-                                    focusedBorder: focusedBorder,
-                                    enabledBorder: enabledBorder,
-                                    border: OutlineInputBorder(),
-                                    filled: true,
-                                    fillColor: Colors.white,
-                                  ),
-                                  value: valueExportData,
-                                  hint: const Text("PDF",
-                                      style: textBoldDarkMedium),
-                                  onChanged: ((value) {
-                                    valueExportData = value as String?;
-                                    print(valueExportData);
-                                  }),
-                                  items: exportData.map((item) {
-                                    return DropdownMenuItem(
-                                      child: Text(
-                                        item,
-                                        style: textBoldDarkMedium,
-                                      ),
-                                      value: item,
-                                    );
-                                  }).toList(),
-                                ),
-                              ),
-                            ],
-                          )
-                        : Container(),
                     spaceHeightMedium,
                     _bottomFilter(),
-                    dataCabangController.typeFilter.value == true
-                        ? _bottomExport()
-                        : Container(),
                   ],
                 )
               : Container(),
         ],
-      ),
-    );
-  }
-
-  SizedBox _bottomExport() {
-    return SizedBox(
-      width: Get.width,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: mPrimaryColor,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20), // <-- Radius
-          ),
-        ),
-        onPressed: () {
-          if (valueExportData == null || valueExportData == "PDF") {
-            ExportPdf().printPdf();
-          } else {
-            if (dataCabangController.selectKodeCabang.isNotEmpty) {
-              if (skemaKreditController.valueSkemaKredit == null) {
-                ExportPosisiPengajuan().excelPosisiPengajuan(); //kesalahan
-              } else {
-                ExportSkemaWithName().excelSkemaWithName();
-              }
-            } else {
-              if (skemaKreditController.valueSkemaKredit == null) {
-                ExportSemuaSkemaDanSemuaCabang()
-                    .excelSemuaSkemaDanSemuaCabang();
-              } else {
-                ExportSkemaWithName().excelSkemaWithName();
-              }
-            }
-            // ExportPosisiPengajuan().excelPosisiPengajuan();
-            // ExportSkemaWithName().excelSkemaWithName();
-            // ExportSemuaSkemaDanSemuaCabang().excelSemuaSkemaDanSemuaCabang();
-          }
-        },
-        child: const Text(
-          "EXPORT",
-          style: textBoldLightMedium,
-        ),
       ),
     );
   }

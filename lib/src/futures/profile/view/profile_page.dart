@@ -71,6 +71,7 @@ class _ProfilePageState extends State<ProfilePage> {
           child: Text("Profile", style: TextStyle(color: Colors.black)),
         ),
         backgroundColor: mBgColor,
+        iconTheme: const IconThemeData(color: Colors.black),
         elevation: 0,
         centerTitle: false,
       ),

@@ -1,10 +1,10 @@
 import 'dart:io';
 import 'package:get/get.dart';
-import 'package:los_mobile/src/futures/home/controllers/data_cabang_controller.dart';
-import 'package:los_mobile/src/futures/home/controllers/data_pengajuan_controller.dart';
-import 'package:los_mobile/src/futures/home/controllers/posisi_pengajuan_controller.dart';
-import 'package:los_mobile/src/futures/home/controllers/ranking/rating_cabang_controller.dart';
-import 'package:los_mobile/src/futures/home/controllers/skema_kredit_controller.dart';
+import 'package:los_mobile/src/futures/exports/controllers/export_data_cabang_controller.dart';
+import 'package:los_mobile/src/futures/exports/controllers/export_data_pengajuan_controller.dart';
+import 'package:los_mobile/src/futures/exports/controllers/export_posisi_pengajuan_controller.dart';
+import 'package:los_mobile/src/futures/exports/controllers/export_ranking/export_rating_cabang_controller.dart';
+import 'package:los_mobile/src/futures/exports/controllers/export_skema_kredit_controller.dart';
 import 'package:los_mobile/src/futures/home/view/pdf/data_pengajuan/grand_total_data_pengajua.dart';
 import 'package:los_mobile/src/futures/home/view/pdf/data_pengajuan/header_main_data_pengajuan.dart';
 import 'package:los_mobile/src/futures/home/view/pdf/data_pengajuan/second_header_data_pengajuan.dart';
@@ -28,11 +28,11 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
 class ExportPdf {
-  var dataPengajuanC = Get.find<DataPengajuanController>();
-  var posisiPengajuanC = Get.find<PosisiPengajuanController>();
-  var skemaKreditC = Get.find<SkemaKreditController>();
-  var cabangC = Get.find<DataCabangController>();
-  var ratingCabangC = Get.find<RatingCabangController>();
+  var dataPengajuanC = Get.find<ExportDataPengajuanController>();
+  var posisiPengajuanC = Get.find<ExportPosisiPengajuanController>();
+  var skemaKreditC = Get.find<ExportSkemaKreditController>();
+  var cabangC = Get.find<ExportDataCabangController>();
+  var ratingCabangC = Get.find<ExportRatingCabangController>();
 
   void printPdf() async {
     final pdf = pw.Document();
@@ -70,7 +70,8 @@ class ExportPdf {
                         secondHeaderPosisiPengajuan(),
                         pw.ListView.builder(
                           itemCount: posisiPengajuanC
-                              .posisiPengajuanModel!.data.length,
+                                  .posisiPengajuanModel?.data.length ??
+                              0,
                           itemBuilder: (context, index) {
                             return valueTablePosisiPengajuan(
                               context,
@@ -139,7 +140,8 @@ class ExportPdf {
                     headerMainDataPengajuan(),
                     secondHeaderDataPengajuan(),
                     pw.ListView.builder(
-                      itemCount: dataPengajuanC.dataPengajuanModel!.data.length,
+                      itemCount:
+                          dataPengajuanC.dataPengajuanModel?.data.length ?? 0,
                       itemBuilder: (context, index) {
                         return valueTableDataPengajuan(
                           context,

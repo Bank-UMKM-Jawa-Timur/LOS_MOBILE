@@ -1,0 +1,50 @@
+import 'dart:convert';
+
+import 'package:flutter/cupertino.dart';
+import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'package:los_mobile/src/futures/exports/models/export_data_cabang.dart';
+import 'package:los_mobile/utils/base_url.dart';
+import 'package:los_mobile/utils/token.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class ExportDataCabangController extends GetxController {
+  var isLoading = false.obs;
+  DataCabangModel? dataCabangModel;
+  var selectCabang = "Semua cabang".obs;
+  var selectKodeCabang = "".obs;
+  var typeFilter = false.obs;
+
+  @override
+  Future<void> onInit() async {
+    super.onInit();
+    var prefs = await SharedPreferences.getInstance();
+    selectKodeCabang.value = "${prefs.getString("kode_cabang")}";
+    getDataCabang();
+  }
+
+  getDataCabang() async {
+    var headers = {
+      'Content-Type': 'application/json',
+      'token': staticToken,
+    };
+
+    try {
+      isLoading(true);
+      http.Response response = await http.get(
+        Uri.parse('$base_url/v1/get-cabang'),
+        headers: headers,
+      );
+      if (response.statusCode == 200) {
+        var result = jsonDecode(response.body);
+        dataCabangModel = DataCabangModel.fromJson(result);
+      } else {
+        debugPrint('error fetching data ${response.statusCode}');
+      }
+    } catch (e) {
+      debugPrint("Error $e");
+    } finally {
+      isLoading(false);
+    }
+  }
+}

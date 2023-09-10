@@ -1,22 +1,22 @@
 import 'dart:io';
 
 import 'package:get/get.dart';
-import 'package:los_mobile/src/futures/home/controllers/data_cabang_controller.dart';
-import 'package:los_mobile/src/futures/home/controllers/data_pengajuan_controller.dart';
-import 'package:los_mobile/src/futures/home/controllers/posisi_pengajuan_controller.dart';
-import 'package:los_mobile/src/futures/home/controllers/ranking/rating_cabang_controller.dart';
-import 'package:los_mobile/src/futures/home/controllers/skema_kredit_controller.dart';
+import 'package:los_mobile/src/futures/exports/controllers/export_data_cabang_controller.dart';
+import 'package:los_mobile/src/futures/exports/controllers/export_data_pengajuan_controller.dart';
+import 'package:los_mobile/src/futures/exports/controllers/export_posisi_pengajuan_controller.dart';
+import 'package:los_mobile/src/futures/exports/controllers/export_ranking/export_rating_cabang_controller.dart';
+import 'package:los_mobile/src/futures/exports/controllers/export_skema_kredit_controller.dart';
 import 'package:los_mobile/utils/constant.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:syncfusion_flutter_xlsio/xlsio.dart';
 
 class ExportSemuaSkemaDanSemuaCabang {
-  var dataPengajuanC = Get.find<DataPengajuanController>();
-  var posisiPengajuanC = Get.find<PosisiPengajuanController>();
-  var skemaKreditC = Get.find<SkemaKreditController>();
-  var cabangC = Get.find<DataCabangController>();
-  var ratingCabangC = Get.find<RatingCabangController>();
+  var dataPengajuanC = Get.find<ExportDataPengajuanController>();
+  var posisiPengajuanC = Get.find<ExportPosisiPengajuanController>();
+  var skemaKreditC = Get.find<ExportSkemaKreditController>();
+  var cabangC = Get.find<ExportDataCabangController>();
+  var ratingCabangC = Get.find<ExportRatingCabangController>();
 
   void excelSemuaSkemaDanSemuaCabang() async {
     final Workbook workbook = Workbook(1);
@@ -144,31 +144,35 @@ class ExportSemuaSkemaDanSemuaCabang {
     cellSkema.cellStyle.hAlign = HAlignType.center;
     cellSkema.cellStyle.vAlign = VAlignType.center;
 
+    print(indexPengajuan);
+
     for (var i = indexPengajuan + 4;
         i < skemaKreditC.lengthSkemaWithoutName.value + indexPengajuan + 4;
         i++) {
-      sheet
-          .getRangeByName('A$i')
-          .setText(skemaKreditC.skemaKreditModel!.data[i - 37].kodeCabang);
-      sheet
-          .getRangeByName('B$i')
-          .setText(skemaKreditC.skemaKreditModel!.data[i - 37].cabang);
-      sheet.getRangeByName('C$i').setNumber(
-          double.parse(skemaKreditC.skemaKreditModel!.data[i - 37].pkpj));
-      sheet.getRangeByName('D$i').setNumber(
-          double.parse(skemaKreditC.skemaKreditModel!.data[i - 37].kkb));
-      sheet.getRangeByName('E$i').setNumber(
-          double.parse(skemaKreditC.skemaKreditModel!.data[i - 37].umroh));
-      sheet.getRangeByName('F$i').setNumber(
-          double.parse(skemaKreditC.skemaKreditModel!.data[i - 37].prokesra));
-      sheet.getRangeByName('G$i').setNumber(
-          double.parse(skemaKreditC.skemaKreditModel!.data[i - 37].kusuma));
-      sheet.getRangeByName('H$i').setNumber(double.parse(
-              skemaKreditC.skemaKreditModel!.data[i - 37].pkpj) +
-          double.parse(skemaKreditC.skemaKreditModel!.data[i - 37].kkb) +
-          double.parse(skemaKreditC.skemaKreditModel!.data[i - 37].umroh) +
-          double.parse(skemaKreditC.skemaKreditModel!.data[i - 37].prokesra) +
-          double.parse(skemaKreditC.skemaKreditModel!.data[i - 37].kusuma));
+      sheet.getRangeByName('A$i').setText(skemaKreditC
+          .skemaKreditModel!.data[i - (indexPengajuan + 4)].kodeCabang);
+      sheet.getRangeByName('B$i').setText(
+          skemaKreditC.skemaKreditModel!.data[i - (indexPengajuan + 4)].cabang);
+      sheet.getRangeByName('C$i').setNumber(double.parse(
+          skemaKreditC.skemaKreditModel!.data[i - (indexPengajuan + 4)].pkpj));
+      sheet.getRangeByName('D$i').setNumber(double.parse(
+          skemaKreditC.skemaKreditModel!.data[i - (indexPengajuan + 4)].kkb));
+      sheet.getRangeByName('E$i').setNumber(double.parse(
+          skemaKreditC.skemaKreditModel!.data[i - (indexPengajuan + 4)].umroh));
+      sheet.getRangeByName('F$i').setNumber(double.parse(skemaKreditC
+          .skemaKreditModel!.data[i - (indexPengajuan + 4)].prokesra));
+      sheet.getRangeByName('G$i').setNumber(double.parse(skemaKreditC
+          .skemaKreditModel!.data[i - (indexPengajuan + 4)].kusuma));
+      sheet.getRangeByName('H$i').setNumber(double.parse(skemaKreditC
+              .skemaKreditModel!.data[i - (indexPengajuan + 4)].pkpj) +
+          double.parse(skemaKreditC
+              .skemaKreditModel!.data[i - (indexPengajuan + 4)].kkb) +
+          double.parse(skemaKreditC
+              .skemaKreditModel!.data[i - (indexPengajuan + 4)].umroh) +
+          double.parse(skemaKreditC
+              .skemaKreditModel!.data[i - (indexPengajuan + 4)].prokesra) +
+          double.parse(skemaKreditC
+              .skemaKreditModel!.data[i - (indexPengajuan + 4)].kusuma));
       sheet.getRangeByName('A$i:H$i').cellStyle = styleValue;
       indexSkema = i;
     }
