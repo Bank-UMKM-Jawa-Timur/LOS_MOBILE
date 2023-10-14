@@ -32,6 +32,7 @@ class LoginController extends GetxController {
       Map body = {
         "email": emailNipController.text,
         "password": passwordController.text,
+        "project": "los_mobile",
       };
 
       http.Response response = await http.post(
