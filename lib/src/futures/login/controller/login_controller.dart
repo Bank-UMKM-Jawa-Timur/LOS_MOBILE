@@ -29,10 +29,15 @@ class LoginController extends GetxController {
     try {
       isLoading(true);
 
+      final url = Uri.parse('https://api.ipify.org');
+      final response2 = await http.get(url);
+      var ipAddress = response2.statusCode == 200 ? response2.body : null;
+
       Map body = {
         "email": emailNipController.text,
         "password": passwordController.text,
         "project": "los_mobile",
+        "ip": ipAddress,
       };
 
       http.Response response = await http.post(
